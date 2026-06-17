@@ -11,9 +11,9 @@
 
   <!-- ===== NAVBAR ===== -->
   <nav class="navbar" aria-label="Main navigation">
-    <a href="#" class="nav-logo" aria-label="MARKETRA Home">
+    <a href="#" class="nav-logo" aria-label="Marketra Home">
       <div class="nav-logo-icon">M</div>
-      <span class="nav-logo-text">MARKETRA</span>
+      <span class="nav-logo-text">Marketra</span>
     </a>
     <ul class="nav-links">
       <li><a href="#features">Features</a></li>
@@ -163,7 +163,7 @@
       </div>
     </div>
 
-    <a href="#" class="btn-cta" id="guideBtn" role="button">
+    <a href="guide.html" class="btn-cta" id="guideBtn" role="button">
       Read Registration Guide
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -173,14 +173,16 @@
 
   <!-- ===== FEATURES CARDS SECTION ===== -->
   <section class="features-section" id="features" aria-labelledby="features-heading">
-    <h2 class="features-label" id="features-heading">What MARKETRA Offers</h2>
+    <h2 class="features-label" id="features-heading">What <span class="features-label-accent">Marketra</span> Offers</h2>
     <p class="features-sub">Three core modules to power a modern public market ecosystem</p>
 
     <div class="cards-grid" role="list">
 
       <!-- Card 1: Vendor Registration -->
       <article class="feature-card" role="listitem">
-        <div class="card-icon-wrap card-icon-green" aria-hidden="true">🏪</div>
+        <div class="card-icon-wrap card-icon-green" aria-hidden="true">
+          <img src="vendorregicon.png" alt="Vendor Registration Icon" width="36" height="36" />
+        </div>
         <h3 class="card-title">Vendor Registration</h3>
         <p class="card-desc">
           Submit and manage your vendor application entirely online. Upload requirements, track approval status, and receive instant confirmations — no more long queues.
@@ -193,14 +195,16 @@
         </a>
       </article>
 
-      <!-- Card 2: Stall Mapping -->
+      <!-- Card 2: Renew Permit -->
       <article class="feature-card" role="listitem">
-        <div class="card-icon-wrap card-icon-blue" aria-hidden="true">🗺️</div>
-        <h3 class="card-title">Stall Mapping</h3>
+        <div class="card-icon-wrap card-icon-blue" aria-hidden="true">
+          <img src="renewpermiticon.png" alt="Renew Permit Icon" width="36" height="36" />
+        </div>
+        <h3 class="card-title">Renew Permit</h3>
         <p class="card-desc">
-          View an interactive map of all market stalls. Check availability, request preferred stall locations, and navigate the market layout with ease.
+          Renew your permit and track your permit status. Guide and most convenient way to track your permit status.
         </p>
-        <a href="#" class="card-link" id="stallLink">
+        <a href="#" class="card-link" id="permitLink">
           Learn more
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -208,14 +212,16 @@
         </a>
       </article>
 
-      <!-- Card 3: Admin Dashboard -->
+      <!-- Card 3: Stall Mapping -->
       <article class="feature-card" role="listitem">
-        <div class="card-icon-wrap card-icon-purple" aria-hidden="true">📊</div>
-        <h3 class="card-title">Admin Dashboard</h3>
+        <div class="card-icon-wrap card-icon-purple" aria-hidden="true">
+          <img src="stallmappingicon.png" alt="Stall Mapping Icon" width="36" height="36" />
+        </div>
+        <h3 class="card-title">Stall Mapping</h3>
         <p class="card-desc">
-          Market administrators can oversee all registrations, manage stall assignments, generate reports, and communicate with vendors in real time.
+          View an interactive map of all market stalls. Check availability, request preferred stall locations, and navigate the market layout with ease.
         </p>
-        <a href="#" class="card-link" id="adminLink">
+        <a href="#" class="card-link" id="stallLink">
           Learn more
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -248,7 +254,8 @@
         <h4>Support</h4>
         <ul>
           <li><a href="#">Help Center</a></li>
-          <li><a href="#">Registration Guide</a></li>
+          <li><a href="guide.html">Registration Guide</a></li>
+          <li><a href="faq.html">FAQ</a></li>
           <li><a href="#">Contact Us</a></li>
         </ul>
       </div>

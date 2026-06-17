@@ -75,11 +75,11 @@ body {
 }
 
 .nav-logo-text {
-  font-family: 'Trebuchet MS', 'Century Gothic', 'Gill Sans', sans-serif;
-  font-weight: 700;
-  font-size: 18px;
+  font-family: 'Arial Black', 'Trebuchet MS', 'Franklin Gothic Medium', sans-serif;
+  font-weight: 900;
+  font-size: 16px;
   color: var(--white);
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
 }
 
 .nav-links {
@@ -137,10 +137,10 @@ body {
   inset: 0;
   background: linear-gradient(
     160deg,
-    rgba(20, 83, 45, 0.88) 0%,
-    rgba(21, 128, 61, 0.85) 40%,
-    rgba(22, 163, 74, 0.80) 70%,
-    rgba(34, 197, 94, 0.75) 100%
+    rgba(10, 50, 25, 0.93) 0%,
+    rgba(15, 90, 40, 0.91) 40%,
+    rgba(18, 130, 55, 0.88) 70%,
+    rgba(22, 163, 74, 0.85) 100%
   );
 }
 
@@ -168,6 +168,7 @@ body {
   letter-spacing: -1px;
   line-height: 1.05;
   margin-bottom: 12px;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.30);
 }
 
 .brand-title .accent {
@@ -407,15 +408,15 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(99, 102, 241, 0.08);
-  color: var(--purple-accent);
+  background: rgba(22, 163, 74, 0.08);
+  color: var(--green-base);
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 1px;
   text-transform: uppercase;
   padding: 6px 16px;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  border: 1px solid rgba(22, 163, 74, 0.25);
   margin-bottom: 20px;
 }
 
@@ -485,7 +486,7 @@ body {
   align-items: center;
   gap: 8px;
   padding: 14px 32px;
-  background: linear-gradient(135deg, var(--purple-accent), var(--purple-hover));
+  background: linear-gradient(135deg, var(--green-base), var(--green-mid));
   color: var(--white);
   font-family: 'Trebuchet MS', 'Century Gothic', 'Gill Sans', sans-serif;
   font-size: 15px;
@@ -493,12 +494,12 @@ body {
   border-radius: var(--radius-full);
   text-decoration: none;
   transition: var(--transition);
-  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 4px 20px rgba(22, 163, 74, 0.4);
   letter-spacing: 0.3px;
 }
 
 .btn-cta:hover {
-  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.65);
+  box-shadow: 0 6px 24px rgba(22, 163, 74, 0.65);
 }
 
 /* ─── Features Cards Section ────────────────────────────────── */
@@ -517,6 +518,8 @@ body {
   color: var(--text-dark);
   margin-bottom: 12px;
 }
+
+.features-label-accent { color: var(--green-base); }
 
 .features-sub {
   text-align: center;
@@ -571,9 +574,9 @@ body {
   margin-bottom: 24px;
 }
 
-.card-icon-green  { background: rgba(22, 163, 74, 0.10); }
-.card-icon-blue   { background: rgba(59, 130, 246, 0.10); }
-.card-icon-purple { background: rgba(99, 102, 241, 0.10); }
+.card-icon-green  { background: rgba(22, 163, 74, 0.10);  color: #16a34a; }
+.card-icon-blue   { background: rgba(59, 130, 246, 0.10); color: #3b82f6; }
+.card-icon-purple { background: rgba(99, 102, 241, 0.10); color: #6366f1; }
 
 .card-title {
   font-family: 'Trebuchet MS', 'Century Gothic', 'Gill Sans', sans-serif;
@@ -646,6 +649,16 @@ footer {
   transition: color var(--transition);
 }
 .footer-links ul a:hover { color: var(--lime-accent); }
+
+.footer-bottom {
+  max-width: 1000px;
+  margin: 32px auto 0;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+}
 
 /* ─── Registration Modal ────────────────────────────────────── */
 .modal-overlay {

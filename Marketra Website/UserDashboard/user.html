@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketra - Vendor Registration Dashboard</title>
+    <link rel="stylesheet" href="user-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <span class="brand-logo">E</span>
+                <span class="brand-name">Marketra</span>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <button class="nav-link active" data-target="view-dashboard">
+                    <i class="fa-solid fa-table-columns"></i> Dashboard
+                </button>
+                
+                <div class="menu-category">PERMITS</div>
+                <button class="nav-link" data-target="view-my-applications">
+                    <i class="fa-regular fa-clipboard"></i> My Applications
+                </button>
+                <button class="nav-link" data-target="view-new-registration">
+                    <i class="fa-solid fa-user-plus"></i> New Registration
+                </button>
+                <button class="nav-link" data-target="view-renew-permit">
+                    <i class="fa-solid fa-rotate"></i> Renew Permit
+                </button>
+                
+                <div class="menu-category">HELP</div>
+                <button class="nav-link" data-target="view-reg-guide">
+                    <i class="fa-solid fa-book-open"></i> Registration Guide
+                </button>
+                <button class="nav-link" data-target="view-faqs">
+                    <i class="fa-solid fa-circle-question"></i> FAQs
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button class="btn-logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-breadcrumbs">
+                    <a href="#" class="bread-link" data-target="view-reg-guide">Guide</a>
+                    <a href="#" class="bread-link" data-target="view-faqs">FAQ</a>
+                    <a href="#" class="bread-link">Help</a>
+                </div>
+                <div class="header-user-actions">
+                    <div class="notification-bell">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="bell-badge"></span>
+                    </div>
+                    <div class="user-profile">
+                        <span class="avatar-circle" id="profile-avatar-initials">-</span>
+                        <div class="user-info">
+                            <span class="user-name" id="profile-display-name">Loading...</span>
+                            <span class="user-role" id="profile-display-role">Vendor</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="view-viewport">
+
+                <section id="view-dashboard" class="app-view active">
+                    <div class="hero-banner">
+                        <div class="hero-text">
+                            <h1 id="dashboard-welcome-heading">Welcome</h1>
+                            <p>Manage stall registrations, track permit validity, and process applications for your public market stalls.</p>
+                        </div>
+                        <div class="hero-actions">
+                            <button class="btn btn-white" data-action="start-app">Start Application</button>
+                            <button class="btn btn-outline-white" data-action="view-guide">How it Works</button>
+                        </div>
+                    </div>
+
+                    <div class="analytics-grid">
+                        <div class="stat-card">
+                            <div>
+                                <span class="stat-title">TOTAL VENDORS</span>
+                                <h2 class="stat-value" id="stat-total-vendors">...</h2>
+                                <p class="stat-subtitle">Registered stalls</p>
+                            </div>
+                            <div class="stat-icon-wrapper green-light"><i class="fa-solid fa-users"></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div>
+                                <span class="stat-title">ACTIVE PERMITS</span>
+                                <h2 class="stat-value" id="stat-active-permits">...</h2>
+                                <p class="stat-subtitle">Valid & compliant</p>
+                            </div>
+                            <div class="stat-icon-wrapper green-light"><i class="fa-regular fa-file-lines"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="quick-actions-grid">
+                        <div class="quick-card" data-target="view-new-registration">
+                            <div class="quick-icon icon-green"><i class="fa-solid fa-user-plus"></i></div>
+                            <span>New Registration</span>
+                        </div>
+                        <div class="quick-card" data-target="view-renew-permit">
+                            <div class="quick-icon icon-amber"><i class="fa-solid fa-rotate"></i></div>
+                            <span>Renew Permit</span>
+                        </div>
+                        <div class="quick-card" data-target="view-my-applications">
+                            <div class="quick-icon icon-blue"><i class="fa-regular fa-clipboard"></i></div>
+                            <span>View Status</span>
+                        </div>
+                        <div class="quick-card" data-target="view-faqs">
+                            <div class="quick-icon icon-purple"><i class="fa-regular fa-circle-question"></i></div>
+                            <span>FAQs</span>
+                        </div>
+                    </div>
+
+                    <div class="content-card notices-card">
+                        <div class="card-header">
+                            <h3>Latest Notices</h3>
+                            <button class="text-link" data-target="view-faqs">All Notices</button>
+                        </div>
+                        <ul class="notices-list" id="dashboard-notices-container">
+                            <li class="text-muted text-sm text-center padding-y-12">Fetching latest updates...</li>
+                        </ul>
+                    </div>
+
+                    <div class="callout-banner banner-blue">
+                        <div class="callout-content">
+                            <i class="fa-solid fa-book-open"></i>
+                            <div>
+                                <h4>First time applying?</h4>
+                                <p>Read our step-by-step registration guide to prepare your documents and understand the process.</p>
+                                <button class="text-link-action" data-target="view-reg-guide">View Registration Guide &rarr;</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="view-my-applications" class="app-view">
+                    <div class="view-header">
+                        <h2>My Applications</h2>
+                        <p>Track the status of your permit applications and renewals</p>
+                    </div>
+
+                    <div class="application-stack" id="user-applications-container">
+                        <div class="content-card text-center text-muted text-sm">
+                            No ongoing applications found. Click "New Registration" to get started.
+                        </div>
+                    </div>
+
+                    <div class="content-card spacer-top">
+                        <h3>Application Process Workflow</h3>
+                        <div class="stepper-vertical">
+                            <div class="step-item" id="wf-step-1">
+                                <div class="step-icon"><span>1</span></div>
+                                <div class="step-text">
+                                    <h4>Application Submitted</h4>
+                                    <p>Your form and documents have been received.</p>
+                                </div>
+                            </div>
+                            <div class="step-item" id="wf-step-2">
+                                <div class="step-icon"><span>2</span></div>
+                                <div class="step-text">
+                                    <h4>Document Verification</h4>
+                                    <p>Market admin reviews your uploaded documents.</p>
+                                </div>
+                            </div>
+                            <div class="step-item" id="wf-step-3">
+                                <div class="step-icon"><span>3</span></div>
+                                <div class="step-text">
+                                    <h4>Admin Approval</h4>
+                                    <p>Application reviewed and decision issued.</p>
+                                </div>
+                            </div>
+                            <div class="step-item" id="wf-step-4">
+                                <div class="step-icon"><span>4</span></div>
+                                <div class="step-text">
+                                    <h4>Stall Assignment</h4>
+                                    <p>Stall assigned based on preferences and availability.</p>
+                                </div>
+                            </div>
+                            <div class="step-item" id="wf-step-5">
+                                <div class="step-icon"><span>5</span></div>
+                                <div class="step-text">
+                                    <h4>Permit Issuance</h4>
+                                    <p>Permit ready for pickup at the market office.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="view-new-registration" class="app-view">
+                    <div class="view-header">
+                        <h2>New Vendor Registration</h2>
+                        <p>Complete all steps to submit your stall application.</p>
+                    </div>
+
+                    <div class="wizard-container">
+                        <div class="wizard-header" id="reg-wizard-steps">
+                            <div class="wiz-step active" data-step="1"><span class="wiz-num">1</span><span class="wiz-label">Personal Info</span></div>
+                            <div class="wiz-line"></div>
+                            <div class="wiz-step" data-step="2"><span class="wiz-num">2</span><span class="wiz-label">Business Info</span></div>
+                            <div class="wiz-line"></div>
+                            <div class="wiz-step" data-step="3"><span class="wiz-num">3</span><span class="wiz-label">Stall Details</span></div>
+                            <div class="wiz-line"></div>
+                            <div class="wiz-step" data-step="4"><span class="wiz-num">4</span><span class="wiz-label">Documents</span></div>
+                            <div class="wiz-line"></div>
+                            <div class="wiz-step" data-step="5"><span class="wiz-num">5</span><span class="wiz-label">Review</span></div>
+                        </div>
+
+                        <form id="new-registration-form" class="wizard-form-body">
+                            <div class="form-pane active" id="reg-pane-1">
+                                <h3 class="pane-title">Personal Information</h3>
+                                <div class="form-grid layout-2col">
+                                    <div class="form-group">
+                                        <label>First Name <span class="required">*</span></label>
+                                        <input type="text" id="reg-input-firstname" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Last Name <span class="required">*</span></label>
+                                        <input type="text" id="reg-input-lastname" required>
+                                    </div>
+                                </div>
+                                <div class="form-grid layout-2col">
+                                    <div class="form-group">
+                                        <label>Email Address <span class="required">*</span></label>
+                                        <input type="email" id="reg-input-email" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Phone Number <span class="required">*</span></label>
+                                        <input type="text" id="reg-input-phone" placeholder="09XX-XXX-XXXX" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Home Address <span class="required">*</span></label>
+                                    <input type="text" id="reg-input-address" placeholder="Street, Barangay" required>
+                                </div>
+                                <div class="form-grid layout-2col">
+                                    <div class="form-group">
+                                        <label>City / Municipality</label>
+                                        <input type="text" id="reg-input-city">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>ID Type <span class="required">*</span></label>
+                                        <select id="reg-input-idtype" required>
+                                            <option value="">Select ID Type</option>
+                                            <option value="UMID">UMID</option>
+                                            <option value="Drivers">Driver's License</option>
+                                            <option value="Passport">Passport</option>
+                                            <option value="PhilSys">PhilSys ID</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-grid layout-2col">
+                                    <div class="form-group">
+                                        <label>ID Number <span class="required">*</span></label>
+                                        <input type="text" id="reg-input-idno" placeholder="Enter id number" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-pane" id="reg-pane-2">
+                                <h3 class="pane-title">Business Information</h3>
+                                <div class="form-group">
+                                    <label>Business / Trade Name <span class="required">*</span></label>
+                                    <input type="text" id="reg-input-bizname" placeholder="e.g. Fresh Produce Vendor">
+                                </div>
+                                <div class="form-grid layout-2col">
+                                    <div class="form-group">
+                                        <label>Business Type <span class="required">*</span></label>
+                                        <select id="reg-input-biztype">
+                                            <option value="">Select Business Type</option>
+                                            <option value="Sole">Sole Proprietorship</option>
+                                            <option value="Coop">Cooperative</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Product Category <span class="required">*</span></label>
+                                        <select id="reg-input-category">
+                                            <option value="">Select Category</option>
+                                            <option value="Vegetables">Vegetables & Fruits</option>
+                                            <option value="Meat">Meat & Poultry</option>
+                                            <option value="Dry">Dry Goods & Grocery</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-grid layout-2col">
+                                    <div class="form-group">
+                                        <label>Years in Business</label>
+                                        <input type="number" id="reg-input-years" value="0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>TIN Number</label>
+                                        <input type="text" id="reg-input-tin" placeholder="XXX-XXX-XXX">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-pane" id="reg-pane-3">
+                                <h3 class="pane-title">Stall Preferences</h3>
+                                <div class="form-grid layout-2col">
+                                    <div class="form-group">
+                                        <label>Preferred Zone <span class="required">*</span></label>
+                                        <select id="reg-input-zone">
+                                            <option value="">Select Zone</option>
+                                            <option value="ZoneA">Zone A - Wet Market</option>
+                                            <option value="ZoneB">Zone B - Dry Goods</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Stall Size <span class="required">*</span></label>
+                                        <select id="reg-input-size">
+                                            <option value="">Select Size</option>
+                                            <option value="Small">Small (2m x 2m)</option>
+                                            <option value="Medium">Medium (3m x 3m)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Operating Days <span class="required">*</span></label>
+                                    <div class="badge-toggle-row">
+                                        <div class="day-badge" data-value="Mon">Mon</div>
+                                        <div class="day-badge" data-value="Tue">Tue</div>
+                                        <div class="day-badge" data-value="Wed">Wed</div>
+                                        <div class="day-badge" data-value="Thu">Thu</div>
+                                        <div class="day-badge" data-value="Fri">Fri</div>
+                                        <div class="day-badge" data-value="Sat">Sat</div>
+                                        <div class="day-badge" data-value="Sun">Sun</div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Operating Hours <span class="required">*</span></label>
+                                    <input type="text" id="reg-input-hours" placeholder="e.g. 4:00 AM - 8:00 PM">
+                                </div>
+                                <div class="callout-banner banner-amber text-sm">
+                                    <p><strong>Note:</strong> Stall assignment is subject to availability. The market authority will confirm your stall number upon approval.</p>
+                                </div>
+                            </div>
+
+                            <div class="form-pane" id="reg-pane-4">
+                                <h3 class="pane-title">Document Uploads</h3>
+                                <p class="pane-desc">Please upload clear, legible copies of the required documents. Accepted formats: PDF, JPG, PNG (max 5MB each).</p>
+                                
+                                <div class="upload-grid">
+                                    <div class="upload-box">
+                                        <label>Valid Government ID <span class="required">*</span></label>
+                                        <div class="dropzone">
+                                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                                            <span>Click to upload</span>
+                                            <span class="formats">PDF, JPG, PNG</span>
+                                        </div>
+                                    </div>
+                                    <div class="upload-box">
+                                        <label>DTI / SEC Business Registration <span class="required">*</span></label>
+                                        <div class="dropzone">
+                                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                                            <span>Click to upload</span>
+                                            <span class="formats">PDF, JPG, PNG</span>
+                                        </div>
+                                    </div>
+                                    <div class="upload-box">
+                                        <label>Health Certificate (DOH 2026) <span class="required">*</span></label>
+                                        <div class="dropzone">
+                                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                                            <span>Click to upload</span>
+                                            <span class="formats">PDF, JPG, PNG</span>
+                                        </div>
+                                    </div>
+                                    <div class="upload-box">
+                                        <label>BIR Certificate of Registration</label>
+                                        <div class="dropzone">
+                                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                                            <span>Click to upload</span>
+                                            <span class="formats">PDF, JPG, PNG</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-pane" id="reg-pane-5">
+                                <h3 class="pane-title">Review Registration Data</h3>
+                                <div class="review-block-container">
+                                    <p>Summary parsing dynamically from fields...</p>
+                                </div>
+                            </div>
+
+                            <div class="wizard-footer-buttons">
+                                <button type="button" class="btn btn-outline" id="btn-reg-prev" style="display:none;">&larr; Previous</button>
+                                <button type="button" class="btn btn-outline" id="btn-reg-cancel">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="btn-reg-next">Next Step &rarr;</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <section id="view-renew-permit" class="app-view">
+                    <div class="view-header">
+                        <h2>Permit Renewal</h2>
+                        <p>Renew your existing market stall permit.</p>
+                    </div>
+
+                    <div class="wizard-container">
+                        <div class="wizard-header" id="renew-wizard-steps">
+                            <div class="wiz-step active" data-step="1"><span class="wiz-num">1</span><span class="wiz-label">Verify Permit</span></div>
+                            <div class="wiz-line"></div>
+                            <div class="wiz-step" data-step="2"><span class="wiz-num">2</span><span class="wiz-label">Update Info</span></div>
+                            <div class="wiz-line"></div>
+                            <div class="wiz-step" data-step="3"><span class="wiz-num">3</span><span class="wiz-label">Documents</span></div>
+                            <div class="wiz-line"></div>
+                            <div class="wiz-step" data-step="4"><span class="wiz-num">4</span><span class="wiz-label">Review</span></div>
+                        </div>
+
+                        <div class="wizard-form-body">
+                            <div class="form-pane active" id="renew-pane-1">
+                                <h3 class="pane-title">Verify Your Permit</h3>
+                                <p class="pane-desc">Enter your existing permit number and last name to retrieve your record.</p>
+
+                                <div class="form-group field-md">
+                                    <label>Permit Number <span class="required">*</span></label>
+                                    <input type="text" id="renew-input-permit">
+                                </div>
+                                <div class="form-group field-md">
+                                    <label>Last Name <span class="required">*</span></label>
+                                    <input type="text" id="renew-input-lastname">
+                                </div>
+                                <button type="button" class="btn btn-primary spacing-y" id="btn-verify-permit">
+                                    <i class="fa-solid fa-magnifying-glass"></i> Verify Permit
+                                </button>
+
+                                <div class="table-summary-card" id="renew-verification-result" style="display:none;">
+                                    <div class="table-card-title flex-between">
+                                        <span>Permit Found</span>
+                                        <span class="badge" id="renew-status-pill">Active</span>
+                                    </div>
+                                    <div class="table-card-content">
+                                        <div><span class="t-lbl">Permit No.</span><span class="t-val" id="vf-no">-</span></div>
+                                        <div><span class="t-lbl">Vendor</span><span class="t-val" id="vf-vendor">-</span></div>
+                                        <div><span class="t-lbl">Stall No.</span><span class="t-val" id="vf-stall">-</span></div>
+                                        <div><span class="t-lbl">Zone</span><span class="t-val" id="vf-zone">-</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-pane" id="renew-pane-2">
+                                <h3 class="pane-title">Update Information</h3>
+                                <p class="pane-desc">Review and update your contact and business details if needed.</p>
+                                
+                                <div class="form-grid layout-2col">
+                                    <div class="form-group">
+                                        <label>Phone Number</label>
+                                        <input type="text" id="ren-phone">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email Address</label>
+                                        <input type="email" id="ren-email">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Home Address</label>
+                                    <input type="text" id="ren-address">
+                                </div>
+                                <div class="form-group">
+                                    <label>Business Name</label>
+                                    <input type="text" id="ren-bname">
+                                </div>
+                                <div class="form-group field-md">
+                                    <label>Product Category</label>
+                                    <select id="ren-cat">
+                                        <option value="">Select Category</option>
+                                        <option value="Dry Goods & Grocery">Dry Goods & Grocery</option>
+                                        <option value="Vegetables">Vegetables & Fruits</option>
+                                    </select>
+                                </div>
+                                <div class="callout-banner banner-blue text-sm">
+                                    <p><strong>Note:</strong> Stall number and zone cannot be changed during renewal. Contact the market office for transfers.</p>
+                                </div>
+                            </div>
+
+                            <div class="form-pane" id="renew-pane-3">
+                                <h3 class="pane-title">Document Uploads</h3>
+                                <p class="pane-desc">Upload updated documents for your permit renewal. All documents must be for the current year.</p>
+                                
+                                <div class="upload-grid">
+                                    <div class="upload-box">
+                                        <label>Health Certificate <span class="required">*</span></label>
+                                        <div class="dropzone">
+                                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                                            <span>Click to upload</span>
+                                            <span class="formats">PDF, JPG, PNG</span>
+                                        </div>
+                                    </div>
+                                    <div class="upload-box">
+                                        <label>Barangay Clearance <span class="required">*</span></label>
+                                        <div class="dropzone">
+                                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                                            <span>Click to upload</span>
+                                            <span class="formats">PDF, JPG, PNG</span>
+                                        </div>
+                                    </div>
+                                    <div class="upload-box">
+                                        <label>Valid Government ID <span class="required">*</span></label>
+                                        <div class="dropzone">
+                                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                                            <span>Click to upload</span>
+                                            <span class="formats">PDF, JPG, PNG</span>
+                                        </div>
+                                    </div>
+                                    <div class="upload-box">
+                                        <label>Tax Clearance / Business Tax Receipt</label>
+                                        <div class="dropzone">
+                                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                                            <span>Click to upload</span>
+                                            <span class="formats">PDF, JPG, PNG</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-pane" id="renew-pane-4">
+                                <h3 class="pane-title">Review Renewal Application</h3>
+                                
+                                <div class="table-summary-card">
+                                    <div class="table-card-header-plain"></div>
+                                    <div class="table-card-content layout-2col-grid">
+                                        <div><span class="t-lbl">Permit No.:</span><span class="t-val" id="rv-pno">-</span></div>
+                                        <div><span class="t-lbl">Stall No.:</span><span class="t-val" id="rv-stallno">-</span></div>
+                                        <div><span class="t-lbl">Zone:</span><span class="t-val" id="rv-zoneno">-</span></div>
+                                        <div><span class="t-lbl">Expiry:</span><span class="t-val" id="rv-expirydate">-</span></div>
+                                    </div>
+                                </div>
+
+                                <div class="table-summary-card spacer-top">
+                                    <div class="table-card-header-plain"></div>
+                                    <div class="table-card-content layout-2col-grid">
+                                        <div><span class="t-lbl">Business:</span><span class="t-val" id="rv-bname">-</span></div>
+                                        <div><span class="t-lbl">Category:</span><span class="t-val" id="rv-cat">-</span></div>
+                                        <div><span class="t-lbl">Phone:</span><span class="t-val" id="rv-phone">-</span></div>
+                                        <div><span class="t-lbl">Email:</span><span class="t-val" id="rv-email">-</span></div>
+                                        <div style="grid-column: span 2;"><span class="t-lbl">Address:</span><span class="t-val" id="rv-addr">-</span></div>
+                                    </div>
+                                </div>
+
+                                <p class="legal-notice-footer">
+                                    I confirm that all information is accurate and that I am the authorized permit holder. I understand renewal is valid for one year from approval date.
+                                </p>
+                            </div>
+
+                            <div class="wizard-footer-buttons spacer-top">
+                                <button type="button" class="btn btn-outline" id="btn-renew-prev" style="display:none;">&larr; Previous</button>
+                                <button type="button" class="btn btn-primary" id="btn-renew-next" disabled>Next Step &rarr;</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="view-reg-guide" class="app-view">
+                    <div class="view-header">
+                        <h2>Registration Guide</h2>
+                        <p>How to apply for a market stall at Oaktown City Public Market.</p>
+                    </div>
+
+                    <div class="callout-banner banner-amber spacer-bottom">
+                        <h4 class="amber-head-title">Prepare these before you start</h4>
+                        <ul class="bullet-list-amber">
+                            <li>Valid Government ID (PhilSys, Driver's License, SSS, or Passport)</li>
+                            <li>DTI or SEC Business Registration Certificate</li>
+                            <li>DOH Health Certificate</li>
+                            <li>TIN Number (optional but recommended)</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="timeline-infographic">
+                            <div class="info-step-row">
+                                <div class="info-icon-badge"><i class="fa-solid fa-user-plus"></i></div>
+                                <div class="info-step-body">
+                                    <h5>Step 1</h5>
+                                    <h4>Create Your Account</h4>
+                                    <p>Fill in your personal details — name, contact info, address, and a valid government ID.</p>
+                                </div>
+                            </div>
+                            <div class="info-step-row">
+                                <div class="info-icon-badge"><i class="fa-regular fa-file-lines"></i></div>
+                                <div class="info-step-body">
+                                    <h5>Step 2</h5>
+                                    <h4>Enter Business Information</h4>
+                                    <p>Provide your business name, type, product category, and TIN number if available.</p>
+                                </div>
+                            </div>
+                            <div class="info-step-row">
+                                <div class="info-icon-badge"><i class="fa-solid fa-location-dot"></i></div>
+                                <div class="info-step-body">
+                                    <h5>Step 3</h5>
+                                    <h4>Select Stall Preferences</h4>
+                                    <p>Choose your preferred zone, stall size, and operating days and hours.</p>
+                                </div>
+                            </div>
+                            <div class="info-step-row">
+                                <div class="info-icon-badge"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                                <div class="info-step-body">
+                                    <h5>Step 4</h5>
+                                    <h4>Upload Documents</h4>
+                                    <p>Upload your valid ID, DTI/SEC registration, and DOH health certificate.</p>
+                                </div>
+                            </div>
+                            <div class="info-step-row">
+                                <div class="info-icon-badge"><i class="fa-regular fa-circle-check"></i></div>
+                                <div class="info-step-body">
+                                    <h5>Step 5</h5>
+                                    <h4>Review & Submit</h4>
+                                    <p>Double-check everything, agree to the declaration, and submit your application.</p>
+                                </div>
+                            </div>
+                            <div class="info-step-row">
+                                <div class="info-icon-badge"><i class="fa-regular fa-credit-card"></i></div>
+                                <div class="info-step-body">
+                                    <h5>Step 6</h5>
+                                    <h4>Pay the Permit Fee</h4>
+                                    <p>After approval, pay the computed fee via Cash, GCash, Maya, or Bank Transfer.</p>
+                                </div>
+                            </div>
+                            <div class="info-step-row">
+                                <div class="info-icon-badge"><i class="fa-solid fa-award"></i></div>
+                                <div class="info-step-body">
+                                    <h5>Step 7</h5>
+                                    <h4>Receive Your Permit</h4>
+                                    <p>Pick up your permit at the Market Admin Office in Zone A. Bring your ID and receipt.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-card spacer-top">
+                        <h3>Processing Timeline</h3>
+                        <div class="timeline-grid-summary">
+                            <div class="grid-time-item"><span>Document Verification</span><strong class="green-text">1–3 days</strong></div>
+                            <div class="grid-time-item"><span>Admin Review</span><strong class="green-text">3–5 days</strong></div>
+                            <div class="grid-time-item"><span>Stall Assignment</span><strong class="green-text">Day 5</strong></div>
+                            <div class="grid-time-item"><span>Permit Issuance</span><strong class="green-text">After payment</strong></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="view-faqs" class="app-view">
+                    <div class="view-header">
+                        <h2>Frequently Asked Questions</h2>
+                        <p>Common questions about market stall registration and operations.</p>
+                    </div>
+
+                    <div class="search-wrapper-row">
+                        <i class="fa-solid fa-magnifying-glass search-bar-icon"></i>
+                        <input type="text" id="faq-search-input" placeholder="Search questions...">
+                    </div>
+
+                    <div class="faq-category-block">
+                        <h4 class="category-block-title">REGISTRATION</h4>
+                        <div class="accordion-item">
+                            <div class="accordion-trigger">
+                                <span>Who can apply for a stall?</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                            <div class="accordion-panel">
+                                <p>Any Filipino citizen aged 18 and above with a legitimate business. You'll need a valid ID, DTI/SEC registration, and a DOH health certificate.</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <div class="accordion-trigger">
+                                <span>How long does processing take?</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                            <div class="accordion-panel">
+                                <p>Standard processing tracks between 5 to 7 business days from complete file clearance submission details.</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <div class="accordion-trigger">
+                                <span>What if my application is rejected?</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                            <div class="accordion-panel">
+                                <p>You will receive a notification highlighting the gaps. You can rectify documents and apply again immediately.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-category-block">
+                        <h4 class="category-block-title">PERMITS & RENEWAL</h4>
+                        <div class="accordion-item">
+                            <div class="accordion-trigger">
+                                <span>When should I renew?</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                            <div class="accordion-panel">
+                                <p>Permit renewal must be filled out prior to the designated deadline to maintain compliance flags safely.</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <div class="accordion-trigger">
+                                <span>What documents do I need for renewal?</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                            <div class="accordion-panel">
+                                <p>You need an updated Health Certificate, Barangay Clearance, and a Valid Government ID.</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <div class="accordion-trigger">
+                                <span>What happens if I miss the deadline?</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                            <div class="accordion-panel">
+                                <p>Late filings incur incremental surcharges, and unrenewed slots risk immediate reassignment access pools.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-category-block">
+                        <h4 class="category-block-title">PAYMENTS & FEES</h4>
+                        <div class="accordion-item">
+                            <div class="accordion-trigger">
+                                <span>How are fees calculated?</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                            <div class="accordion-panel">
+                                <p>Fees are calculated relative to total target floor area sizing and structural zones categories metrics mapping.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="callout-banner banner-dark-green flex-between spacer-top">
+                        <div>
+                            <h4 class="text-white">Still have questions?</h4>
+                            <p class="text-gray-light">Visit the market admin office or contact us.</p>
+                        </div>
+                        <div class="cta-contact-row">
+                            <span class="cta-pill"><i class="fa-solid fa-phone"></i> (02) 8888-MKTRO</span>
+                            <span class="cta-pill"><i class="fa-solid fa-envelope"></i> admin@marketra.ph</span>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="user-function.js"></script>
+</body>
+</html>

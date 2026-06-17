@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marketra - Login</title>
+  <meta name="description" content="MARKETRA is a Public Market Vendor Registration System designed to make markets more organized and communities more prosperous." />
+  <link rel="stylesheet" href="login-style.css" />
+</head>
+<body>
+
+  <nav class="navbar" aria-label="Main navigation">
+    <a href="#" class="nav-logo" aria-label="MARKETRA Home">
+      <div class="nav-logo-icon">M</div>
+      <span class="nav-logo-text">MARKETRA</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Help</a></li>
+      <li><a href="#login-form" class="nav-btn">Sign In</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero" id="login-form" aria-labelledby="hero-title">
+    <div class="hero-overlay" aria-hidden="true"></div>
+
+    <div class="hero-content">
+      <h1 class="brand-title" id="hero-title">
+        MARKETRA
+      </h1>
+      <p class="brand-tagline">
+        Mas Organisadong Pamilihan, Mas Maunlad na Komunidad.
+      </p>
+
+      <div class="login-card" role="main">
+        <form id="loginForm" novalidate>
+
+          <div class="input-group">
+            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Email or Username"
+              autocomplete="username"
+              aria-label="Email or Username"
+            />
+          </div>
+
+          <div class="input-group">
+            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Password"
+              autocomplete="current-password"
+              aria-label="Password"
+            />
+            <button type="button" class="toggle-pass" id="togglePass" aria-label="Toggle password visibility">
+              <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="form-helper">
+            <a href="#" id="forgotPass">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn-signin" id="signinBtn">
+            Sign In
+          </button>
+
+        </form>
+
+        <div class="form-footer">
+          <p class="register-link">
+            Don't have an account? <a href="#" id="registerLink">Register</a>
+          </p>
+
+          <div class="divider">
+            <span>Or Login with</span>
+          </div>
+
+          <a href="#" class="btn-google" id="googleBtn" role="button" aria-label="Continue with Google">
+            <svg class="google-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+              <path fill="none" d="M0 0h48v48H0z"/>
+            </svg>
+            Continue with Google
+          </a>
+        </div>
+      </div></div><div class="wave-separator" aria-hidden="true">
+      <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,80 C360,0 1080,0 1440,80 L1440,80 L0,80 Z" fill="#f8fafc"/>
+      </svg>
+    </div>
+  </section>
+
+  <section class="info-section" id="about" aria-labelledby="info-heading">
+    <div class="section-chip" aria-label="Section label">
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+      About the System
+    </div>
+
+    <h2 class="info-heading" id="info-heading">
+      Mas <span>Mabilis</span> na Permit,<br>Mas <span>Maayos</span> na Negosyo.
+    </h2>
+
+    <p class="info-body">
+      Pinadadali ng MARKETRA ang pagpaparehistro at pag-renew ng permit para sa mga vendor ng pampublikong pamilihan. Isang digital na sistema para sa mas mabilis, mas malinaw, at mas maaasahang proseso.
+    </p>
+
+    <div class="benefits-grid" role="list" aria-label="System benefits">
+      <div class="benefit-pill" role="listitem">
+        <span class="pill-icon" aria-hidden="true">✓</span>
+        Fast Online Registration
+      </div>
+      <div class="benefit-pill" role="listitem">
+        <span class="pill-icon" aria-hidden="true">✓</span>
+        Digital Stall Management
+      </div>
+      <div class="benefit-pill" role="listitem">
+        <span class="pill-icon" aria-hidden="true">✓</span>
+        Real-time Notifications
+      </div>
+      <div class="benefit-pill" role="listitem">
+        <span class="pill-icon" aria-hidden="true">✓</span>
+        Secure & Transparent
+      </div>
+      <div class="benefit-pill" role="listitem">
+        <span class="pill-icon" aria-hidden="true">✓</span>
+        Community-centered Design
+      </div>
+    </div>
+
+    <a href="#" class="btn-cta" id="guideBtn" role="button">
+      Read Registration Guide
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+    </a>
+  </section>
+
+  <section class="features-section" id="features" aria-labelledby="features-heading">
+    <h2 class="features-label" id="features-heading">What MARKETRA Offers</h2>
+    <p class="features-sub">Three core modules to power a modern public market ecosystem</p>
+
+    <div class="cards-grid" role="list">
+
+      <article class="feature-card" role="listitem">
+        <div class="card-icon-wrap card-icon-green" aria-hidden="true">🏪</div>
+        <h3 class="card-title">Vendor Registration</h3>
+        <p class="card-desc">
+          Submit and manage your vendor application entirely online. Upload requirements, track approval status, and receive instant confirmations — no more long queues.
+        </p>
+        <a href="#" class="card-link" id="vendorLink">
+          Learn more
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </article>
+
+      <article class="feature-card" role="listitem">
+        <div class="card-icon-wrap card-icon-blue" aria-hidden="true">🗺️</div>
+        <h3 class="card-title">Stall Mapping</h3>
+        <p class="card-desc">
+          View an interactive map of all market stalls. Check availability, request preferred stall locations, and navigate the market layout with ease.
+        </p>
+        <a href="#" class="card-link" id="stallLink">
+          Learn more
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </article>
+
+      <article class="feature-card" role="listitem">
+        <div class="card-icon-wrap card-icon-purple" aria-hidden="true">📊</div>
+        <h3 class="card-title">Admin Dashboard</h3>
+        <p class="card-desc">
+          Market administrators can oversee all registrations, manage stall assignments, generate reports, and communicate with vendors in real time.
+        </p>
+        <a href="#" class="card-link" id="adminLink">
+          Learn more
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </article>
+
+    </div>
+  </section>
+
+  <footer id="contact" role="contentinfo">
+    <div class="footer-inner">
+
+      <div class="footer-brand">
+        <div class="brand-title-sm">MARKETRA</div>
+        <p>Public Market Vendor Registration System — connecting vendors and communities for a better future.</p>
+      </div>
+
+      <div class="footer-links">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="#login-form">Login</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#features">Features</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Registration Guide</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      &copy; 2026 MARKETRA. All rights reserved. Built for public market communities across the Philippines.
+    </div>
+  </footer>
+
+  <div class="modal-overlay" id="forgotModal" aria-hidden="true" role="dialog" aria-labelledby="forgotTitle">
+    <div class="modal-card fp-card">
+      <button class="modal-close" id="closeForgot" aria-label="Close forgot password">&times;</button>
+
+      <div id="fpStep1">
+        <div class="modal-header">
+          <div class="modal-logo fp-logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <h2 id="forgotTitle">Forgot Password?</h2>
+          <p>No worries! Enter your registered email or mobile number and we'll send you a reset link.</p>
+        </div>
+
+        <form id="forgotForm" novalidate>
+          <div class="input-group modal-input-group">
+            <svg class="input-icon modal-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <input type="text" id="fpContact" placeholder="Email or Mobile Number" required autocomplete="email" />
+          </div>
+
+          <div class="fp-info-box">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <p>A password reset link will be sent to your registered contact. The link expires in <strong>15 minutes</strong>.</p>
+          </div>
+
+          <button type="submit" class="btn-signin" id="fpSendBtn">Send Reset Link</button>
+        </form>
+
+        <p class="modal-signin-prompt" style="margin-top:16px;">
+          Remember your password? <a href="#" id="fpBackToLogin">Back to Sign In</a>
+        </p>
+      </div>
+
+      <div id="fpStep2" style="display:none;">
+        <div class="modal-header">
+          <div class="fp-success-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6
+                       19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72
+                       12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91
+                       a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45
+                       12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+          </div>
+          <h2>Check Your Inbox</h2>
+          <p>We've sent a password reset link to:</p>
+          <p class="fp-sent-to" id="fpSentTo" aria-live="polite">—</p>
+        </div>
+
+        <div class="fp-steps-list">
+          <div class="fp-step-item">
+            <span class="fp-step-num">1</span>
+            <span>Open the email or SMS we sent you</span>
+          </div>
+          <div class="fp-step-item">
+            <span class="fp-step-num">2</span>
+            <span>Click the <strong>Reset Password</strong> link</span>
+          </div>
+          <div class="fp-step-item">
+            <span class="fp-step-num">3</span>
+            <span>Create a new secure password</span>
+          </div>
+        </div>
+
+        <p class="fp-expiry-note">⏱ The reset link expires in <strong>15 minutes</strong>.</p>
+
+        <div class="fp-resend-row">
+          Didn't receive it? <button type="button" class="fp-resend-btn" id="fpResendBtn">Resend link</button>
+        </div>
+
+        <button type="button" class="btn-signin fp-back-btn" id="fpDoneBtn">Back to Sign In</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="registerModal" aria-hidden="true">
+    <div class="modal-card">
+      <button class="modal-close" id="closeRegister" aria-label="Close registration form">&times;</button>
+
+      <div class="modal-header">
+        <div class="modal-logo">M</div>
+        <h2>Create an Account</h2>
+        <p>Join MARKETRA and get started today.</p>
+      </div>
+
+      <form id="registerForm" novalidate>
+
+        <div class="input-group modal-input-group">
+          <svg class="input-icon modal-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+          </svg>
+          <input type="text" id="regContact" placeholder="Email or Mobile Number" required autocomplete="email" />
+        </div>
+
+        <div class="input-row">
+          <div class="input-group modal-input-group">
+            <svg class="input-icon modal-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            <input type="text" id="regFirstName" placeholder="First Name" required autocomplete="given-name" />
+          </div>
+          <div class="input-group modal-input-group">
+            <input type="text" id="regLastName" placeholder="Last Name" required autocomplete="family-name" style="padding-left: 16px;" />
+          </div>
+        </div>
+
+        <div class="input-group modal-input-group">
+          <svg class="input-icon modal-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+          </svg>
+          <input type="text" id="regUsername" placeholder="Username" required autocomplete="username" />
+        </div>
+
+        <div class="input-group modal-input-group">
+          <svg class="input-icon modal-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <input type="password" id="regPassword" placeholder="Create Password" required autocomplete="new-password" />
+          <button type="button" class="toggle-pass" id="toggleRegPass" aria-label="Toggle password visibility">
+            <svg id="regEyeIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="policy-box" id="policyBox">
+          <p class="policy-title">Password must include:</p>
+          <ul class="policy-list">
+            <li id="pol-len"  class="policy-item">
+              <span class="pol-icon">✕</span> At least 8 characters
+            </li>
+            <li id="pol-upper" class="policy-item">
+              <span class="pol-icon">✕</span> One uppercase letter (A–Z)
+            </li>
+            <li id="pol-lower" class="policy-item">
+              <span class="pol-icon">✕</span> One lowercase letter (a–z)
+            </li>
+            <li id="pol-num" class="policy-item">
+              <span class="pol-icon">✕</span> One number (0–9)
+            </li>
+            <li id="pol-sym" class="policy-item">
+              <span class="pol-icon">✕</span> One symbol (!@#$%^&*)
+            </li>
+          </ul>
+        </div>
+
+        <div class="checks-block">
+          <div class="checkbox-group">
+            <input type="checkbox" id="regRemember" />
+            <label for="regRemember">Remember me on this device</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="regAgree" required />
+            <label for="regAgree">I agree to the <a href="#">Terms of Service</a> &amp; <a href="#">Privacy Policy</a></label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-signin" id="regSubmitBtn">Create Account</button>
+
+        <div class="divider modal-divider">
+          <span>Or sign up with</span>
+        </div>
+
+        <a href="#" class="btn-google" id="regGoogleBtn" role="button" aria-label="Sign up with Google">
+          <svg class="google-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            <path fill="none" d="M0 0h48v48H0z"/>
+          </svg>
+          Continue with Google
+        </a>
+
+        <p class="modal-signin-prompt">Already have an account? <a href="#" id="goToLogin">Sign in</a></p>
+
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script type="module" src="login-auth.js"></script>
+  <script type="module" src="login-script.js"></script>
+
+</body>
+</html>

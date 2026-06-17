@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketra - Admin Panel</title>
+    <link rel="stylesheet" href="admin-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <!-- 1. LEFT SIDEBAR NAVIGATION -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <span class="brand-logo">AD</span>
+                <span class="brand-name">Admin Panel</span>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <button class="nav-link active" data-target="view-dashboard">
+                    <i class="fa-solid fa-table-columns"></i> Dashboard
+                </button>
+                
+                <div class="menu-category">OPERATIONS</div>
+                <button class="nav-link" data-target="view-review-apps">
+                    <i class="fa-regular fa-file-lines"></i> Review Applications
+                </button>
+                <button class="nav-link" data-target="view-verify-docs">
+                    <i class="fa-regular fa-square-check"></i> Verify Documents
+                </button>
+                <button class="nav-link" data-target="view-manage-vendors">
+                    <i class="fa-solid fa-users"></i> Manage Vendors
+                </button>
+                <button class="nav-link" data-target="view-announcements">
+                    <i class="fa-solid fa-bullhorn"></i> Announcements
+                </button>
+                
+                <div class="menu-category">FINANCE</div>
+                <button class="nav-link" data-target="view-billing-finance">
+                    <i class="fa-regular fa-credit-card"></i> Billing & Finance
+                </button>
+
+                <div class="menu-category">FIELD</div>
+                <button class="nav-link" data-target="view-stall-map">
+                    <i class="fa-solid fa-map"></i> Stall Map
+                </button>
+                <button class="nav-link" data-target="view-field-verification">
+                    <i class="fa-solid fa-qrcode"></i> Field Verification
+                </button>
+                <button class="nav-link" data-target="view-assign-stalls">
+                    <i class="fa-solid fa-location-dot"></i> Assign Stalls
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button class="btn-logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN APP CONTENT AREA -->
+        <main class="main-content">
+            <!-- 2. TOP HEADER BAR -->
+            <header class="top-header">
+                <div class="header-breadcrumbs">
+                    <i class="fa-regular fa-square-check brand-check-icon"></i>
+                    <span>Admin Panel Portal</span>
+                </div>
+                <div class="header-user-actions">
+                    <div class="notification-bell">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="bell-badge"></span>
+                    </div>
+                    <div class="user-profile">
+                        <span class="avatar-circle">AD</span>
+                        <div class="user-info">
+                            <span class="user-name" id="admin-profile-name">Admin</span>
+                            <span class="user-role" id="admin-profile-email">admin@marketra.ph</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 3. VIEWS CONTAINER -->
+            <div class="view-viewport">
+
+                <!-- VIEW A: MAIN DASHBOARD OVERVIEW -->
+                <section id="view-dashboard" class="app-view active">
+                    <div class="view-header">
+                        <h2>Admin Dashboard</h2>
+                        <p>Manage applications and vendors for Altura Public Market</p>
+                    </div>
+
+                    <div class="analytics-grid spec-4col">
+                        <div class="stat-card stat-amber" data-target="view-review-apps">
+                            <div><span class="stat-title">PENDING APPS</span><h2 class="stat-value" id="kpi-pending-apps">...</h2></div>
+                        </div>
+                        <div class="stat-card stat-blue" data-target="view-verify-docs">
+                            <div><span class="stat-title">DOCS TO VERIFY</span><h2 class="stat-value" id="kpi-docs-verify">...</h2></div>
+                        </div>
+                        <div class="stat-card stat-green" data-target="view-stall-map">
+                            <div><span class="stat-title">AVAILABLE STALLS</span><h2 class="stat-value" id="kpi-available-stalls">...</h2></div>
+                        </div>
+                        <div class="stat-card stat-purple" data-target="view-manage-vendors">
+                            <div><span class="stat-title">ACTIVE VENDORS</span><h2 class="stat-value" id="kpi-active-vendors">...</h2></div>
+                        </div>
+                    </div>
+
+                    <div class="finance-links-grid">
+                        <div class="fin-card" data-target="view-billing-finance" data-subtab="calc">
+                            <div class="fin-icon ic-green"><i class="fa-regular fa-credit-card"></i></div>
+                            <div class="fin-text"><h5>Billing & Finance</h5><p>Fees, payments, invoices, arrears</p></div>
+                        </div>
+                        <div class="fin-card" data-target="view-stall-map" data-subtab="map">
+                            <div class="fin-icon ic-blue"><i class="fa-solid fa-map"></i></div>
+                            <div class="fin-text"><h5>Stall Map</h5><p>Interactive zone & allocation map</p></div>
+                        </div>
+                        <div class="fin-card" data-target="view-field-verification" data-subtab="scan">
+                            <div class="fin-icon ic-purple"><i class="fa-solid fa-qrcode"></i></div>
+                            <div class="fin-text"><h5>Field Verification</h5><p>QR scanner and permit check</p></div>
+                        </div>
+                    </div>
+
+                    <div class="split-dashboard-row spacer-top">
+                        <div class="content-card">
+                            <div class="card-header"><h3>Recent Applications</h3><button class="text-link-blue" data-target="view-review-apps">View All</button></div>
+                            <ul class="admin-queue-list" id="dashboard-recent-apps-list">
+                                <li class="text-muted text-sm text-center padding-y-12">No recent applications...</li>
+                            </ul>
+                        </div>
+
+                        <div class="content-card">
+                            <div class="card-header"><h3>Document Queue</h3><button class="text-link-blue" data-target="view-verify-docs">View All</button></div>
+                            <ul class="admin-queue-list" id="dashboard-docs-queue-list">
+                                <li class="text-muted text-sm text-center padding-y-12">No pending verification items...</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW B: REVIEW APPLICATIONS -->
+                <section id="view-review-apps" class="app-view">
+                    <div class="view-header">
+                        <h2>Review Applications</h2>
+                        <p>Approve or reject new registrations and renewals</p>
+                    </div>
+
+                    <div class="filter-strip-row">
+                        <div class="search-box-container">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" placeholder="Search name or ID..." class="table-search" id="apps-table-search">
+                        </div>
+                        <select class="filter-dropdown" id="filter-app-type"><option value="">Type</option></select>
+                        <select class="filter-dropdown" id="filter-app-status"><option value="">Status</option></select>
+                        <select class="filter-dropdown" id="filter-app-zone"><option value="">Zone</option></select>
+                        <span class="count-tag-indicator" id="apps-count-tag">0 results</span>
+                    </div>
+
+                    <div class="table-container-card">
+                        <table class="admin-data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>APPLICANT</th>
+                                    <th>TYPE</th>
+                                    <th>CATEGORY</th>
+                                    <th>ZONE</th>
+                                    <th>DATE</th>
+                                    <th>STATUS</th>
+                                    <th>ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="apps-table-body">
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted text-sm">Awaiting dynamic pipeline fetch data entries...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- VIEW C: VERIFY DOCUMENTS -->
+                <section id="view-verify-docs" class="app-view">
+                    <div class="view-header">
+                        <h2>Verify Documents</h2>
+                        <p>Review and verify uploaded vendor documents</p>
+                    </div>
+
+                    <div class="analytics-grid grid-3col-fixed spacer-bottom">
+                        <div class="stat-card card-kpi-bordered amber-left"><div><h2 class="kpi-val amber-txt" id="kpi-docs-pending">-</h2><p class="kpi-lbl">Pending</p></div></div>
+                        <div class="stat-card card-kpi-bordered green-left"><div><h2 class="kpi-val green-txt" id="kpi-docs-verified">-</h2><p class="kpi-lbl">Verified</p></div></div>
+                        <div class="stat-card card-kpi-bordered red-left"><div><h2 class="kpi-val red-txt" id="kpi-docs-invalid">-</h2><p class="kpi-lbl">Invalid</p></div></div>
+                    </div>
+
+                    <div class="filter-strip-row">
+                        <div class="search-box-container"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="Search vendor or ID..." class="table-search" id="docs-table-search"></div>
+                        <select class="filter-dropdown" id="filter-docs-status"><option value="">Status</option></select>
+                        <select class="filter-dropdown" id="filter-docs-type"><option value="">Doc Type</option></select>
+                        <span class="count-tag-indicator" id="docs-count-tag">0 results</span>
+                    </div>
+
+                    <div class="table-container-card">
+                        <table class="admin-data-table">
+                            <thead>
+                                <tr>
+                                    <th>VENDOR</th>
+                                    <th>APPLICATION</th>
+                                    <th>DOCUMENT TYPE</th>
+                                    <th>SUBMITTED</th>
+                                    <th>STATUS</th>
+                                    <th>ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="docs-table-body">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted text-sm">No verification files registered...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- VIEW D: MANAGE VENDORS -->
+                <section id="view-manage-vendors" class="app-view">
+                    <div class="view-header">
+                        <h2>Manage Vendors</h2>
+                        <p>View and manage all registered market vendors</p>
+                    </div>
+
+                    <div class="filter-strip-row">
+                        <div class="search-box-container"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="Search vendor or stall..." class="table-search" id="vendors-table-search"></div>
+                        <select class="filter-dropdown" id="filter-vendors-zone"><option value="">Zone</option></select>
+                        <select class="filter-dropdown" id="filter-vendors-status"><option value="">Status</option></select>
+                        <select class="filter-dropdown" id="filter-vendors-cat"><option value="">Category</option></select>
+                        <span class="count-tag-indicator" id="vendors-count-tag">0 vendors</span>
+                    </div>
+
+                    <div class="table-container-card">
+                        <table class="admin-data-table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>VENDOR</th>
+                                    <th>STALL</th>
+                                    <th>ZONE</th>
+                                    <th>CATEGORY</th>
+                                    <th>PERMIT</th>
+                                    <th>STATUS</th>
+                                    <th>ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vendors-table-body">
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted text-sm">No active marketplace operators directory mapped...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- VIEW E: ANNOUNCEMENTS PUBLISHER -->
+                <section id="view-announcements" class="app-view">
+                    <div class="view-header">
+                        <h2>Post Announcements</h2>
+                        <p>Publish notices visible to all vendors in the portal</p>
+                    </div>
+
+                    <div class="content-card">
+                        <h4 class="pane-title-sm">New Announcement</h4>
+                        <form id="announcement-creation-form">
+                            <div class="form-group">
+                                <label>Title <span class="required">*</span></label>
+                                <input type="text" placeholder="e.g. Renewal Deadline Reminder" required id="ann-input-title">
+                            </div>
+                            <div class="form-grid layout-2col">
+                                <div class="form-group">
+                                    <label>Priority</label>
+                                    <select id="ann-input-priority"><option value="Normal">Normal</option><option value="High">High</option></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Target Audience</label>
+                                    <select><option value="All Vendors">All Vendors</option></select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Message <span class="required">*</span></label>
+                                <textarea rows="4" placeholder="Write your announcement here..." required id="ann-input-msg" class="custom-textarea"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-royal"><i class="fa-regular fa-paper-plane"></i> Post Announcement</button>
+                        </form>
+                    </div>
+
+                    <div class="content-card spacer-top">
+                        <h4 class="pane-title-sm spacer-bottom">Posted Announcements</h4>
+                        <div class="announcements-feed-container" id="live-announcement-feed">
+                            <!-- Empty frame logs populate dynamically from database feeds -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW F: BILLING & FINANCE MODULE -->
+                <section id="view-billing-finance" class="app-view">
+                    <div class="view-header">
+                        <h2>Billing & Financial Transactions</h2>
+                        <p>Fee collection, invoicing, and penalty management</p>
+                    </div>
+
+                    <div class="finance-header-banner-row flex-between">
+                        <div class="fin-header-badges">
+                            <div class="fin-badge-box bg-box-green"><span>Collected (Jun)</span><strong id="fin-kpi-collected">₱0</strong></div>
+                            <div class="fin-badge-box bg-box-amber"><span>Pending</span><strong id="fin-kpi-pending">₱0</strong></div>
+                            <div class="fin-badge-box bg-box-red"><span>Total Arrears</span><strong id="fin-kpi-arrears">₱0</strong></div>
+                            <div class="fin-badge-box bg-box-blue"><span>Invoices Issued</span><strong id="fin-kpi-invoices">0</strong></div>
+                        </div>
+                        <div class="june-total-callout"><i class="fa-solid fa-chart-line"></i> Total Collected June: <b id="fin-callout-total">₱0.00</b></div>
+                    </div>
+
+                    <div class="inner-subtabs-container spacer-top">
+                        <button class="subtab-btn active" data-pane="finance-pane-calc"><i class="fa-solid fa-calculator"></i> Fee Calculator</button>
+                        <button class="subtab-btn" data-pane="finance-pane-pay"><i class="fa-solid fa-money-bill-wave"></i> Payments</button>
+                        <button class="subtab-btn" data-pane="finance-pane-inv"><i class="fa-solid fa-file-invoice-dollar"></i> Invoices & Receipts</button>
+                        <button class="subtab-btn" data-pane="finance-pane-arr"><i class="fa-solid fa-triangle-exclamation"></i> Arrears & Penalties</button>
+                    </div>
+
+                    <div class="subtab-view-viewport spacer-top">
+                        <!-- Sub Pane 1: Calculator -->
+                        <div class="subtab-pane active" id="finance-pane-calc">
+                            <div class="split-dashboard-row">
+                                <div class="content-card bg-white-card">
+                                    <h3>Dynamic Fee Calculator</h3>
+                                    <div class="form-group spacer-top"><label>Stall Size</label><select id="calc-size"><option value="6000">Medium (3m x 3m)</option><option value="4000">Small (2m x 2m)</option></select></div>
+                                    <div class="form-group"><label>Zone</label><select id="calc-zone"><option value="0.15">Zone A - Wet Market (+15% Surcharge)</option><option value="0.0">Zone B - Dry Goods</option></select></div>
+                                    <div class="form-group">
+                                        <label>Permit Duration (months)</label>
+                                        <div class="badge-toggle-row">
+                                            <div class="duration-badge active" data-months="12">12mo</div>
+                                            <div class="duration-badge" data-months="6">6mo</div>
+                                            <div class="duration-badge" data-months="3">3mo</div>
+                                            <div class="duration-badge" data-months="1">1mo</div>
+                                        </div>
+                                    </div>
+                                    <div class="checkbox-group"><input type="checkbox" id="calc-daily-fee" checked><label for="calc-daily-fee">Include daily market fee</label></div>
+                                </div>
+                                <div class="content-card bg-white-card">
+                                    <h3>Fee Breakdown</h3>
+                                    <div class="breakdown-receipt-list spacer-top">
+                                        <div class="breakdown-item"><div><b>Base Permit Fee</b><p>₱500/mo × 12 mo</p></div><span id="lbl-calc-base">₱6,000.00</span></div>
+                                        <div class="breakdown-item"><div><b>Zone Surcharge (15%)</b><p>Zone A – Wet Market</p></div><span id="lbl-calc-sur">₱900.00</span></div>
+                                        <div class="total-payable-row flex-between spacer-top"><span>TOTAL PAYABLE</span><h2 id="lbl-calc-total">₱6,900.00</h2></div>
+                                    </div>
+                                    <div class="form-grid layout-2col spacer-top">
+                                        <button class="btn btn-outline"><i class="fa-regular fa-file-pdf"></i> Export PDF</button>
+                                        <button class="btn btn-primary" id="btn-create-invoice-calc"><i class="fa-solid fa-plus"></i> Create Invoice</button>
+                                    </div>
+                                    <div class="callout-banner banner-amber text-xs spacer-top"><p><b>Penalty notice:</b> A 2% monthly penalty applies to unpaid balances after the due date.</p></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sub Pane 2: Payments Ledger -->
+                        <div class="subtab-pane" id="finance-pane-pay">
+                            <div class="filter-strip-row padding-none">
+                                <div class="search-box-container"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="Search payments..." class="table-search" id="payments-ledger-search"></div>
+                                <button class="btn btn-primary ml-auto" id="btn-trigger-payment-modal"><i class="fa-solid fa-plus"></i> Log Payment</button>
+                            </div>
+                            <div class="table-container-card spacer-top">
+                                <table class="admin-data-table">
+                                    <thead>
+                                        <tr><th>PAYMENT ID</th><th>VENDOR</th><th>STALL</th><th>AMOUNT</th><th>TYPE</th><th>DATE</th><th>METHOD</th><th>STATUS</th></tr>
+                                    </thead>
+                                    <tbody id="payments-table-body">
+                                        <tr><td colspan="8" class="text-center text-muted text-sm">No transaction entries found...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Sub Pane 3: Invoices & Receipts -->
+                        <div class="subtab-pane" id="finance-pane-inv">
+                            <div class="table-container-card">
+                                <table class="admin-data-table">
+                                    <thead>
+                                        <tr><th>INVOICE NO.</th><th>VENDOR</th><th>STALL</th><th>AMOUNT</th><th>ISSUED</th><th>DUE DATE</th><th>STATUS</th><th>ACTIONS</th></tr>
+                                    </thead>
+                                    <tbody id="invoices-table-body">
+                                        <tr><td colspan="8" class="text-center text-muted text-sm">No invoices recorded...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Sub Pane 4: Arrears & Penalties -->
+                        <div class="subtab-pane" id="finance-pane-arr">
+                            <div class="callout-banner banner-red flex-row-layout gap-12 text-sm">
+                                <i class="fa-solid fa-circle-exclamation red-txt"></i>
+                                <p><strong>Penalty Policy:</strong> Unpaid permit fees accrue a <b class="red-txt">2% monthly penalty</b> on the outstanding principal. Accounts overdue by more than 6 months may be suspended.</p>
+                            </div>
+                            <div class="table-container-card spacer-top">
+                                <table class="admin-data-table">
+                                    <thead>
+                                        <tr><th>VENDOR</th><th>STALL</th><th>DUE SINCE</th><th>PRINCIPAL</th><th>MONTHS OVERDUE</th><th>PENALTY</th><th>TOTAL DUE</th><th>ACTIONS</th></tr>
+                                    </thead>
+                                    <tbody id="arrears-table-body">
+                                        <tr><td colspan="8" class="text-center text-muted text-sm">Clear compliant record: No arrears found...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="analytics-grid spec-3col spacer-top">
+                                <div class="stat-card kpi-centered"><div><h2 class="red-txt font-semibold" id="kpi-arr-vendors">-</h2><p class="text-muted text-xs">Total Vendors w/ Arrears</p></div></div>
+                                <div class="stat-card kpi-centered"><div><h2 id="kpi-arr-principal">-</h2><p class="text-muted text-xs">Total Principal Due</p></div></div>
+                                <div class="stat-card kpi-centered"><div><h2 class="red-txt font-semibold" id="kpi-arr-penalties">-</h2><p class="text-muted text-xs">Total Penalties</p></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW G: INTERACTIVE STALL MAPS -->
+                <section id="view-stall-map" class="app-view">
+                    <div class="view-header">
+                        <h2>Space & Asset Allocation</h2>
+                        <p>Interactive stall map, status tracking, and vendor mapping</p>
+                    </div>
+
+                    <div class="analytics-grid spec-5col spacer-bottom">
+                        <div class="stat-card bordered-kpi text-center active-green-kpi"><div><h2 id="map-kpi-occupied">-</h2><p class="text-xs text-muted">Occupied</p></div></div>
+                        <div class="stat-card bordered-kpi text-center"><div><h2 id="map-kpi-available">-</h2><p class="text-xs text-muted">Available</p></div></div>
+                        <div class="stat-card bordered-kpi text-center"><div><h2 id="map-kpi-reserved">-</h2><p class="text-xs text-muted">Reserved</p></div></div>
+                        <div class="stat-card bordered-kpi text-center"><div><h2 id="map-kpi-maintenance">-</h2><p class="text-xs text-muted">Maintenance</p></div></div>
+                        <div class="stat-card bordered-kpi text-center"><div><h2 id="map-kpi-blocked">-</h2><p class="text-xs text-muted">Blocked</p></div></div>
+                    </div>
+
+                    <div class="map-subrouter-tabs">
+                        <button class="map-subtab" id="subtab-trigger-interactive"><i class="fa-solid fa-border-all"></i> Interactive Map</button>
+                        <button class="map-subtab active" id="subtab-trigger-tracker"><i class="fa-solid fa-layer-group"></i> Status Tracker</button>
+                        <button class="map-subtab" id="subtab-trigger-vendor"><i class="fa-solid fa-user-tag"></i> Stall-to-Vendor</button>
+                    </div>
+
+                    <!-- Container Inner 1: Status Tracker View Dashboard Panel -->
+                    <div class="map-content-pane active-panel" id="map-pane-tracker">
+                        <div class="zone-progress-card-stack spacer-top" id="map-zones-progress-container">
+                            <!-- Populates dynamically from database analytics -->
+                        </div>
+                    </div>
+
+                    <!-- Container Inner 2: Stall to Vendor Registry Directory -->
+                    <div class="map-content-pane" id="map-pane-vendor">
+                        <div class="filter-strip-row padding-none spacer-top">
+                            <div class="search-box-container width-full"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="Search by stall, vendor, or category..." class="table-search" id="stalls-vendor-search"></div>
+                        </div>
+                        <div class="table-container-card spacer-top">
+                            <table class="admin-data-table text-sm">
+                                <thead><tr><th>STALL</th><th>ZONE</th><th>SIZE</th><th>VENDOR</th><th>CATEGORY</th><th>PERMIT ID</th><th>EXPIRY</th><th>STATUS</th></tr></thead>
+                                <tbody id="stalls-vendor-table-body">
+                                    <tr><td colspan="8" class="text-center text-muted text-sm">Awaiting database sync mapping...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Container Inner 3: Real Interactive Structural Cell Grid Layout Box -->
+                    <div class="map-content-pane" id="map-pane-interactive">
+                        <div class="interactive-map-filter-row spacer-top">
+                            <div class="zone-pill-filters-row" id="map-interactive-zone-filters">
+                                <!-- Zone filters load dynamically -->
+                            </div>
+                            <div class="status-legend-dots spacer-top text-xs flex-row-layout gap-12">
+                                <span><span class="dot dot-green"></span> Occupied</span>
+                                <span><span class="dot dot-available"></span> Available</span>
+                                <span><span class="dot dot-amber"></span> Reserved</span>
+                                <span><span class="dot dot-maintenance"></span> Maintenance</span>
+                                <span><span class="dot dot-blocked"></span> Blocked</span>
+                            </div>
+                        </div>
+                        <div class="grid-cells-card-container content-card spacer-top">
+                            <h5 id="map-active-zone-label">Select a Zone Panel</h5>
+                            <div class="stalls-hardware-grid-matrix spacer-top" id="map-grid-hardware-matrix">
+                                <!-- Interactive cell squares render dynamically here -->
+                            </div>
+                            <div class="callout-banner banner-blue text-xs spacer-top"><p><i class="fa-solid fa-circle-info"></i> Click any stall cell to view details and change its status.</p></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW H: FIELD VERIFICATION UTILITIES -->
+                <section id="view-field-verification" class="app-view">
+                    <div class="view-header">
+                        <h2>Field Operations & Verification</h2>
+                        <p>Mobile-ready tools for on-site stall inspection and permit verification</p>
+                    </div>
+
+                    <div class="verification-tab-header">
+                        <button class="vtab-btn" id="vbtn-qr"><i class="fa-solid fa-qrcode"></i> QR Generator</button>
+                        <button class="vtab-btn active" id="vbtn-scan"><i class="fa-solid fa-expand"></i> Scanner Interface</button>
+                        <button class="vtab-btn" id="vbtn-status"><i class="fa-solid fa-bolt"></i> Status Verification</button>
+                    </div>
+
+                    <div class="v-panes-viewport spacer-top">
+                        <!-- V-Pane 1: Scanner Simulation View Overlay -->
+                        <div class="v-pane-item active-pane" id="vpane-scan">
+                            <div class="split-dashboard-row">
+                                <div class="content-card text-center">
+                                    <h4>Scanner Interface</h4>
+                                    <div class="mock-camera-viewport spacer-top">
+                                        <i class="fa-solid fa-camera camera-view-icon text-muted"></i>
+                                        <p class="text-xs text-muted">Camera / QR reader</p>
+                                        <span class="text-tiny text-muted opacity-50">(Simulated — enter permit ID below)</span>
+                                    </div>
+                                    <div class="form-group spacer-top flex-row-layout gap-8">
+                                        <input type="text" placeholder="Enter permit ID or scan..." id="scan-simulation-input">
+                                        <button class="btn btn-royal" id="btn-run-scan-trigger">Scan</button>
+                                    </div>
+                                </div>
+                                <div class="content-card flex-center-content" id="scan-result-pane-box">
+                                    <div class="empty-state-scan-box text-center text-muted">
+                                        <i class="fa-solid fa-expand scan-await-icon text-muted"></i>
+                                        <p class="spacer-top">Awaiting scan</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- V-Pane 2: QR Code Generation Screen -->
+                        <div class="v-pane-item" id="vpane-qr">
+                            <div class="split-dashboard-row">
+                                <div class="content-card">
+                                    <h4>Generate QR Code</h4>
+                                    <div class="form-group spacer-top">
+                                        <label>Select Vendor / Permit</label>
+                                        <select id="qr-select-vendor"><option value="">No vendors loaded</option></select>
+                                    </div>
+                                    <div class="table-card-content padding-none layout-single-col-stack text-sm spacer-top" id="qr-metadata-display">
+                                        <p class="text-muted padding-y-12 text-center">Select an entry from the dropdown above...</p>
+                                    </div>
+                                    <button class="btn btn-outline width-full spacer-top" disabled><i class="fa-solid fa-download"></i> Download QR Code (PNG)</button>
+                                </div>
+                                <div class="content-card text-center flex-center-content" id="qr-output-render-zone">
+                                    <p class="text-muted">Awaiting generation config...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- V-Pane 3: Instant Status Manual Grid Audit -->
+                        <div class="v-pane-item" id="vpane-status">
+                            <div class="content-card">
+                                <h4>Instant Status Verification</h4>
+                                <div class="form-group spacer-top flex-row-layout gap-8 max-w-450">
+                                    <input type="text" placeholder="Enter Permit No. or Vendor Name..." id="input-search-instant-audit">
+                                    <button class="btn btn-royal" id="btn-trigger-instant-audit">Verify</button>
+                                </div>
+                            </div>
+                            <div class="content-card text-center spacer-top" id="instant-audit-failure-box" style="display: none;">
+                                <i class="fa-regular fa-circle-xmark big-danger-cross-icon"></i>
+                                <h3 class="spacer-top">No matching record found</h3>
+                                <p class="text-muted text-sm spacer-top">Check the permit number and try again.</p>
+                            </div>
+                            <div class="content-card spacer-top">
+                                <h5>All Permit Records</h5>
+                                <div class="table-container-card spacer-top">
+                                    <table class="admin-data-table text-sm">
+                                        <thead><tr><th>PERMIT NO.</th><th>VENDOR</th><th>STALL</th><th>CATEGORY</th><th>EXPIRY</th><th>STATUS</th></tr></thead>
+                                        <tbody id="verification-all-records-tbody">
+                                            <tr><td colspan="6" class="text-center text-muted text-sm">No dynamic system permit directories accessible...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW I: ASSIGN STALLS REGISTRY -->
+                <section id="view-assign-stalls" class="app-view">
+                    <div class="view-header">
+                        <h2>Assign Stalls</h2>
+                        <p>Manage stall occupancy and assignments</p>
+                    </div>
+                    <div class="table-container-card">
+                        <table class="admin-data-table">
+                            <thead><tr><th>STALL NO.</th><th>ZONE</th><th>CURRENT VENDOR</th><th>STATUS</th><th>ACTIONS</th></tr></thead>
+                            <tbody id="assign-stalls-table-body">
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted text-sm">Awaiting dynamic table mapping fetch queues...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals Portals Framework overlays elements setup -->
+    <!-- Modal 1: Payment Logger -->
+    <div class="modal-backdrop-layer-box" id="modal-portal-payment">
+        <div class="modal-window-card shadow-lg animate-fade-in">
+            <h4>Log New Payment</h4>
+            <form id="modal-form-log-pay" class="spacer-top">
+                <div class="form-group"><label>Vendor Name</label><input type="text" placeholder="e.g. Maria Santos" required></div>
+                <div class="form-group"><label>Stall No.</label><input type="text" placeholder="e.g. B-14" required></div>
+                <div class="form-group"><label>Amount (₱)</label><input type="number" step="0.01" placeholder="0.00" required></div>
+                <div class="form-group"><label>Payment Method</label><input type="text" placeholder="e.g. GCash" required></div>
+                <div class="form-grid layout-2col spacer-top">
+                    <button type="button" class="btn btn-outline" id="btn-close-pay-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary bg-darkgreen">Log Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Official Receipt Card Layout Box -->
+    <div class="modal-backdrop-layer-box" id="modal-portal-receipt">
+        <div class="modal-window-card shadow-lg padding-none width-md animate-fade-in" id="receipt-modal-dynamic-target">
+            <!-- Emptied out completely for runtime injection based on data row IDs clicked -->
+        </div>
+    </div>
+
+    <script src="admin-function.js"></script>
+</body>
+</html>

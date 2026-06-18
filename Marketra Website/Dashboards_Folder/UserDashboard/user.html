@@ -6,6 +6,7 @@
     <title>Marketra - Vendor Registration Dashboard</title>
     <link rel="stylesheet" href="user-style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -103,17 +104,17 @@
                     <div class="analytics-grid">
                         <div class="stat-card">
                             <div>
-                                <span class="stat-title">TOTAL VENDORS</span>
-                                <h2 class="stat-value" id="stat-total-vendors">...</h2>
-                                <p class="stat-subtitle">Registered stalls</p>
+                                <span class="stat-title">MY ASSIGNED STALL</span>
+                                <h2 class="stat-value" id="stat-my-stall">None</h2>
+                                <p class="stat-subtitle">Awaiting allocation</p>
                             </div>
-                            <div class="stat-icon-wrapper green-light"><i class="fa-solid fa-users"></i></div>
+                            <div class="stat-icon-wrapper green-light"><i class="fa-solid fa-store"></i></div>
                         </div>
                         <div class="stat-card">
                             <div>
-                                <span class="stat-title">ACTIVE PERMITS</span>
-                                <h2 class="stat-value" id="stat-active-permits">...</h2>
-                                <p class="stat-subtitle">Valid & compliant</p>
+                                <span class="stat-title">MY PERMIT ID</span>
+                                <h2 class="stat-value" id="stat-my-permit">None</h2>
+                                <p class="stat-subtitle">No active permit</p>
                             </div>
                             <div class="stat-icon-wrapper green-light"><i class="fa-regular fa-file-lines"></i></div>
                         </div>
@@ -363,44 +364,56 @@
                             </div>
 
                             <div class="form-pane" id="reg-pane-4">
-                                <h3 class="pane-title">Document Uploads</h3>
-                                <p class="pane-desc">Please upload clear, legible copies of the required documents. Accepted formats: PDF, JPG, PNG (max 5MB each).</p>
-                                
-                                <div class="upload-grid">
-                                    <div class="upload-box">
-                                        <label>Valid Government ID <span class="required">*</span></label>
-                                        <div class="dropzone">
-                                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                                            <span>Click to upload</span>
-                                            <span class="formats">PDF, JPG, PNG</span>
-                                        </div>
-                                    </div>
-                                    <div class="upload-box">
-                                        <label>DTI / SEC Business Registration <span class="required">*</span></label>
-                                        <div class="dropzone">
-                                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                                            <span>Click to upload</span>
-                                            <span class="formats">PDF, JPG, PNG</span>
-                                        </div>
-                                    </div>
-                                    <div class="upload-box">
-                                        <label>Health Certificate (DOH 2026) <span class="required">*</span></label>
-                                        <div class="dropzone">
-                                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                                            <span>Click to upload</span>
-                                            <span class="formats">PDF, JPG, PNG</span>
-                                        </div>
-                                    </div>
-                                    <div class="upload-box">
-                                        <label>BIR Certificate of Registration</label>
-                                        <div class="dropzone">
-                                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                                            <span>Click to upload</span>
-                                            <span class="formats">PDF, JPG, PNG</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                 <h3 class="pane-title">Document Uploads</h3>
+                                 <p class="pane-desc">Please upload clear, legible copies of the required documents. Accepted formats: PDF, JPG, PNG (max 5MB each).</p>
+                                 
+                                 <div class="upload-grid">
+                                     <div class="upload-box">
+                                         <label>Valid Government ID <span class="required">*</span></label>
+                                         <div class="dropzone" id="dropzone-reg-gov-id">
+                                             <input type="file" id="input-reg-gov-id" class="doc-file-input" style="display:none;" accept=".pdf,.jpg,.jpeg,.png">
+                                             <div class="dropzone-content" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                                 <i class="fa-solid fa-cloud-arrow-up"></i>
+                                                 <span>Click to upload</span>
+                                                 <span class="formats">PDF, JPG, PNG</span>
+                                             </div>
+                                         </div>
+                                     </div>
+                                     <div class="upload-box">
+                                         <label>DTI / SEC Business Registration <span class="required">*</span></label>
+                                         <div class="dropzone" id="dropzone-reg-dti">
+                                             <input type="file" id="input-reg-dti" class="doc-file-input" style="display:none;" accept=".pdf,.jpg,.jpeg,.png">
+                                             <div class="dropzone-content" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                                 <i class="fa-solid fa-cloud-arrow-up"></i>
+                                                 <span>Click to upload</span>
+                                                 <span class="formats">PDF, JPG, PNG</span>
+                                             </div>
+                                         </div>
+                                     </div>
+                                     <div class="upload-box">
+                                         <label>Health Certificate (DOH 2026) <span class="required">*</span></label>
+                                         <div class="dropzone" id="dropzone-reg-health">
+                                             <input type="file" id="input-reg-health" class="doc-file-input" style="display:none;" accept=".pdf,.jpg,.jpeg,.png">
+                                             <div class="dropzone-content" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                                 <i class="fa-solid fa-cloud-arrow-up"></i>
+                                                 <span>Click to upload</span>
+                                                 <span class="formats">PDF, JPG, PNG</span>
+                                             </div>
+                                         </div>
+                                     </div>
+                                     <div class="upload-box">
+                                         <label>BIR Certificate of Registration</label>
+                                         <div class="dropzone" id="dropzone-reg-bir">
+                                             <input type="file" id="input-reg-bir" class="doc-file-input" style="display:none;" accept=".pdf,.jpg,.jpeg,.png">
+                                             <div class="dropzone-content" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                                 <i class="fa-solid fa-cloud-arrow-up"></i>
+                                                 <span>Click to upload</span>
+                                                 <span class="formats">PDF, JPG, PNG</span>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
 
                             <div class="form-pane" id="reg-pane-5">
                                 <h3 class="pane-title">Review Registration Data</h3>
@@ -504,42 +517,55 @@
                             <div class="form-pane" id="renew-pane-3">
                                 <h3 class="pane-title">Document Uploads</h3>
                                 <p class="pane-desc">Upload updated documents for your permit renewal. All documents must be for the current year.</p>
-                                
-                                <div class="upload-grid">
-                                    <div class="upload-box">
-                                        <label>Health Certificate <span class="required">*</span></label>
-                                        <div class="dropzone">
-                                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                                            <span>Click to upload</span>
-                                            <span class="formats">PDF, JPG, PNG</span>
-                                        </div>
-                                    </div>
-                                    <div class="upload-box">
-                                        <label>Barangay Clearance <span class="required">*</span></label>
-                                        <div class="dropzone">
-                                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                                            <span>Click to upload</span>
-                                            <span class="formats">PDF, JPG, PNG</span>
-                                        </div>
-                                    </div>
-                                    <div class="upload-box">
-                                        <label>Valid Government ID <span class="required">*</span></label>
-                                        <div class="dropzone">
-                                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                                            <span>Click to upload</span>
-                                            <span class="formats">PDF, JPG, PNG</span>
-                                        </div>
-                                    </div>
-                                    <div class="upload-box">
-                                        <label>Tax Clearance / Business Tax Receipt</label>
-                                        <div class="dropzone">
-                                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                                            <span>Click to upload</span>
-                                            <span class="formats">PDF, JPG, PNG</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+
+                                 
+                                 <div class="upload-grid">
+                                     <div class="upload-box">
+                                         <label>Health Certificate <span class="required">*</span></label>
+                                         <div class="dropzone" id="dropzone-renew-health">
+                                             <input type="file" id="input-renew-health" class="doc-file-input" style="display:none;" accept=".pdf,.jpg,.jpeg,.png">
+                                             <div class="dropzone-content" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                                 <i class="fa-solid fa-cloud-arrow-up"></i>
+                                                 <span>Click to upload</span>
+                                                 <span class="formats">PDF, JPG, PNG</span>
+                                             </div>
+                                         </div>
+                                     </div>
+                                     <div class="upload-box">
+                                         <label>Barangay Clearance <span class="required">*</span></label>
+                                         <div class="dropzone" id="dropzone-renew-barangay">
+                                             <input type="file" id="input-renew-barangay" class="doc-file-input" style="display:none;" accept=".pdf,.jpg,.jpeg,.png">
+                                             <div class="dropzone-content" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                                 <i class="fa-solid fa-cloud-arrow-up"></i>
+                                                 <span>Click to upload</span>
+                                                 <span class="formats">PDF, JPG, PNG</span>
+                                             </div>
+                                         </div>
+                                     </div>
+                                     <div class="upload-box">
+                                         <label>Valid Government ID <span class="required">*</span></label>
+                                         <div class="dropzone" id="dropzone-renew-gov-id">
+                                             <input type="file" id="input-renew-gov-id" class="doc-file-input" style="display:none;" accept=".pdf,.jpg,.jpeg,.png">
+                                             <div class="dropzone-content" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                                 <i class="fa-solid fa-cloud-arrow-up"></i>
+                                                 <span>Click to upload</span>
+                                                 <span class="formats">PDF, JPG, PNG</span>
+                                             </div>
+                                         </div>
+                                     </div>
+                                     <div class="upload-box">
+                                         <label>Tax Clearance / Business Tax Receipt</label>
+                                         <div class="dropzone" id="dropzone-renew-tax">
+                                             <input type="file" id="input-renew-tax" class="doc-file-input" style="display:none;" accept=".pdf,.jpg,.jpeg,.png">
+                                             <div class="dropzone-content" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                                 <i class="fa-solid fa-cloud-arrow-up"></i>
+                                                 <span>Click to upload</span>
+                                                 <span class="formats">PDF, JPG, PNG</span>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
 
                             <div class="form-pane" id="renew-pane-4">
                                 <h3 class="pane-title">Review Renewal Application</h3>
@@ -562,6 +588,16 @@
                                         <div><span class="t-lbl">Phone:</span><span class="t-val" id="rv-phone">-</span></div>
                                         <div><span class="t-lbl">Email:</span><span class="t-val" id="rv-email">-</span></div>
                                         <div style="grid-column: span 2;"><span class="t-lbl">Address:</span><span class="t-val" id="rv-addr">-</span></div>
+                                    </div>
+                                </div>
+
+                                <div class="table-summary-card spacer-top">
+                                    <div class="table-card-header-plain"></div>
+                                    <div class="table-card-content layout-2col-grid">
+                                        <div><span class="t-lbl">Health Cert:</span><span class="t-val" id="rv-doc-health">-</span></div>
+                                        <div><span class="t-lbl">Barangay Clearance:</span><span class="t-val" id="rv-doc-barangay">-</span></div>
+                                        <div><span class="t-lbl">Government ID:</span><span class="t-val" id="rv-doc-gov-id">-</span></div>
+                                        <div><span class="t-lbl">Tax Clearance:</span><span class="t-val" id="rv-doc-tax">-</span></div>
                                     </div>
                                 </div>
 

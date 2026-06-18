@@ -910,6 +910,9 @@ function renderAssignStallsTable() {
                     expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
                 });
 
+                // Sync to user profile in real-time
+                await syncStallAssignmentToVendor(stallNo, "Occupied", vendorName, permitNo, category);
+
                 // 2. Update application and user profile
                 if (selectedApp) {
                     await updateDoc(doc(db, "applications", selectedApp.id), {
@@ -952,6 +955,12 @@ function renderAssignStallsTable() {
             if (!confirm("Are you sure you want to unassign this stall? This will set it back to Available.")) return;
 
             try {
+                const stall = allStalls.find(s => s.id === stallId);
+                const stallNo = stall ? stall.stallNo : "";
+                if (stallNo) {
+                    await syncStallAssignmentToVendor(stallNo, "Available", "", "", "");
+                }
+
                 await updateDoc(doc(db, "stalls", stallId), {
                     status: "Available",
                     vendorName: "",
@@ -993,6 +1002,66 @@ function setupStallsListener() {
         renderAssignStallsTable();
         updateStallsKPIs();
     });
+}
+
+// Helper to sync stall assignments to vendor user profile & notifications in Firestore
+async function syncStallAssignmentToVendor(stallNo, status, vendorName, permitNo, category) {
+    try {
+        if (status === "Occupied" && vendorName) {
+            const cleanedName = vendorName.trim().toLowerCase();
+            const usersSnap = await getDocs(collection(db, "users"));
+            let matchedUserDoc = null;
+            
+            usersSnap.forEach(userDoc => {
+                const uData = userDoc.data();
+                const uFullName = `${uData.firstName || ''} ${uData.lastName || ''}`.trim().toLowerCase();
+                const uUsername = (uData.username || "").trim().toLowerCase();
+                if (uFullName === cleanedName || uUsername === cleanedName) {
+                    matchedUserDoc = userDoc;
+                }
+            });
+
+            if (matchedUserDoc) {
+                await updateDoc(doc(db, "users", matchedUserDoc.id), {
+                    stallNo: stallNo,
+                    permitNo: permitNo,
+                    productCategory: category
+                });
+
+                await addDoc(collection(db, "notifications"), {
+                    userId: matchedUserDoc.id,
+                    title: "Stall Assigned",
+                    description: `Congratulations! Stall ${stallNo} has been assigned to you. Permit No: ${permitNo}.`,
+                    type: "success",
+                    read: false,
+                    createdAt: new Date().toISOString()
+                });
+            }
+        } else {
+            // Clear stall details for any user currently assigned to this stall
+            const q = query(collection(db, "users"), where("stallNo", "==", stallNo));
+            const usersSnap = await getDocs(q);
+            const updatePromises = [];
+            
+            usersSnap.forEach(userDoc => {
+                updatePromises.push(updateDoc(doc(db, "users", userDoc.id), {
+                    stallNo: "",
+                    permitNo: ""
+                }));
+                updatePromises.push(addDoc(collection(db, "notifications"), {
+                    userId: userDoc.id,
+                    title: "Stall Unassigned",
+                    description: `Your assignment for Stall ${stallNo} has been removed by the market administrator.`,
+                    type: "warning",
+                    read: false,
+                    createdAt: new Date().toISOString()
+                }));
+            });
+            await Promise.all(updatePromises);
+        }
+    } catch (err) {
+        console.error("Error syncing stall assignment to vendor:", err);
+    }
 }
 
 let unsubscribeInvoices = null;
@@ -1673,6 +1742,10 @@ function initializeAdminDashboard() {
 
             try {
                 stallModal.style.display = "none";
+                
+                const stall = allStalls.find(s => s.id === id);
+                const stallNo = stall ? stall.stallNo : "";
+
                 if (newStatus === "Occupied") {
                     await updateDoc(doc(db, "stalls", id), {
                         status: "Occupied",
@@ -1681,15 +1754,9 @@ function initializeAdminDashboard() {
                         category: category,
                         expiryDate: "2027-06-18"
                     });
-                } else if (newStatus === "Available") {
-                    await updateDoc(doc(db, "stalls", id), {
-                        status: "Available",
-                        vendorName: "",
-                        permitNo: "",
-                        category: "",
-                        vendorId: "",
-                        expiryDate: ""
-                    });
+                    if (stallNo) {
+                        await syncStallAssignmentToVendor(stallNo, "Occupied", vendorName, permitNo, category);
+                    }
                 } else {
                     await updateDoc(doc(db, "stalls", id), {
                         status: newStatus,
@@ -1699,6 +1766,9 @@ function initializeAdminDashboard() {
                         vendorId: "",
                         expiryDate: ""
                     });
+                    if (stallNo) {
+                        await syncStallAssignmentToVendor(stallNo, newStatus, "", "", "");
+                    }
                 }
                 alert("Stall successfully updated!");
             } catch (err) {

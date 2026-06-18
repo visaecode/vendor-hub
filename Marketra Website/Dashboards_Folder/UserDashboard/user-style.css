@@ -804,3 +804,49 @@ body {
 .admin-data-table tbody tr:last-child td {
     border-bottom: none;
 }
+
+/* --- 13. DROPZONE UPLOAD ACTIVE STATES --- */
+.dropzone.dragover {
+    border-color: var(--sidebar-active) !important;
+    background-color: #E8F5E9 !important;
+}
+.dropzone.has-file {
+    border-color: #2E7D32 !important;
+    border-style: solid !important;
+    background-color: #E8F5E9 !important;
+}
+.dropzone.has-file i {
+    color: #2E7D32 !important;
+    font-size: 2rem !important;
+}
+.dropzone .file-name {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1E293B;
+    margin-top: 8px;
+    word-break: break-all;
+    max-width: 90%;
+    text-align: center;
+}
+.dropzone .file-size {
+    display: block;
+    font-size: 0.75rem;
+    color: #64748B;
+    margin-top: 2px;
+}
+.dropzone .remove-file-btn {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: #EF4444;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    text-decoration: underline;
+    padding: 2px 8px;
+}
+.dropzone .remove-file-btn:hover {
+    color: #B91C1C;
+}

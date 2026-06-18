@@ -258,6 +258,7 @@ function setupNoticesListener() {
     });
 }
 
+let unsubscribeUser = null;
 let unsubscribeInvoices = null;
 let unsubscribePayments = null;
 
@@ -305,6 +306,122 @@ function setupFinanceListeners() {
     });
 }
 
+function downloadCertificate(inv) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: "a4"
+    });
+
+    const width = 297;
+    const height = 210;
+
+    // Draw borders
+    doc.setDrawColor(20, 52, 36);
+    doc.setLineWidth(1.5);
+    doc.rect(10, 10, width - 20, height - 20);
+    doc.rect(12, 12, width - 24, height - 24);
+
+    // Draw corner decorations
+    doc.setFillColor(20, 52, 36);
+    doc.rect(10, 10, 8, 8, 'F');
+    doc.rect(width - 18, 10, 8, 8, 'F');
+    doc.rect(10, height - 18, 8, 8, 'F');
+    doc.rect(width - 18, height - 18, 8, 8, 'F');
+
+    // Header Logo/Title
+    doc.setTextColor(20, 52, 36);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(28);
+    doc.text("ALTURA PUBLIC MARKET", width / 2, 35, { align: "center" });
+
+    doc.setTextColor(100, 116, 139);
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(10);
+    doc.text("Altura Zone Operations Section — City of Manila", width / 2, 42, { align: "center" });
+
+    // Divider Line
+    doc.setDrawColor(35, 105, 68);
+    doc.setLineWidth(0.5);
+    doc.line(40, 48, width - 40, 48);
+
+    // Certificate Title
+    doc.setTextColor(198, 40, 40);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("CERTIFICATE OF STALL REGISTRATION", width / 2, 62, { align: "center" });
+
+    // Body text
+    doc.setTextColor(30, 41, 59);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    doc.text("This is to certify and officially recognize that", width / 2, 75, { align: "center" });
+
+    // Vendor Name
+    doc.setTextColor(20, 52, 36);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(22);
+    doc.text(inv.vendorName.toUpperCase(), width / 2, 88, { align: "center" });
+
+    // Description text
+    doc.setTextColor(30, 41, 59);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    doc.text("has complied with all regulatory clearances, background document verifications,", width / 2, 100, { align: "center" });
+    doc.text("and financial commitments required to operate at Altura Public Market.", width / 2, 106, { align: "center" });
+
+    doc.text("Specifically, the registered vendor is assigned to:", width / 2, 116, { align: "center" });
+
+    // Stall No Badge Box
+    doc.setFillColor(232, 245, 233);
+    doc.rect(width / 2 - 45, 122, 90, 12, 'F');
+    doc.setDrawColor(46, 125, 50);
+    doc.setLineWidth(0.3);
+    doc.rect(width / 2 - 45, 122, 90, 12, 'D');
+
+    doc.setTextColor(46, 125, 50);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.text(`STALL NUMBER: ${inv.stallNo}`, width / 2, 130, { align: "center" });
+
+    // Details Block (Table format at bottom-left)
+    doc.setTextColor(100, 116, 139);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.text(`Invoice Reference: ${inv.invoiceNo}`, 30, 160);
+    doc.text(`Billing Status: PAID & SETTLED`, 30, 165);
+    doc.text(`Date of Issuance: ${inv.issuedDate}`, 30, 170);
+    const issueDateObj = new Date(inv.issuedDate);
+    const expiryDate = new Date(issueDateObj.setFullYear(issueDateObj.getFullYear() + 1)).toISOString().split('T')[0];
+    doc.text(`Expiry Date: ${expiryDate}`, 30, 175);
+
+    // Seal decoration (circular badge)
+    doc.setFillColor(255, 248, 225);
+    doc.setDrawColor(230, 81, 0);
+    doc.circle(width / 2, 168, 14, 'FD');
+    doc.setTextColor(230, 81, 0);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.text("APPROVED", width / 2, 166, { align: "center" });
+    doc.setFontSize(6);
+    doc.text("ALTURA BOARD", width / 2, 171, { align: "center" });
+    doc.text("★ OFFICIAL ★", width / 2, 175, { align: "center" });
+
+    // Signatures (Bottom-right)
+    doc.setTextColor(30, 41, 59);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.line(width - 90, 168, width - 30, 168);
+    doc.text("MARKET ADMINISTRATOR", width - 60, 174, { align: "center" });
+    doc.setFontSize(8);
+    doc.setTextColor(100, 116, 139);
+    doc.text("Altura Public Market Board Authority", width - 60, 179, { align: "center" });
+
+    // Save PDF
+    doc.save(`Stall_Certificate_${inv.stallNo}.pdf`);
+}
+
 function renderUserInvoicesTable(invoices) {
     const tbody = document.getElementById("user-invoices-table-body");
     if (!tbody) return;
@@ -322,7 +439,10 @@ function renderUserInvoicesTable(invoices) {
     invoices.forEach(inv => {
         const isPaid = inv.status === "Paid";
         const actionHtml = isPaid 
-            ? `<span class="badge status-approved"><i class="fa-solid fa-circle-check"></i> Paid</span>`
+            ? `<div style="display: flex; align-items: center; gap: 8px;">
+                   <span class="badge status-approved"><i class="fa-solid fa-circle-check"></i> Paid</span>
+                   <button class="btn btn-outline user-cert-btn" style="padding: 4px 10px; font-size: 0.72rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; border: 1px solid var(--sidebar-active); color: var(--sidebar-active);" data-id="${inv.id}"><i class="fa-solid fa-file-pdf"></i> Certificate</button>
+               </div>`
             : `<button class="btn-blue-action-item user-pay-btn" data-id="${inv.id}" data-invoice="${inv.invoiceNo}" data-amount="${inv.amount}">Pay Now</button>`;
 
         const statusClass = isPaid ? "status-approved" : "status-review";
@@ -357,6 +477,16 @@ function renderUserInvoicesTable(invoices) {
                 document.getElementById("user-pay-modal-display-amount").value = `₱${amount.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
                 
                 modal.style.display = "flex";
+            }
+        });
+    });
+
+    tbody.querySelectorAll(".user-cert-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const id = btn.getAttribute("data-id");
+            const inv = invoices.find(i => i.id === id);
+            if (inv) {
+                downloadCertificate(inv);
             }
         });
     });
@@ -405,31 +535,25 @@ function updateFinanceKPIs(invoices) {
 }
 
 // Authentication state check
-onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth, (user) => {
+    if (unsubscribeUser) unsubscribeUser();
+
     if (!user) {
         window.location.href = "../../Login_Folder/LoginSystem/login.html";
         return;
     }
 
-    try {
-        let userData = null;
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-            userData = userDoc.data();
-        } else {
-            // Fallback: Query by email field
-            const q = query(collection(db, "users"), where("email", "==", user.email));
-            const querySnapshot = await getDocs(q);
-            if (!querySnapshot.empty) {
-                userData = querySnapshot.docs[0].data();
-            }
-        }
-
-        if (userData) {
+    // Subscribe to user document/query updates in real-time
+    const userQuery = query(collection(db, "users"), where("email", "==", user.email));
+    unsubscribeUser = onSnapshot(userQuery, (snapshot) => {
+        if (!snapshot.empty) {
+            const userData = snapshot.docs[0].data();
+            
             const firstName = userData.firstName || "";
             const lastName = userData.lastName || "";
             const fullName = `${firstName} ${lastName}`.trim() || userData.username || user.email;
             const stallNo = userData.stallNo || userData.stall || "";
+            const permitNo = userData.permitNo || "";
 
             userProfileName = fullName;
             userProfileStall = stallNo;
@@ -446,19 +570,38 @@ onAuthStateChanged(auth, async (user) => {
             // Populate welcome heading
             const welcomeHeading = document.getElementById("dashboard-welcome-heading");
             if (welcomeHeading) welcomeHeading.textContent = `Welcome, ${firstName || userData.username || "Vendor"}!`;
-        }
-    } catch (err) {
-        console.error("Error fetching user data:", err);
-    }
 
-    // Initialize the real-time application list listener
+            // Update assigned stall KPI card
+            const stallCardVal = document.getElementById("stat-my-stall");
+            if (stallCardVal) {
+                stallCardVal.textContent = stallNo || "None";
+                const stallCardSubtitle = stallCardVal.nextElementSibling;
+                if (stallCardSubtitle) {
+                    stallCardSubtitle.textContent = stallNo ? "Altura Public Market" : "Awaiting allocation";
+                }
+            }
+
+            // Update permit ID KPI card
+            const permitCardVal = document.getElementById("stat-my-permit");
+            if (permitCardVal) {
+                permitCardVal.textContent = permitNo || "None";
+                const permitCardSubtitle = permitCardVal.nextElementSibling;
+                if (permitCardSubtitle) {
+                    permitCardSubtitle.textContent = permitNo ? "Valid & Compliant" : "No active permit";
+                }
+            }
+
+            // Re-initialize finance listeners with new stall/name info
+            setupFinanceListeners();
+        }
+    }, (err) => {
+        console.error("Error listening to user profile updates:", err);
+    });
+
+    // Initialize other real-time listeners (only once per auth session)
     setupApplicationsListener(user.uid);
-    // Initialize the real-time notification list listener
     setupNotificationsListener(user.uid);
-    // Initialize the real-time notice board listener
     setupNoticesListener();
-    // Initialize finance listeners
-    setupFinanceListeners();
 });
 
 function initializeUserDashboard() {

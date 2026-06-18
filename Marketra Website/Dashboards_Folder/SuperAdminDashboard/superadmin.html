@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Super Admin Portal – Manage the Marketra platform, admins, system health, reports, and settings." />
+  <title>Marketra - Super Admin</title>
+  <link rel="stylesheet" href="superadmin.css" />
+  <!-- FontAwesome linked for strict cross-dashboard component visual matching -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       SIDEBAR (FONT-AWESOME STANDARD UPGRADE)
+  ════════════════════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+
+    <!-- Brand -->
+    <div class="sidebar-brand">
+      <div class="sidebar-avatar">SA</div>
+      <span class="sidebar-brand-name">Super Admin</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav" aria-label="Main navigation">
+      <ul class="nav-list">
+
+        <li class="nav-item">
+          <button class="nav-link active" id="nav-dashboard" data-section="dashboard" aria-current="page">
+            <span class="nav-icon"><i class="fa-solid fa-table-columns"></i></span>
+            <span class="nav-label">Dashboard</span>
+          </button>
+        </li>
+
+        <li class="nav-item">
+          <button class="nav-link" id="nav-manage-admins" data-section="manage-admins">
+            <span class="nav-icon"><i class="fa-solid fa-users-gear"></i></span>
+            <span class="nav-label">Manage Admins</span>
+          </button>
+        </li>
+
+        <li class="nav-item">
+          <button class="nav-link" id="nav-system-monitor" data-section="system-monitor">
+            <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span>
+            <span class="nav-label">System Monitor</span>
+          </button>
+        </li>
+
+        <li class="nav-item">
+          <button class="nav-link" id="nav-reports" data-section="reports">
+            <span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span>
+            <span class="nav-label">Reports</span>
+          </button>
+        </li>
+
+        <li class="nav-item">
+          <button class="nav-link" id="nav-settings" data-section="settings">
+            <span class="nav-icon"><i class="fa-solid fa-gear"></i></span>
+            <span class="nav-label">Settings</span>
+          </button>
+        </li>
+
+      </ul>
+    </nav>
+
+    <!-- Sign Out -->
+    <div class="sidebar-footer">
+      <button class="signout-btn" id="signout-btn">
+        <span class="nav-icon"><i class="fa-solid fa-right-from-bracket"></i></span>
+        <span class="nav-label">Sign Out</span>
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- ═══════════════════════════════════════════
+       MAIN WRAPPER
+  ════════════════════════════════════════════ -->
+  <div class="main-wrapper">
+
+    <!-- ─── Top Header ──────────────────────────── -->
+    <header class="topbar" id="topbar">
+      <div class="topbar-left">
+        <i class="fa-solid fa-shield-solid fa-shield-halved brand-check-icon"></i>
+        <span class="topbar-title">Super Admin Portal</span>
+      </div>
+      <div class="topbar-right">
+        <button class="icon-btn notif-btn" id="notif-btn" aria-label="Notifications">
+          <i class="fa-regular fa-bell"></i>
+          <span class="notif-badge" id="notif-badge"></span>
+        </button>
+        <div class="topbar-user">
+          <div class="topbar-avatar">SA</div>
+          <div class="topbar-user-info">
+            <span class="topbar-username">Super Admin</span>
+            <span class="topbar-email">superadmin@marketra.ph</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ─── Page Content ────────────────────────── -->
+    <main class="content-area" id="content-area">
+
+      <!-- ══════════════════════════════════════════
+           SECTION 1 — DASHBOARD
+      ═══════════════════════════════════════════ -->
+      <section class="page-section active" id="section-dashboard">
+
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Overview</h1>
+            <p class="page-subtitle">System-wide statistics for Oaktown City Public Market</p>
+          </div>
+        </div>
+
+        <!-- Stat Cards Row -->
+        <div class="stats-row">
+
+          <div class="stat-card" id="stat-total-admins">
+            <div class="stat-card-icon green">
+              <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <div class="stat-card-body">
+              <span class="stat-label">Total Admins</span>
+              <span class="stat-value" data-stat="total-admins">—</span>
+            </div>
+          </div>
+
+          <div class="stat-card" id="stat-total-vendors">
+            <div class="stat-card-icon teal">
+              <i class="fa-solid fa-shop"></i>
+            </div>
+            <div class="stat-card-body">
+              <span class="stat-label">Total Vendors</span>
+              <span class="stat-value" data-stat="total-vendors">—</span>
+            </div>
+          </div>
+
+          <div class="stat-card" id="stat-pending-apps">
+            <div class="stat-card-icon amber">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="stat-card-body">
+              <span class="stat-label">Pending Apps</span>
+              <span class="stat-value" data-stat="pending-apps">—</span>
+            </div>
+          </div>
+
+          <div class="stat-card" id="stat-active-permits">
+            <div class="stat-card-icon blue">
+              <i class="fa-regular fa-id-card"></i>
+            </div>
+            <div class="stat-card-body">
+              <span class="stat-label">Active Permits</span>
+              <span class="stat-value" data-stat="active-permits">—</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Chart + System Health Row -->
+        <div class="two-col-row">
+
+          <!-- Applications & Renewals Chart -->
+          <div class="card chart-card" id="dashboard-chart-card">
+            <div class="card-header">
+              <h2 class="card-title">Applications &amp; Renewals</h2>
+              <div class="chart-legend">
+                <span class="legend-dot dark-green"></span><span>New</span>
+                <span class="legend-dot light-green"></span><span>Renewals</span>
+              </div>
+            </div>
+            <div class="chart-placeholder" id="dashboard-chart" aria-label="Applications and Renewals bar chart">
+              <div class="chart-bars-wrapper">
+                <div class="chart-bar-group">
+                  <div class="chart-bar-wrap"><div class="chart-bar primary" style="height:0%"></div></div>
+                  <div class="chart-bar-wrap"><div class="chart-bar secondary" style="height:0%"></div></div>
+                  <span class="chart-month">Jan</span>
+                </div>
+                <div class="chart-bar-group">
+                  <div class="chart-bar-wrap"><div class="chart-bar primary" style="height:0%"></div></div>
+                  <div class="chart-bar-wrap"><div class="chart-bar secondary" style="height:0%"></div></div>
+                  <span class="chart-month">Feb</span>
+                </div>
+                <div class="chart-bar-group">
+                  <div class="chart-bar-wrap"><div class="chart-bar primary" style="height:0%"></div></div>
+                  <div class="chart-bar-wrap"><div class="chart-bar secondary" style="height:0%"></div></div>
+                  <span class="chart-month">Mar</span>
+                </div>
+                <div class="chart-bar-group">
+                  <div class="chart-bar-wrap"><div class="chart-bar primary" style="height:0%"></div></div>
+                  <div class="chart-bar-wrap"><div class="chart-bar secondary" style="height:0%"></div></div>
+                  <span class="chart-month">Apr</span>
+                </div>
+                <div class="chart-bar-group">
+                  <div class="chart-bar-wrap"><div class="chart-bar primary" style="height:0%"></div></div>
+                  <div class="chart-bar-wrap"><div class="chart-bar secondary" style="height:0%"></div></div>
+                  <span class="chart-month">May</span>
+                </div>
+                <div class="chart-bar-group">
+                  <div class="chart-bar-wrap"><div class="chart-bar primary" style="height:0%"></div></div>
+                  <div class="chart-bar-wrap"><div class="chart-bar secondary" style="height:0%"></div></div>
+                  <span class="chart-month">Jun</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- System Health -->
+          <div class="card system-health-card" id="dashboard-health-card">
+            <div class="card-header">
+              <h2 class="card-title">System Health</h2>
+            </div>
+            <div class="health-metrics" id="health-metrics">
+
+              <div class="health-metric">
+                <div class="health-metric-top">
+                  <div class="health-metric-label">
+                    <span class="health-icon"><i class="fa-solid fa-microchip"></i></span>
+                    <span>CPU Usage</span>
+                  </div>
+                  <span class="health-pct" data-metric="cpu">—</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill blue" data-fill="cpu" style="width:0%"></div></div>
+              </div>
+
+              <div class="health-metric">
+                <div class="health-metric-top">
+                  <div class="health-metric-label">
+                    <span class="health-icon"><i class="fa-solid fa-server"></i></span>
+                    <span>Memory</span>
+                  </div>
+                  <span class="health-pct" data-metric="memory">—</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill purple" data-fill="memory" style="width:0%"></div></div>
+              </div>
+
+              <div class="health-metric">
+                <div class="health-metric-top">
+                  <div class="health-metric-label">
+                    <span class="health-icon"><i class="fa-solid fa-database"></i></span>
+                    <span>Database</span>
+                  </div>
+                  <span class="health-pct" data-metric="database">—</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill green" data-fill="database" style="width:0%"></div></div>
+              </div>
+
+              <div class="health-metric">
+                <div class="health-metric-top">
+                  <div class="health-metric-label">
+                    <span class="health-icon"><i class="fa-solid fa-wifi"></i></span>
+                    <span>Network</span>
+                  </div>
+                  <span class="health-pct" data-metric="network">—</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill amber" data-fill="network" style="width:0%"></div></div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Recent Activity Log -->
+        <div class="card activity-card" id="dashboard-activity-card">
+          <div class="card-header">
+            <h2 class="card-title">Recent Activity Log</h2>
+          </div>
+          <ul class="activity-list" id="activity-list" aria-label="Recent activity log">
+            <li class="activity-empty">No recent activity to display.</li>
+          </ul>
+        </div>
+
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           SECTION 2 — MANAGE ADMINS
+      ═══════════════════════════════════════════ -->
+      <section class="page-section" id="section-manage-admins">
+
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Manage Admins</h1>
+            <p class="page-subtitle">Create, edit, and deactivate admin accounts</p>
+          </div>
+          <button class="btn-primary" id="add-admin-btn">
+            <i class="fa-regular fa-plus-square"></i>
+            Add Admin
+          </button>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-bar-wrap">
+          <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+          <input
+            type="search"
+            class="search-input"
+            id="admin-search"
+            placeholder="Search admins..."
+            aria-label="Search admins"
+          />
+        </div>
+
+        <!-- Admins Table -->
+        <div class="card table-card" id="admins-table-card">
+          <table class="data-table" id="admins-table" aria-label="Admins list">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Assigned Zones</th>
+                <th>Status</th>
+                <th>Joined</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admins-tbody">
+              <tr>
+                <td colspan="6" class="table-empty">No admins found.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           SECTION 3 — SYSTEM MONITOR
+      ═══════════════════════════════════════════ -->
+      <section class="page-section" id="section-system-monitor">
+
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">System Monitor</h1>
+            <p class="page-subtitle">Real-time infrastructure health</p>
+          </div>
+          <div class="operational-badge" id="operational-badge">
+            <span class="status-dot green pulse"></span>
+            All Systems Operational
+          </div>
+        </div>
+
+        <!-- Metric Cards Row -->
+        <div class="stats-row metrics-row">
+
+          <div class="card metric-card" id="mon-cpu-card">
+            <div class="metric-card-top">
+              <span class="metric-icon"><i class="fa-solid fa-microchip"></i></span>
+              <span class="metric-value" data-metric-val="cpu">—</span>
+            </div>
+            <div class="metric-label">CPU Usage</div>
+            <div class="progress-bar sm"><div class="progress-fill blue" data-fill="mon-cpu" style="width:0%"></div></div>
+          </div>
+
+          <div class="card metric-card" id="mon-memory-card">
+            <div class="metric-card-top">
+              <span class="metric-icon"><i class="fa-solid fa-server"></i></span>
+              <span class="metric-value" data-metric-val="memory">—</span>
+            </div>
+            <div class="metric-label">Memory</div>
+            <div class="progress-bar sm"><div class="progress-fill purple" data-fill="mon-memory" style="width:0%"></div></div>
+          </div>
+
+          <div class="card metric-card" id="mon-db-card">
+            <div class="metric-card-top">
+              <span class="metric-icon"><i class="fa-solid fa-database"></i></span>
+              <span class="metric-value" data-metric-val="database">—</span>
+            </div>
+            <div class="metric-label">Database</div>
+            <div class="progress-bar sm"><div class="progress-fill green" data-fill="mon-database" style="width:0%"></div></div>
+          </div>
+
+          <div class="card metric-card" id="mon-network-card">
+            <div class="metric-card-top">
+              <span class="metric-icon"><i class="fa-solid fa-wifi"></i></span>
+              <span class="metric-value" data-metric-val="network">—</span>
+            </div>
+            <div class="metric-label">Network</div>
+            <div class="progress-bar sm"><div class="progress-fill amber" data-fill="mon-network" style="width:0%"></div></div>
+          </div>
+
+        </div>
+
+        <!-- Services + Events Row -->
+        <div class="two-col-row">
+
+          <!-- Services Status -->
+          <div class="card" id="services-status-card">
+            <div class="card-header">
+              <h2 class="card-title">Services Status</h2>
+            </div>
+            <ul class="services-list" id="services-list" aria-label="Services status">
+              <li class="service-row" id="svc-app-portal">
+                <div class="service-left">
+                  <span class="status-dot green"></span>
+                  <span class="service-name">Application Portal</span>
+                </div>
+                <div class="service-right">
+                  <span class="service-uptime" data-uptime="app-portal">Uptime: —</span>
+                  <span class="status-badge online" data-status-badge="app-portal">Online</span>
+                </div>
+              </li>
+              <li class="service-row" id="svc-doc-storage">
+                <div class="service-left">
+                  <span class="status-dot green"></span>
+                  <span class="service-name">Document Storage</span>
+                </div>
+                <div class="service-right">
+                  <span class="service-uptime" data-uptime="doc-storage">Uptime: —</span>
+                  <span class="status-badge online" data-status-badge="doc-storage">Online</span>
+                </div>
+              </li>
+              <li class="service-row" id="svc-email-notif">
+                <div class="service-left">
+                  <span class="status-dot green"></span>
+                  <span class="service-name">Email Notifications</span>
+                </div>
+                <div class="service-right">
+                  <span class="service-uptime" data-uptime="email-notif">Uptime: —</span>
+                  <span class="status-badge online" data-status-badge="email-notif">Online</span>
+                </div>
+              </li>
+              <li class="service-row" id="svc-db-backup">
+                <div class="service-left">
+                  <span class="status-dot green"></span>
+                  <span class="service-name">Database Backup</span>
+                </div>
+                <div class="service-right">
+                  <span class="service-uptime" data-uptime="db-backup">Uptime: —</span>
+                  <span class="status-badge online" data-status-badge="db-backup">Online</span>
+                </div>
+              </li>
+              <li class="service-row" id="svc-payment">
+                <div class="service-left">
+                  <span class="status-dot amber"></span>
+                  <span class="service-name">Payment Gateway</span>
+                </div>
+                <div class="service-right">
+                  <span class="service-uptime" data-uptime="payment">Uptime: —</span>
+                  <span class="status-badge maintenance" data-status-badge="payment">Maintenance</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Recent System Events -->
+          <div class="card" id="system-events-card">
+            <div class="card-header">
+              <h2 class="card-title">Recent System Events</h2>
+            </div>
+            <ul class="sys-events-list" id="sys-events-list" aria-label="Recent system events">
+              <li class="activity-empty">No system events to display.</li>
+            </ul>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           SECTION 4 — REPORTS
+      ═══════════════════════════════════════════ -->
+      <section class="page-section" id="section-reports">
+
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Generate Reports</h1>
+            <p class="page-subtitle">Export system-wide data and analytics</p>
+          </div>
+          <button class="btn-outline" id="export-all-btn">
+            <i class="fa-solid fa-cloud-arrow-down"></i>
+            Export All
+          </button>
+        </div>
+
+        <!-- Report Cards Grid -->
+        <div class="reports-grid">
+
+          <div class="report-card" id="rpt-vendor">
+            <div class="report-card-icon green">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <h3 class="report-card-title">Vendor Report</h3>
+            <p class="report-card-desc">All registered vendors, status, and stall assignments</p>
+            <div class="report-card-actions">
+              <button class="btn-outline" id="rpt-vendor-preview">
+                <i class="fa-regular fa-eye"></i> Preview
+              </button>
+              <button class="btn-primary sm" id="rpt-vendor-export">
+                <i class="fa-solid fa-cloud-arrow-down"></i> Export
+              </button>
+            </div>
+          </div>
+
+          <div class="report-card" id="rpt-permit">
+            <div class="report-card-icon blue">
+              <i class="fa-solid fa-arrow-trend-up"></i>
+            </div>
+            <h3 class="report-card-title">Permit Report</h3>
+            <p class="report-card-desc">Active, expired, and pending permits for the year</p>
+            <div class="report-card-actions">
+              <button class="btn-outline" id="rpt-permit-preview">
+                <i class="fa-regular fa-eye"></i> Preview
+              </button>
+              <button class="btn-primary sm" id="rpt-permit-export">
+                <i class="fa-solid fa-cloud-arrow-down"></i> Export
+              </button>
+            </div>
+          </div>
+
+          <div class="report-card" id="rpt-admin-activity">
+            <div class="report-card-icon purple">
+              <i class="fa-solid fa-wave-square"></i>
+            </div>
+            <h3 class="report-card-title">Admin Activity</h3>
+            <p class="report-card-desc">Log of all admin actions and decisions</p>
+            <div class="report-card-actions">
+              <button class="btn-outline" id="rpt-admin-preview">
+                <i class="fa-regular fa-eye"></i> Preview
+              </button>
+              <button class="btn-primary sm" id="rpt-admin-export">
+                <i class="fa-solid fa-cloud-arrow-down"></i> Export
+              </button>
+            </div>
+          </div>
+
+          <div class="report-card" id="rpt-revenue">
+            <div class="report-card-icon amber">
+              <i class="fa-solid fa-chart-simple"></i>
+            </div>
+            <h3 class="report-card-title">Revenue Summary</h3>
+            <p class="report-card-desc">Permit fees collected and outstanding balances</p>
+            <div class="report-card-actions">
+              <button class="btn-outline" id="rpt-revenue-preview">
+                <i class="fa-regular fa-eye"></i> Preview
+              </button>
+              <button class="btn-primary sm" id="rpt-revenue-export">
+                <i class="fa-solid fa-cloud-arrow-down"></i> Export
+              </button>
+            </div>
+          </div>
+
+          <div class="report-card" id="rpt-application">
+            <div class="report-card-icon pink">
+              <i class="fa-solid fa-rotate"></i>
+            </div>
+            <h3 class="report-card-title">Application Report</h3>
+            <p class="report-card-desc">New applications by month, zone, and category</p>
+            <div class="report-card-actions">
+              <button class="btn-outline" id="rpt-app-preview">
+                <i class="fa-regular fa-eye"></i> Preview
+              </button>
+              <button class="btn-primary sm" id="rpt-app-export">
+                <i class="fa-solid fa-cloud-arrow-down"></i> Export
+              </button>
+            </div>
+          </div>
+
+          <div class="report-card" id="rpt-audit">
+            <div class="report-card-icon slate">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3 class="report-card-title">System Audit Log</h3>
+            <p class="report-card-desc">Security and system event audit trail</p>
+            <div class="report-card-actions">
+              <button class="btn-outline" id="rpt-audit-preview">
+                <i class="fa-regular fa-eye"></i> Preview
+              </button>
+              <button class="btn-primary sm" id="rpt-audit-export">
+                <i class="fa-solid fa-cloud-arrow-down"></i> Export
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Monthly Applications vs Renewals Chart -->
+        <div class="card chart-card reports-chart-card" id="reports-chart-card">
+          <div class="card-header">
+            <h2 class="card-title">Monthly Applications vs Renewals</h2>
+            <div class="chart-legend">
+              <span class="legend-dot dark-green"></span><span>New Apps</span>
+              <span class="legend-dot light-green"></span><span>Renewals</span>
+            </div>
+          </div>
+          <div class="chart-placeholder" id="reports-chart" aria-label="Monthly Applications vs Renewals bar chart">
+            <div class="chart-bars-wrapper">
+              <div class="chart-bar-group">
+                <div class="chart-bar-wrap"><div class="chart-bar primary" style="height:0%"></div></div>
+                <div class="chart-bar-wrap"><div class="chart-bar secondary" style="height:0%"></div></div>
+                <span class="chart-month">Jan</span>
+              </div>
+              <div class="chart-bar-group">
+                <div class="chart-bar-wrap"><div class="chart-bar primary" style="height:0%"></div></div>
+                <div class="chart-bar-wrap"><div class="chart-bar secondary" style="height:0%"></div></div>
+                <span class="chart-month">Feb</span>
+              </div>
+              <div class="chart-bar-group">
+                <div class="chart-bar-wrap"><div class="chart-bar primary" style="height:0%"></div></div>
+                <div class="chart-bar-wrap"><div class="chart-bar secondary" style="height:0%"></div></div>
+                <span class="chart-month">Mar</span>
+              </div>
+              <div class="chart-bar-group">
+                <div class="chart-bar-wrap"><div class="chart-bar primary" style="height:0%"></div></div>
+                <div class="chart-bar-wrap"><div class="chart-bar secondary" style="height:0%"></div></div>
+                <span class="chart-month">Apr</span>
+              </div>
+              <div class="chart-bar-group">
+                <div class="chart-bar-wrap"><div class="chart-bar primary" style="height:0%"></div></div>
+                <div class="chart-bar-wrap"><div class="chart-bar secondary" style="height:0%"></div></div>
+                <span class="chart-month">May</span>
+              </div>
+              <div class="chart-bar-group">
+                <div class="chart-bar-wrap"><div class="chart-bar primary" style="height:0%"></div></div>
+                <div class="chart-bar-wrap"><div class="chart-bar secondary" style="height:0%"></div></div>
+                <span class="chart-month">Jun</span>
+              </div>
+            </div>
+          </div>
+          <div class="reports-summary-row">
+            <div class="reports-summary-item">
+              <span class="reports-summary-value" data-summary="total-apps">—</span>
+              <span class="reports-summary-label">Total Applications (2026)</span>
+            </div>
+            <div class="reports-summary-item">
+              <span class="reports-summary-value" data-summary="total-renewals">—</span>
+              <span class="reports-summary-label">Total Renewals (2026)</span>
+            </div>
+            <div class="reports-summary-item">
+              <span class="reports-summary-value" data-summary="approval-rate">—</span>
+              <span class="reports-summary-label">Approval Rate</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           SECTION 5 — SETTINGS
+      ═══════════════════════════════════════════ -->
+      <section class="page-section" id="section-settings">
+
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">System Settings</h1>
+            <p class="page-subtitle">Configure platform behavior and policies</p>
+          </div>
+        </div>
+
+        <!-- Platform Controls -->
+        <div class="card settings-card" id="platform-controls-card">
+          <h2 class="settings-section-title">Platform Controls</h2>
+
+          <div class="settings-row" id="setting-maintenance">
+            <div class="settings-row-info">
+              <span class="settings-row-name">Maintenance Mode</span>
+              <span class="settings-row-desc">Temporarily disable public access to the portal</span>
+            </div>
+            <label class="toggle-switch" aria-label="Toggle Maintenance Mode">
+              <input type="checkbox" id="toggle-maintenance" />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+
+          <div class="settings-row" id="setting-email-notif">
+            <div class="settings-row-info">
+              <span class="settings-row-name">Email Notifications</span>
+              <span class="settings-row-desc">Send automated emails for approvals and deadlines</span>
+            </div>
+            <label class="toggle-switch" aria-label="Toggle Email Notifications">
+              <input type="checkbox" id="toggle-email-notif" checked />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+
+          <div class="settings-row" id="setting-auto-backup">
+            <div class="settings-row-info">
+              <span class="settings-row-name">Automatic Backup</span>
+              <span class="settings-row-desc">Daily backup of all system data at 2:00 AM</span>
+            </div>
+            <label class="toggle-switch" aria-label="Toggle Automatic Backup">
+              <input type="checkbox" id="toggle-auto-backup" checked />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+
+          <div class="settings-row" id="setting-2fa">
+            <div class="settings-row-info">
+              <span class="settings-row-name">Two-Factor Authentication</span>
+              <span class="settings-row-desc">Require 2FA for all admin and super admin logins</span>
+            </div>
+            <label class="toggle-switch" aria-label="Toggle Two-Factor Authentication">
+              <input type="checkbox" id="toggle-2fa" />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+
+          <div class="settings-row" id="setting-walkin">
+            <div class="settings-row-info">
+              <span class="settings-row-name">Walk-In Applications</span>
+              <span class="settings-row-desc">Allow in-person applications at the market office</span>
+            </div>
+            <label class="toggle-switch" aria-label="Toggle Walk-In Applications">
+              <input type="checkbox" id="toggle-walkin" checked />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+
+          <div class="settings-row" id="setting-public-portal">
+            <div class="settings-row-info">
+              <span class="settings-row-name">Public Portal</span>
+              <span class="settings-row-desc">Allow vendors to self-register through the online portal</span>
+            </div>
+            <label class="toggle-switch" aria-label="Toggle Public Portal">
+              <input type="checkbox" id="toggle-public-portal" checked />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+
+        </div>
+
+        <!-- Permit Fee Configuration -->
+        <div class="card settings-card" id="permit-fee-card">
+          <h2 class="settings-section-title">Permit Fee Configuration</h2>
+          <div class="fee-grid">
+
+            <div class="fee-field-group">
+              <label class="fee-label" for="fee-small">Small Stall (2×2m)</label>
+              <div class="fee-input-wrap">
+                <span class="fee-currency">₱</span>
+                <input type="number" class="fee-input" id="fee-small" placeholder="0" min="0" aria-label="Fee for Small Stall 2x2m" />
+              </div>
+            </div>
+
+            <div class="fee-field-group">
+              <label class="fee-label" for="fee-medium">Medium Stall (3×3m)</label>
+              <div class="fee-input-wrap">
+                <span class="fee-currency">₱</span>
+                <input type="number" class="fee-input" id="fee-medium" placeholder="0" min="0" aria-label="Fee for Medium Stall 3x3m" />
+              </div>
+            </div>
+
+            <div class="fee-field-group">
+              <label class="fee-label" for="fee-large">Large Stall (4×4m)</label>
+              <div class="fee-input-wrap">
+                <span class="fee-currency">₱</span>
+                <input type="number" class="fee-input" id="fee-large" placeholder="0" min="0" aria-label="Fee for Large Stall 4x4m" />
+              </div>
+            </div>
+
+            <div class="fee-field-group">
+              <label class="fee-label" for="fee-xl">Extra Large Stall (5×5m)</label>
+              <div class="fee-input-wrap">
+                <span class="fee-currency">₱</span>
+                <input type="number" class="fee-input" id="fee-xl" placeholder="0" min="0" aria-label="Fee for Extra Large Stall 5x5m" />
+              </div>
+            </div>
+
+          </div>
+          <button class="btn-primary save-fee-btn" id="save-fee-btn">
+            Save Fee Schedule
+          </button>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="card danger-zone-card" id="danger-zone-card">
+          <h2 class="danger-zone-title">Danger Zone</h2>
+          <p class="danger-zone-desc">These actions are irreversible. Proceed with caution.</p>
+          <div class="danger-actions">
+            <button class="btn-danger-outline" id="clear-cache-btn">Clear Application Cache</button>
+            <button class="btn-danger-outline" id="reset-notices-btn">Reset All Notices</button>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Add Admin Modal -->
+  <div class="modal-overlay" id="add-admin-modal" style="display: none;">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">Add New Administrator</h2>
+        <button class="modal-close" id="close-modal-btn">&times;</button>
+      </div>
+      <form id="add-admin-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="admin-first-name">First Name <span class="required">*</span></label>
+            <input type="text" id="admin-first-name" required placeholder="John">
+          </div>
+          <div class="form-group">
+            <label for="admin-last-name">Last Name <span class="required">*</span></label>
+            <input type="text" id="admin-last-name" required placeholder="Doe">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="admin-username">Username <span class="required">*</span></label>
+          <input type="text" id="admin-username" required placeholder="johndoe">
+        </div>
+        <div class="form-group">
+          <label for="admin-email">Email Address <span class="required">*</span></label>
+          <input type="email" id="admin-email" required placeholder="john@marketra.ph">
+        </div>
+        <div class="form-group">
+          <label for="admin-password">Password <span class="required">*</span></label>
+          <input type="password" id="admin-password" required placeholder="••••••••" minlength="6">
+        </div>
+        <div class="form-group">
+          <label>Assigned Zones <span class="required">*</span></label>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" name="assigned-zones" value="Zone A"> Zone A
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="assigned-zones" value="Zone B"> Zone B
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="assigned-zones" value="Zone C"> Zone C
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="assigned-zones" value="Zone D"> Zone D
+            </label>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-outline" id="cancel-modal-btn">Cancel</button>
+          <button type="submit" class="btn-primary" id="submit-admin-btn">Create Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { auth, db } from "../../Login_Folder/LoginSystem/firebase-config.js";
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+    import { doc, getDoc, collection, query, where, getDocs, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signOut as secondarySignOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+
+    // Helper to escape HTML and prevent XSS
+    function escapeHTML(str) {
+      if (!str) return "";
+      return str.replace(/[&<>'"]/g, 
+        tag => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          "'": '&#39;',
+          '"': '&quot;'
+        }[tag] || tag)
+      );
+    }
+
+    let unsubscribeAdmins = null;
+
+    // Set up real-time listener for administrators list
+    function setupAdminsListener() {
+      if (unsubscribeAdmins) unsubscribeAdmins();
+
+      const adminsQuery = query(collection(db, "users"), where("userRole", "==", "Admin"));
+      
+      unsubscribeAdmins = onSnapshot(adminsQuery, (snapshot) => {
+        const tbody = document.getElementById("admins-tbody");
+        if (!tbody) return;
+
+        if (snapshot.empty) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" class="table-empty">No admins found.</td>
+            </tr>
+          `;
+          return;
+        }
+
+        let html = "";
+        snapshot.forEach(docSnap => {
+          const data = docSnap.data();
+          const id = docSnap.id;
+          const firstName = data.firstName || "";
+          const lastName = data.lastName || "";
+          const fullName = `${firstName} ${lastName}`.trim() || data.username || "Admin";
+          const email = data.email || "";
+          
+          let zonesHtml = "None";
+          if (data.assignedZones) {
+            if (Array.isArray(data.assignedZones)) {
+              if (data.assignedZones.length > 0) {
+                zonesHtml = data.assignedZones.map(z => `<span class="zone-badge">${escapeHTML(z)}</span>`).join(" ");
+              }
+            } else if (typeof data.assignedZones === "string" && data.assignedZones.trim().length > 0) {
+              const zonesArray = data.assignedZones.split(",").map(z => z.trim());
+              zonesHtml = zonesArray.map(z => `<span class="zone-badge">${escapeHTML(z)}</span>`).join(" ");
+            }
+          }
+
+          const status = data.status || "Active";
+          const statusClass = status.toLowerCase() === "active" ? "active" : "inactive";
+          const joinedDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : "N/A";
+          
+          const actionBtn = status.toLowerCase() === "active" 
+            ? `<button class="deactivate-btn" data-id="${id}"><i class="fa-solid fa-user-slash"></i> Deactivate</button>` 
+            : `<button class="activate-btn" data-id="${id}"><i class="fa-solid fa-user-check"></i> Activate</button>`;
+
+          html += `
+            <tr>
+              <td>
+                <div class="admin-name-cell">
+                  <div class="admin-initial">${escapeHTML(firstName.charAt(0) || data.username?.charAt(0) || "A").toUpperCase()}</div>
+                  <strong>${escapeHTML(fullName)}</strong>
+                </div>
+              </td>
+              <td>${escapeHTML(email)}</td>
+              <td>${zonesHtml}</td>
+              <td><span class="status-pill ${statusClass}">${status}</span></td>
+              <td>${joinedDate}</td>
+              <td>
+                <div class="table-actions">
+                  ${actionBtn}
+                </div>
+              </td>
+            </tr>
+          `;
+        });
+
+        tbody.innerHTML = html;
+
+        // Bind deactivate actions
+        tbody.querySelectorAll(".deactivate-btn").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const id = btn.getAttribute("data-id");
+            if (confirm("Are you sure you want to deactivate this admin account?")) {
+              try {
+                await updateDoc(doc(db, "users", id), { status: "Inactive" });
+              } catch (err) {
+                alert("Error: " + err.message);
+              }
+            }
+          });
+        });
+
+        // Bind activate actions
+        tbody.querySelectorAll(".activate-btn").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const id = btn.getAttribute("data-id");
+            if (confirm("Are you sure you want to activate this admin account?")) {
+              try {
+                await updateDoc(doc(db, "users", id), { status: "Active" });
+              } catch (err) {
+                alert("Error: " + err.message);
+              }
+            }
+          });
+        });
+      });
+    }
+
+    // Authentication state & role authorization check
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "../../Login_Folder/LoginSystem/login.html";
+        return;
+      }
+
+      try {
+        let userData = null;
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          userData = userDoc.data();
+        } else {
+          // Fallback: Query by email field
+          const q = query(collection(db, "users"), where("email", "==", user.email));
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            userData = querySnapshot.docs[0].data();
+          }
+        }
+
+        if (userData) {
+          // Check authorization role
+          if (userData.userRole !== "Super Admin") {
+            alert("Unauthorized Access: This area is reserved for the Super Administrator.");
+            window.location.href = "../../Login_Folder/LoginSystem/login.html";
+            return;
+          }
+
+          // Check account status
+          if (userData.status === "Inactive") {
+            alert("Access Denied: Your account has been deactivated.");
+            await signOut(auth);
+            window.location.href = "../../Login_Folder/LoginSystem/login.html";
+            return;
+          }
+
+          const firstName = userData.firstName || "";
+          const lastName = userData.lastName || "";
+          const fullName = `${firstName} ${lastName}`.trim() || userData.username || "Super Admin";
+
+          // Populate topbar profile details
+          const usernameEl = document.querySelector(".topbar-username");
+          if (usernameEl) usernameEl.textContent = fullName;
+
+          const emailEl = document.querySelector(".topbar-email");
+          if (emailEl) emailEl.textContent = userData.email || user.email;
+
+          // Populate avatar initials
+          const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || userData.username?.slice(0, 2).toUpperCase() || "SA";
+          const topbarAvatar = document.querySelector(".topbar-avatar");
+          if (topbarAvatar) topbarAvatar.textContent = initials;
+          
+          const sidebarAvatar = document.querySelector(".sidebar-avatar");
+          if (sidebarAvatar) sidebarAvatar.textContent = initials;
+
+          // Initialize real-time list of admins
+          setupAdminsListener();
+        } else {
+          alert("No user profile found in Firestore.");
+          window.location.href = "../../Login_Folder/LoginSystem/login.html";
+        }
+      } catch (err) {
+        console.error("Error fetching super admin data:", err);
+      }
+    });
+
+    // Sidebar navigation logic
+    const navLinks = document.querySelectorAll('.nav-link[data-section]');
+    const sections = document.querySelectorAll('.page-section');
+
+    function switchSection(targetId) {
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        link.removeAttribute('aria-current');
+      });
+      sections.forEach(sec => sec.classList.remove('active'));
+
+      const targetLink = document.querySelector(`[data-section="${targetId}"]`);
+      if (targetLink) {
+        targetLink.classList.add('active');
+        targetLink.setAttribute('aria-current', 'page');
+      }
+
+      const targetSection = document.getElementById(`section-${targetId}`);
+      if (targetSection) {
+        targetSection.classList.add('active');
+      }
+    }
+
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        switchSection(link.dataset.section);
+      });
+    });
+
+    document.getElementById('signout-btn').addEventListener('click', async () => {
+      if (confirm('Are you sure you want to sign out?')) {
+        try {
+          await signOut(auth);
+          window.location.href = '../../Login_Folder/LoginSystem/login.html';
+        } catch (err) {
+          alert("Sign Out Error: " + err.message);
+        }
+      }
+    });
+
+    // Client-side search filtering
+    const adminSearchInput = document.getElementById("admin-search");
+    if (adminSearchInput) {
+      adminSearchInput.addEventListener("input", (e) => {
+        const queryVal = e.target.value.toLowerCase().trim();
+        const rows = document.querySelectorAll("#admins-tbody tr");
+        rows.forEach(row => {
+          if (row.querySelector(".table-empty")) return;
+          const text = row.textContent.toLowerCase();
+          row.style.display = text.includes(queryVal) ? "" : "none";
+        });
+      });
+    }
+
+    // Modal controls
+    const addAdminBtn = document.getElementById("add-admin-btn");
+    const addAdminModal = document.getElementById("add-admin-modal");
+    const closeModalBtn = document.getElementById("close-modal-btn");
+    const cancelModalBtn = document.getElementById("cancel-modal-btn");
+    const addAdminForm = document.getElementById("add-admin-form");
+
+    if (addAdminBtn && addAdminModal) {
+      addAdminBtn.addEventListener("click", () => {
+        addAdminModal.style.display = "flex";
+      });
+    }
+
+    function closeModal() {
+      if (addAdminModal) {
+        addAdminModal.style.display = "none";
+      }
+      if (addAdminForm) {
+        addAdminForm.reset();
+      }
+    }
+
+    if (closeModalBtn) closeModalBtn.addEventListener("click", closeModal);
+    if (cancelModalBtn) cancelModalBtn.addEventListener("click", closeModal);
+
+    // Close modal when clicking on overlay
+    if (addAdminModal) {
+      addAdminModal.addEventListener("click", (e) => {
+        if (e.target === addAdminModal) closeModal();
+      });
+    }
+
+    // Form Submission
+    if (addAdminForm) {
+      addAdminForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const firstName = document.getElementById("admin-first-name").value.trim();
+        const lastName = document.getElementById("admin-last-name").value.trim();
+        const username = document.getElementById("admin-username").value.trim();
+        const email = document.getElementById("admin-email").value.trim();
+        const password = document.getElementById("admin-password").value;
+
+        // Get selected zones
+        const selectedCheckboxes = document.querySelectorAll('input[name="assigned-zones"]:checked');
+        const assignedZones = Array.from(selectedCheckboxes).map(cb => cb.value);
+
+        if (assignedZones.length === 0) {
+          alert("Please select at least one assigned zone.");
+          return;
+        }
+
+        const submitBtn = document.getElementById("submit-admin-btn");
+        submitBtn.setAttribute("disabled", "true");
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating...';
+
+        try {
+          // Firebase Config for secondary authentication instance registration
+          const firebaseConfig = {
+            apiKey: "AIzaSyCZ7-OvOzsSoqNiuXUKquKMsmitUJDTcLw",
+            authDomain: "marketra-website-25140.firebaseapp.com",
+            projectId: "marketra-website-25140",
+            storageBucket: "marketra-website-25140.firebasestorage.app",
+            messagingSenderId: "943864250185",
+            appId: "1:943864250185:web:14d3944c9b4bf37c206498",
+            measurementId: "G-KD1KVRJP2J"
+          };
+
+          // Register in Auth using secondary app instance
+          const tempApp = initializeApp(firebaseConfig, "TempAppAdminCreator");
+          const tempAuth = getAuth(tempApp);
+          const userCredential = await createUserWithEmailAndPassword(tempAuth, email, password);
+          const newUid = userCredential.user.uid;
+
+          // Immediately log out secondary instance so it does not interfere
+          await secondarySignOut(tempAuth);
+
+          // Write admin details to users Firestore collection
+          await setDoc(doc(db, "users", newUid), {
+            firstName: firstName,
+            lastName: lastName,
+            username: username,
+            email: email,
+            userRole: "Admin",
+            assignedZones: assignedZones,
+            status: "Active",
+            createdAt: new Date().toISOString()
+          });
+
+          alert("Administrator account created successfully!");
+          closeModal();
+        } catch (err) {
+          alert("Failed to create admin account: " + err.message);
+        } finally {
+          submitBtn.removeAttribute("disabled");
+          submitBtn.textContent = "Create Account";
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

@@ -1,4 +1,42 @@
+/* ---- Tab Switcher ---- */
+const tabVendor   = document.getElementById('tabVendor');
+const tabAdmin    = document.getElementById('tabAdmin');
+const panelVendor = document.getElementById('panelVendor');
+const panelAdmin  = document.getElementById('panelAdmin');
+
+function switchTab(activeTab, activePanel, inactiveTab, inactivePanel) {
+  activeTab.classList.add('active');
+  activeTab.setAttribute('aria-selected', 'true');
+  inactiveTab.classList.remove('active');
+  inactiveTab.setAttribute('aria-selected', 'false');
+  activePanel.removeAttribute('hidden');
+  inactivePanel.setAttribute('hidden', '');
+}
+
+tabVendor.addEventListener('click', () => switchTab(tabVendor, panelVendor, tabAdmin, panelAdmin));
+tabAdmin.addEventListener('click',  () => switchTab(tabAdmin,  panelAdmin,  tabVendor, panelVendor));
+
+/* ---- Admin password toggle ---- */
+const toggleAdminBtn  = document.getElementById('toggleAdminPass');
+const adminPassInput  = document.getElementById('adminPassword');
+const adminEyeIcon    = document.getElementById('adminEyeIcon');
+
+toggleAdminBtn.addEventListener('click', () => {
+  const hidden = adminPassInput.type === 'password';
+  adminPassInput.type = hidden ? 'text' : 'password';
+  adminEyeIcon.innerHTML = hidden
+    ? `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`
+    : `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+});
+
+/* ---- Admin form submission ---- */
+document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  // TODO (backend): wire up Firebase admin authentication here
+});
+
 /* ---- Login password toggle ---- */
+
 const toggleBtn = document.getElementById('togglePass');
 const passInput = document.getElementById('password');
 const eyeIcon   = document.getElementById('eyeIcon');

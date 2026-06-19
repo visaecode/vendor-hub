@@ -1,39 +1,53 @@
-import { auth, db } from "./firebase-config.js";
-import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
-
-// FIXED: Form ID matched exactly to login_2.html framework tag
 const loginForm = document.getElementById("loginForm");
 
 if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        
-        // Ensure these input IDs match your username/password fields exactly
-        const email = document.getElementById("username").value.trim();
+
+        const identifier = document.getElementById("username").value.trim();
         const password = document.getElementById("password").value;
 
-        try {
-            // Secure serverless credential authentication query check
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
+        if (!identifier || !password) {
+            alert("Please enter both your email/username and password.");
+            return;
+        }
 
-            // Fetch the user's role from Firestore to determine which dashboard they belong on
-            const userDoc = await getDoc(doc(db, "users", user.uid));
-            
-            if (userDoc.exists()) {
-                const userData = userDoc.data();
-                
-                // FIXED: Multi-folder relative path routers targeting separate modules
-                if (userData.userRole === "Super Admin") {
-                    window.location.href = "../SuperAdminDashboard/superadmin.html";
-                } else if (userData.userRole === "Admin") {
-                    window.location.href = "../AdminDashboard/admin.html";
-                } else {
-                    window.location.href = "../UserDashboard/user.html";
-                }
+        if (identifier.length > 100 || password.length > 100) {
+            alert("Input is too long.");
+            return;
+        }
+
+        if (identifier.includes("@")) {
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(identifier)) {
+                alert("Please enter a valid email address.");
+                return;
+            }
+        }
+
+        try {
+            const res = await fetch("http://localhost:3000/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ identifier, password }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                alert(`Authentication Notice: ${data.error}`);
+                return;
+            }
+
+            localStorage.setItem("mkt_token", data.token);
+            localStorage.setItem("mkt_user", JSON.stringify(data.user));
+
+            if (data.user.role === "Super Admin") {
+                window.location.href = "../SuperAdminDashboard/superadmin.html";
+            } else if (data.user.role === "Admin") {
+                window.location.href = "../AdminDashboard/admin.html";
             } else {
-                alert("Authentication Notice: Account profile data does not exist in our systems.");
+                window.location.href = "../UserDashboard/user.html";
             }
         } catch (error) {
             alert(`Authentication Notice: ${error.message}`);

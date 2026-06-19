@@ -785,6 +785,13 @@ function initDocumentUploads() {
 }
 
 function handleFileSelection(file, inputId, dz) {
+    if (!file) return;
+
+    if (file.size === 0) {
+        alert("Empty file detected! Zero-byte files are not allowed.");
+        return;
+    }
+
     const maxSizeBytes = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSizeBytes) {
         alert(`File is too large! Maximum allowed size is 5MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB.`);
@@ -796,8 +803,14 @@ function handleFileSelection(file, inputId, dz) {
         alert("Invalid file type! Please upload a PDF, JPG, JPEG, or PNG file.");
         return;
     }
+
+    const fileType = file.type || "";
+    const allowedMimeTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+    if (fileType && !allowedMimeTypes.includes(fileType)) {
+        alert("Invalid file content type! Please upload a real PDF, JPG, JPEG, or PNG file.");
+        return;
+    }
     
-    const fileType = file.type;
     const fileName = file.name;
     const fileSizeKB = Math.round(file.size / 1024);
     const isImage = fileType.startsWith('image/');
@@ -1200,18 +1213,219 @@ function initializeUserDashboard() {
         updateRegNextButtonState();
     }
 
+    // -- VALIDATION HELPERS --
+    function validateStep1() {
+        const firstname = document.getElementById("reg-input-firstname")?.value.trim() || "";
+        const lastname = document.getElementById("reg-input-lastname")?.value.trim() || "";
+        const email = document.getElementById("reg-input-email")?.value.trim() || "";
+        const phone = document.getElementById("reg-input-phone")?.value.trim() || "";
+        const address = document.getElementById("reg-input-address")?.value.trim() || "";
+        const idtype = document.getElementById("reg-input-idtype")?.value || "";
+        const idno = document.getElementById("reg-input-idno")?.value.trim() || "";
+        const city = document.getElementById("reg-input-city")?.value.trim() || "";
+
+        // First/Last Name validation: letters, spaces, hyphens, and apostrophes only, min 2 chars
+        const nameRegex = /^[a-zA-Z\s'.]+$/;
+        if (!firstname || firstname.length < 2 || !nameRegex.test(firstname)) {
+            alert("Please enter a valid First Name (letters and spaces only, minimum 2 characters).");
+            return false;
+        }
+        if (!lastname || lastname.length < 2 || !nameRegex.test(lastname)) {
+            alert("Please enter a valid Last Name (letters and spaces only, minimum 2 characters).");
+            return false;
+        }
+
+        // Email validation
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!email || !emailRegex.test(email)) {
+            alert("Please enter a valid email address (e.g., name@domain.com).");
+            return false;
+        }
+        const emailDomain = email.toLowerCase().split("@")[1];
+        if (disposableDomains.includes(emailDomain)) {
+            alert("Temporary or disposable email addresses are not allowed. Please use a standard email provider.");
+            return false;
+        }
+
+        // Phone validation (Philippine formats: 09XXXXXXXXX or +639XXXXXXXXX)
+        const cleanPhone = phone.replace(/[\s-]/g, "");
+        const phoneRegex = /^(09|\+639)\d{9}$/;
+        if (!phone || !phoneRegex.test(cleanPhone)) {
+            alert("Please enter a valid Philippine mobile number (e.g., 09XXXXXXXXX or +639XXXXXXXXX).");
+            return false;
+        }
+
+        // Address validation
+        if (!address || address.length < 10) {
+            alert("Please enter a complete home address (minimum 10 characters).");
+            return false;
+        }
+
+        // City validation
+        if (city && (city.length < 2 || !nameRegex.test(city))) {
+            alert("Please enter a valid City/Municipality (letters and spaces only, minimum 2 characters).");
+            return false;
+        }
+
+        // ID Type
+        if (!idtype) {
+            alert("Please select a Government ID Type.");
+            return false;
+        }
+
+        // ID Number validation based on selected ID Type
+        const cleanIdno = idno.replace(/[\s-]/g, "");
+        if (idtype === "Passport") {
+            const passportRegex = /^[a-zA-Z]{1,2}\d{7}$/;
+            if (!passportRegex.test(cleanIdno)) {
+                alert("Invalid Passport Number. It must start with 1 or 2 letters followed by exactly 7 digits (e.g., PA1234567).");
+                return false;
+            }
+        } else if (idtype === "UMID") {
+            const umidRegex = /^\d{12}$/;
+            if (!umidRegex.test(cleanIdno)) {
+                alert("Invalid UMID CRN. It must consist of exactly 12 digits (e.g., 1234-5678901-2).");
+                return false;
+            }
+        } else if (idtype === "Drivers") {
+            const driversRegex = /^[a-zA-Z]\d{10}$/;
+            if (!driversRegex.test(cleanIdno)) {
+                alert("Invalid Driver's License Number. It must consist of 1 letter followed by 10 digits (e.g., L01-23-456789).");
+                return false;
+            }
+        } else if (idtype === "PhilSys") {
+            const philsysRegex = /^(\d{12}|\d{16})$/;
+            if (!philsysRegex.test(cleanIdno)) {
+                alert("Invalid PhilSys ID. It must be either a 12-digit PhilID number or a 16-digit Transaction Number.");
+                return false;
+            }
+        } else {
+            const idRegex = /^[a-zA-Z0-9\-\/]+$/;
+            if (!idno || idno.length < 4 || !idRegex.test(idno)) {
+                alert("Please enter a valid Government ID Number (alphanumeric and dashes only, minimum 4 characters).");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function validateStep2() {
+        const bizname = document.getElementById("reg-input-bizname")?.value.trim() || "";
+        const biztype = document.getElementById("reg-input-biztype")?.value || "";
+        const category = document.getElementById("reg-input-category")?.value || "";
+        const yearsStr = document.getElementById("reg-input-years")?.value;
+        const tin = document.getElementById("reg-input-tin")?.value.trim() || "";
+
+        // Business Name
+        if (!bizname || bizname.length < 3) {
+            alert("Please enter a valid Business / Trade Name (minimum 3 characters).");
+            return false;
+        }
+
+        // Business Type
+        if (!biztype) {
+            alert("Please select a Business Type.");
+            return false;
+        }
+
+        // Product Category
+        if (!category) {
+            alert("Please select a Product Category.");
+            return false;
+        }
+
+        // Years in business
+        const years = parseInt(yearsStr);
+        if (yearsStr === "" || isNaN(years) || years < 0 || years > 80) {
+            alert("Please enter a valid number of years in business (between 0 and 80).");
+            return false;
+        }
+
+        // TIN Number (Philippine TIN is exactly 9 or 12 digits, e.g., 123-456-789-000)
+        const cleanTin = tin.replace(/[\s-]/g, "");
+        const tinRegex = /^(\d{9}|\d{12})$/;
+        if (tin && !tinRegex.test(cleanTin)) {
+            alert("Invalid TIN format. A standard Philippine TIN must consist of exactly 9 digits, or 12 digits (with 3-digit branch code, e.g., 123-456-789-000).");
+            return false;
+        }
+
+        return true;
+    }
+
+    function validateStep3() {
+        const zone = document.getElementById("reg-input-zone")?.value || "";
+        const size = document.getElementById("reg-input-size")?.value || "";
+        const hours = document.getElementById("reg-input-hours")?.value.trim() || "";
+        const daysCount = document.querySelectorAll("#reg-pane-3 .day-badge.selected").length;
+
+        // Zone
+        if (!zone) {
+            alert("Please select a Preferred Zone.");
+            return false;
+        }
+
+        // Size
+        if (!size) {
+            alert("Please select a Stall Size.");
+            return false;
+        }
+
+        // Days Count
+        if (daysCount === 0) {
+            alert("Please select at least one Operating Day.");
+            return false;
+        }
+
+        // Operating Hours
+        if (!hours || hours.length < 5 || !/\d/.test(hours) || (!hours.includes("-") && !hours.toLowerCase().includes("to") && !hours.toLowerCase().includes("24 hours"))) {
+            alert("Please enter a valid Operating Hours range (e.g., '4:00 AM - 8:00 PM' or '24 Hours').");
+            return false;
+        }
+
+        return true;
+    }
+
+    function validateStep4() {
+        if (!regUploadedFiles['input-reg-gov-id'] || !regUploadedFiles['input-reg-dti'] || !regUploadedFiles['input-reg-health']) {
+            alert("Please upload all required documents (Valid Government ID, DTI / SEC Certificate, and Health Certificate).");
+            return false;
+        }
+
+        // Double check files properties (size and data content)
+        const requiredKeys = ['input-reg-gov-id', 'input-reg-dti', 'input-reg-health', 'input-reg-bir'];
+        for (const key of requiredKeys) {
+            const fileInfo = regUploadedFiles[key];
+            if (fileInfo) {
+                if (!fileInfo.data || fileInfo.data.length < 100) {
+                    alert(`The uploaded file for ${key.replace('input-reg-', '').toUpperCase()} is invalid or empty. Please re-upload.`);
+                    return false;
+                }
+                if (fileInfo.sizeKB <= 0) {
+                    alert(`The uploaded file for ${key.replace('input-reg-', '').toUpperCase()} is empty (0 KB). Please upload a valid file.`);
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     btnRegNext.addEventListener("click", async (e) => {
         e.preventDefault(); 
         
+        // Validate current step before proceeding or submitting
+        if (currentRegStep === 1) {
+            if (!validateStep1()) return;
+        } else if (currentRegStep === 2) {
+            if (!validateStep2()) return;
+        } else if (currentRegStep === 3) {
+            if (!validateStep3()) return;
+        } else if (currentRegStep === 4) {
+            if (!validateStep4()) return;
+        }
+        
         if (currentRegStep < totalRegSteps) {
-            // Document validation before moving to review step
-            if (currentRegStep === 4) {
-                if (!regUploadedFiles['input-reg-gov-id'] || !regUploadedFiles['input-reg-dti'] || !regUploadedFiles['input-reg-health']) {
-                    alert("Please upload all required documents (Valid ID, DTI Certificate, and Health Certificate) before proceeding.");
-                    return;
-                }
-            }
-
             if (currentRegStep === totalRegSteps - 1) {
                 const reviewContainer = document.querySelector(".review-block-container");
                 const inputs = newRegForm.querySelectorAll("input, select");
@@ -1228,8 +1442,7 @@ function initializeUserDashboard() {
                 });
                 
                 summaryHTML += `</div></div>`;
-
-                // Add documents to summary review
+                
                 summaryHTML += `
                     <div class="table-summary-card" style="margin-top: 16px;">
                         <div class="table-card-header-plain"><h4>Uploaded Documents</h4></div>
@@ -1241,7 +1454,7 @@ function initializeUserDashboard() {
                         </div>
                     </div>
                 `;
-
+                
                 reviewContainer.innerHTML = summaryHTML;
             }
 
@@ -1251,6 +1464,12 @@ function initializeUserDashboard() {
             // Check auth state
             if (!auth.currentUser) {
                 alert("You must be logged in to submit an application.");
+                return;
+            }
+            
+            // Stricter validations of all steps before writing to Firestore
+            if (!validateStep1() || !validateStep2() || !validateStep3() || !validateStep4()) {
+                alert("Validation failed. Please review your inputs in previous steps before submitting.");
                 return;
             }
 

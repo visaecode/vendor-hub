@@ -1031,6 +1031,43 @@
       );
     }
 
+    // --- INACTIVITY WATCHER MODULE (15 MINUTES) ---
+    let idleTimer;
+    function initInactivityWatcher() {
+      const timeoutMs = 15 * 60 * 1000; // 15 minutes of inactivity
+
+      function resetTimer() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(logoutDueToInactivity, timeoutMs);
+      }
+
+      async function logoutDueToInactivity() {
+        alert("Session Expired: You have been logged out due to 15 minutes of inactivity.");
+        try {
+          if (systemHealthInterval) clearInterval(systemHealthInterval);
+          if (unsubscribeAdmins) unsubscribeAdmins();
+          if (unsubscribeAllUsers) unsubscribeAllUsers();
+          if (unsubscribeApplications) unsubscribeApplications();
+          if (unsubscribePermits) unsubscribePermits();
+          if (unsubscribeSuperAdminNotifs) unsubscribeSuperAdminNotifs();
+          await signOut(auth);
+          window.location.href = "../../Login_Folder/LoginSystem/login.html";
+        } catch (error) {
+          console.error("Inactivity logout error:", error);
+          window.location.href = "../../Login_Folder/LoginSystem/login.html";
+        }
+      }
+
+      // Bind event listeners for user activity
+      window.addEventListener("load", resetTimer, true);
+      const events = ["mousemove", "keydown", "click", "scroll", "touchstart"];
+      events.forEach(event => {
+        document.addEventListener(event, resetTimer, true);
+      });
+      
+      resetTimer(); // Initialize timer
+    }
+
     let unsubscribeAdmins = null;
     let unsubscribeAllUsers = null;
     let unsubscribeApplications = null;
@@ -1648,6 +1685,9 @@
         window.location.href = "../../Login_Folder/LoginSystem/login.html";
         return;
       }
+
+      // Start inactivity session watcher
+      initInactivityWatcher();
 
       try {
         let userData = null;

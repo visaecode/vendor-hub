@@ -9,6 +9,54 @@ let renewUploadedFiles = {};
 let updateRegNextButtonStateGlobal = null;
 let unsubscribeSystemSettings = null;
 
+// Input sanitization to prevent XSS
+function sanitizeInput(str) {
+    if (!str) return "";
+    return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#x27;")
+        .replace(/\//g, "&#x2F;");
+}
+
+const disposableDomains = ["yopmail.com", "mailinator.com", "tempmail.com", "trashmail.com", "dispostable.com", "10minutemail.com", "sharklasers.com", "guerrillamail.com"];
+
+// --- INACTIVITY WATCHER MODULE (15 MINUTES) ---
+let idleTimer;
+function initInactivityWatcher() {
+    const timeoutMs = 15 * 60 * 1000; // 15 minutes of inactivity
+
+    function resetTimer() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(logoutDueToInactivity, timeoutMs);
+    }
+
+    async function logoutDueToInactivity() {
+        alert("Session Expired: You have been logged out due to 15 minutes of inactivity.");
+        try {
+            if (unsubscribeUser) unsubscribeUser();
+            if (unsubscribeEmailQuery) unsubscribeEmailQuery();
+            if (unsubscribeSystemSettings) unsubscribeSystemSettings();
+            await signOut(auth);
+            window.location.href = "../../Login_Folder/LoginSystem/login.html";
+        } catch (error) {
+            console.error("Inactivity logout error:", error);
+            window.location.href = "../../Login_Folder/LoginSystem/login.html";
+        }
+    }
+
+    // Bind event listeners for user activity
+    window.addEventListener("load", resetTimer, true);
+    const events = ["mousemove", "keydown", "click", "scroll", "touchstart"];
+    events.forEach(event => {
+        document.addEventListener(event, resetTimer, true);
+    });
+    
+    resetTimer(); // Initialize timer
+}
+
 // Helper to render a dynamic application card
 function renderApplicationCard(app) {
     const statusClass = app.status === "Approved" ? "status-approved" : "status-review";
@@ -631,6 +679,9 @@ onAuthStateChanged(auth, (user) => {
         return;
     }
 
+    // Start inactivity session watcher
+    initInactivityWatcher();
+
     // Subscribe to user document/query updates in real-time using UID, falling back to email query
     const docRef = doc(db, "users", user.uid);
     unsubscribeUser = onSnapshot(docRef, (docSnap) => {
@@ -1212,24 +1263,33 @@ function initializeUserDashboard() {
             const operatingHours = document.getElementById("reg-input-hours").value.trim();
             const operatingDays = Array.from(document.querySelectorAll(".day-badge.selected")).map(b => b.textContent.trim());
 
+            const emailVal = document.getElementById("reg-input-email").value.trim();
+            
+            // Check disposable email
+            const emailDomain = emailVal.toLowerCase().split("@")[1];
+            if (disposableDomains.includes(emailDomain)) {
+                alert("Submission Blocked: Temporary or disposable email addresses are not allowed. Please use a standard email provider.");
+                return;
+            }
+
             const appPayload = {
                 userId: auth.currentUser.uid,
-                firstName: document.getElementById("reg-input-firstname").value.trim(),
-                lastName: document.getElementById("reg-input-lastname").value.trim(),
-                email: document.getElementById("reg-input-email").value.trim(),
-                phone: document.getElementById("reg-input-phone").value.trim(),
-                address: document.getElementById("reg-input-address").value.trim(),
-                city: document.getElementById("reg-input-city").value.trim(),
+                firstName: sanitizeInput(document.getElementById("reg-input-firstname").value.trim()),
+                lastName: sanitizeInput(document.getElementById("reg-input-lastname").value.trim()),
+                email: sanitizeInput(emailVal),
+                phone: sanitizeInput(document.getElementById("reg-input-phone").value.trim()),
+                address: sanitizeInput(document.getElementById("reg-input-address").value.trim()),
+                city: sanitizeInput(document.getElementById("reg-input-city").value.trim()),
                 idType: document.getElementById("reg-input-idtype").value,
-                idNumber: document.getElementById("reg-input-idno").value.trim(),
-                businessName: bizname || "Market Stall",
+                idNumber: sanitizeInput(document.getElementById("reg-input-idno").value.trim()),
+                businessName: sanitizeInput(bizname) || "Market Stall",
                 businessType: biztype || "Sole",
                 productCategory: category || "Vegetables",
                 yearsInBusiness: parseInt(document.getElementById("reg-input-years").value) || 0,
-                tinNumber: document.getElementById("reg-input-tin").value.trim(),
+                tinNumber: sanitizeInput(document.getElementById("reg-input-tin").value.trim()),
                 preferredZone: preferredZone || "Zone A",
                 stallSize: stallSize || "Small",
-                operatingHours: operatingHours || "N/A",
+                operatingHours: sanitizeInput(operatingHours) || "N/A",
                 operatingDays: operatingDays,
                 status: "Pending",
                 applicationType: "New Registration",
@@ -1655,18 +1715,27 @@ function initializeUserDashboard() {
                 return;
             }
 
+            const emailVal = document.getElementById("ren-email").value.trim();
+            
+            // Check disposable email
+            const emailDomain = emailVal.toLowerCase().split("@")[1];
+            if (disposableDomains.includes(emailDomain)) {
+                alert("Submission Blocked: Temporary or disposable email addresses are not allowed. Please use a standard email provider.");
+                return;
+            }
+
             const renewalPayload = {
                 userId: auth.currentUser.uid,
-                firstName: document.getElementById("ren-firstname").value.trim(),
-                lastName: document.getElementById("ren-lastname").value.trim(),
-                email: document.getElementById("ren-email").value.trim(),
-                phone: document.getElementById("ren-phone").value.trim(),
-                address: document.getElementById("ren-address").value.trim(),
-                city: document.getElementById("ren-city").value.trim(),
-                businessName: document.getElementById("ren-bname").value.trim(),
+                firstName: sanitizeInput(document.getElementById("ren-firstname").value.trim()),
+                lastName: sanitizeInput(document.getElementById("ren-lastname").value.trim()),
+                email: sanitizeInput(emailVal),
+                phone: sanitizeInput(document.getElementById("ren-phone").value.trim()),
+                address: sanitizeInput(document.getElementById("ren-address").value.trim()),
+                city: sanitizeInput(document.getElementById("ren-city").value.trim()),
+                businessName: sanitizeInput(document.getElementById("ren-bname").value.trim()),
                 businessType: document.getElementById("ren-biztype").value,
                 productCategory: document.getElementById("ren-cat").value,
-                tinNumber: document.getElementById("ren-tin").value.trim(),
+                tinNumber: sanitizeInput(document.getElementById("ren-tin").value.trim()),
                 permitNo: verifiedPermitRecord.permitNo,
                 stallNo: verifiedPermitRecord.stallNo,
                 preferredZone: verifiedPermitRecord.zoneName,

@@ -850,3 +850,111 @@ body {
 .dropzone .remove-file-btn:hover {
     color: #B91C1C;
 }
+
+/* --- 14. RESPONSIVE DESIGN MEDIA QUERIES --- */
+@media (max-width: 900px) {
+    .sidebar {
+        width: 70px;
+    }
+    .main-content {
+        margin-left: 70px;
+    }
+    .brand-name,
+    .menu-category {
+        display: none;
+    }
+    .sidebar-brand {
+        padding: 0;
+        justify-content: center;
+    }
+    .brand-logo {
+        margin-right: 0;
+    }
+    .nav-link {
+        width: calc(100% - 16px);
+        padding: 12px 0;
+        justify-content: center;
+        font-size: 0 !important;
+    }
+    .nav-link i {
+        font-size: 1.25rem !important;
+        width: auto;
+        margin: 0;
+    }
+    .sidebar-footer {
+        padding: 0 8px;
+    }
+    .btn-logout {
+        padding: 12px 0;
+        justify-content: center;
+        font-size: 0 !important;
+    }
+    .btn-logout i {
+        font-size: 1.25rem !important;
+        margin: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .top-header {
+        padding: 0 15px;
+    }
+    .view-viewport {
+        padding: 20px 15px;
+    }
+    .hero-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 24px;
+    }
+    .hero-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    .analytics-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .quick-actions-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    .upload-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .form-grid.layout-2col {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .wizard-container {
+        padding: 20px 15px;
+    }
+}
+
+@media (max-width: 600px) {
+    .header-breadcrumbs {
+        display: none;
+    }
+    .app-card-details {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .table-card-content {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 500px) {
+    .wiz-label {
+        display: none;
+    }
+    .wizard-header {
+        margin-bottom: 24px;
+    }
+    .quick-actions-grid {
+        grid-template-columns: 1fr;
+    }
+}

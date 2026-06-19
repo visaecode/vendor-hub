@@ -16,6 +16,38 @@ function escapeHTML(str) {
     );
 }
 
+// --- INACTIVITY WATCHER MODULE (15 MINUTES) ---
+let idleTimer;
+function initInactivityWatcher() {
+    const timeoutMs = 15 * 60 * 1000; // 15 minutes of inactivity
+
+    function resetTimer() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(logoutDueToInactivity, timeoutMs);
+    }
+
+    async function logoutDueToInactivity() {
+        alert("Session Expired: You have been logged out due to 15 minutes of inactivity.");
+        try {
+            if (unsubscribeSystemSettings) unsubscribeSystemSettings();
+            await signOut(auth);
+            window.location.href = "../../Login_Folder/LoginSystem/login.html";
+        } catch (error) {
+            console.error("Inactivity logout error:", error);
+            window.location.href = "../../Login_Folder/LoginSystem/login.html";
+        }
+    }
+
+    // Bind event listeners for user activity
+    window.addEventListener("load", resetTimer, true);
+    const events = ["mousemove", "keydown", "click", "scroll", "touchstart"];
+    events.forEach(event => {
+        document.addEventListener(event, resetTimer, true);
+    });
+    
+    resetTimer(); // Initialize timer
+}
+
 let allApplications = [];
 let allVendors = [];
 let unsubscribeApps = null;
@@ -224,14 +256,16 @@ function renderDocsTable() {
             : docStatus === "Invalid" ? "status-rejected" 
             : "status-pending";
 
-        let actionsHtml = "-";
+        let actionsHtml = `
+            <div style="display:flex; gap: 8px;">
+                <button class="btn-blue-action-item preview-doc-btn" data-id="${id}" style="background-color: var(--sidebar-active);"><i class="fa-solid fa-eye"></i> Preview</button>
+        `;
         if (docStatus === "Pending") {
-            actionsHtml = `
-                <div style="display:flex; gap: 8px;">
-                    <button class="btn-blue-action-item verify-doc-btn" data-id="${id}">Verify Files</button>
-                </div>
+            actionsHtml += `
+                <button class="btn-blue-action-item verify-doc-btn" data-id="${id}">Verify Files</button>
             `;
         }
+        actionsHtml += `</div>`;
 
         html += `
             <tr>
@@ -248,6 +282,9 @@ function renderDocsTable() {
     tbody.innerHTML = html;
 
     // Bind action events
+    tbody.querySelectorAll(".preview-doc-btn").forEach(btn => {
+        btn.addEventListener("click", () => handlePreviewDocs(btn.getAttribute("data-id")));
+    });
     tbody.querySelectorAll(".verify-doc-btn").forEach(btn => {
         btn.addEventListener("click", () => handleVerifyDocs(btn.getAttribute("data-id")));
     });
@@ -258,6 +295,278 @@ async function handleVerifyDocs(appId) {
         return;
     }
     await handleApplicationStatusUpdate(appId, "Approved");
+}
+
+async function handlePreviewDocs(appId) {
+    const app = allApplications.find(a => a.id === appId);
+    if (!app) {
+        alert("Application not found.");
+        return;
+    }
+
+    const modal = document.getElementById("modal-portal-preview-doc");
+    const body = document.getElementById("preview-modal-body");
+    const footer = document.getElementById("preview-modal-footer");
+    if (!modal || !body || !footer) return;
+
+    // Build the details layout
+    const fullName = `${app.firstName || ''} ${app.lastName || ''}`.trim() || "N/A";
+    const appType = app.applicationType || "New Registration";
+    const dateSubmitted = app.createdAt ? new Date(app.createdAt).toLocaleString() : "N/A";
+    
+    // Operating days badges
+    const allDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const opDays = app.operatingDays || [];
+    const daysHtml = allDays.map(day => {
+        const isSelected = opDays.includes(day);
+        return `<span class="day-badge-preview ${isSelected ? 'selected' : ''}">${day}</span>`;
+    }).join("");
+
+    // Personal details info group
+    const personalHtml = `
+        <div class="preview-info-group">
+            <h4>Personal Details</h4>
+            <div class="preview-grid-2col">
+                <div class="preview-field">
+                    <span class="preview-label">Full Name</span>
+                    <span class="preview-value">${escapeHTML(fullName)}</span>
+                </div>
+                <div class="preview-field">
+                    <span class="preview-label">Phone</span>
+                    <span class="preview-value">${escapeHTML(app.phone || 'N/A')}</span>
+                </div>
+            </div>
+            <div class="preview-field">
+                <span class="preview-label">Email Address</span>
+                <span class="preview-value">${escapeHTML(app.email || 'N/A')}</span>
+            </div>
+            <div class="preview-field">
+                <span class="preview-label">Home Address</span>
+                <span class="preview-value">${escapeHTML((app.address || '') + (app.city ? ', ' + app.city : '')) || 'N/A'}</span>
+            </div>
+            <div class="preview-grid-2col">
+                <div class="preview-field">
+                    <span class="preview-label">ID Type</span>
+                    <span class="preview-value">${escapeHTML(app.idType || 'N/A')}</span>
+                </div>
+                <div class="preview-field">
+                    <span class="preview-label">ID Number</span>
+                    <span class="preview-value">${escapeHTML(app.idNumber || 'N/A')}</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Business details info group
+    const businessHtml = `
+        <div class="preview-info-group">
+            <h4>Business & Operating Details</h4>
+            <div class="preview-field">
+                <span class="preview-label">Business Name</span>
+                <span class="preview-value">${escapeHTML(app.businessName || 'N/A')}</span>
+            </div>
+            <div class="preview-grid-2col">
+                <div class="preview-field">
+                    <span class="preview-label">Business Type</span>
+                    <span class="preview-value">${escapeHTML(app.businessType || 'N/A')}</span>
+                </div>
+                <div class="preview-field">
+                    <span class="preview-label">Product Category</span>
+                    <span class="preview-value">${escapeHTML(app.productCategory || 'N/A')}</span>
+                </div>
+            </div>
+            <div class="preview-grid-2col">
+                <div class="preview-field">
+                    <span class="preview-label">Years in Business</span>
+                    <span class="preview-value">${app.yearsInBusiness ?? 'N/A'}</span>
+                </div>
+                <div class="preview-field">
+                    <span class="preview-label">TIN Number</span>
+                    <span class="preview-value">${escapeHTML(app.tinNumber || 'N/A')}</span>
+                </div>
+            </div>
+            <div class="preview-field">
+                <span class="preview-label">Operating Days</span>
+                <div style="margin-top: 4px;">${daysHtml}</div>
+            </div>
+            <div class="preview-field">
+                <span class="preview-label">Operating Hours</span>
+                <span class="preview-value">${escapeHTML(app.operatingHours || 'N/A')}</span>
+            </div>
+        </div>
+    `;
+
+    // Stall preferences info group
+    const stallHtml = `
+        <div class="preview-info-group">
+            <h4>Application Details</h4>
+            <div class="preview-grid-2col">
+                <div class="preview-field">
+                    <span class="preview-label">Application Type</span>
+                    <span class="preview-value">${escapeHTML(appType)}</span>
+                </div>
+                <div class="preview-field">
+                    <span class="preview-label">Submission Date</span>
+                    <span class="preview-value">${dateSubmitted}</span>
+                </div>
+            </div>
+            <div class="preview-grid-2col">
+                <div class="preview-field">
+                    <span class="preview-label">${appType === 'Permit Renewal' ? 'Assigned Stall' : 'Preferred Zone'}</span>
+                    <span class="preview-value">${escapeHTML(appType === 'Permit Renewal' ? app.stallNo : app.preferredZone) || 'N/A'}</span>
+                </div>
+                <div class="preview-field">
+                    <span class="preview-label">Stall Size</span>
+                    <span class="preview-value">${escapeHTML(app.stallSize) || 'N/A'}</span>
+                </div>
+            </div>
+            <div class="preview-field">
+                <span class="preview-label">Status</span>
+                <span class="badge ${app.status === 'Approved' ? 'status-approved' : app.status === 'Rejected' ? 'status-rejected' : 'status-pending'}">${app.status}</span>
+            </div>
+        </div>
+    `;
+
+    // Gather documents list
+    const docs = app.documents || {};
+    let docsHtml = "";
+    
+    // Define standard labels for document keys
+    const docLabels = {
+        govId: "Government Valid ID",
+        dti: "DTI / SEC Registration Certificate",
+        health: "Sanitary / Health Certificate",
+        bir: "BIR Certificate of Registration (COR)",
+        barangay: "Barangay Clearance",
+        tax: "Occupancy Permit / Real Property Tax Receipt"
+    };
+
+    const docKeys = Object.keys(docLabels);
+    
+    docKeys.forEach(key => {
+        const docFile = docs[key];
+        
+        const isExpected = (appType === "New Registration" && ["govId", "dti", "health", "bir"].includes(key)) ||
+                           (appType === "Permit Renewal" && ["govId", "health", "barangay", "tax"].includes(key));
+        
+        if (!isExpected && !docFile) {
+            return;
+        }
+
+        let docBodyHtml = "";
+        let metaHtml = "";
+
+        if (docFile && docFile.data) {
+            const fileName = docFile.name || "document_file";
+            const fileSize = docFile.sizeKB ? `${docFile.sizeKB} KB` : "Unknown Size";
+            metaHtml = `<span class="preview-doc-meta">${fileSize}</span>`;
+
+            const dataUrl = docFile.data;
+            const isImage = docFile.type?.startsWith("image/") || dataUrl.startsWith("data:image/");
+            const isPdf = docFile.type === "application/pdf" || dataUrl.startsWith("data:application/pdf");
+
+            if (isImage) {
+                docBodyHtml = `
+                    <img src="${dataUrl}" class="preview-doc-img" alt="${escapeHTML(fileName)}" onclick="window.open(this.src, '_blank')">
+                    <div class="preview-btn-row">
+                        <a href="${dataUrl}" download="${escapeHTML(fileName)}" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem; height: 32px;"><i class="fa-solid fa-download"></i> Download</a>
+                    </div>
+                `;
+            } else if (isPdf) {
+                docBodyHtml = `
+                    <i class="fa-solid fa-file-pdf preview-pdf-icon"></i>
+                    <span style="font-size: 0.8rem; margin-bottom: 8px; color: #475569; max-width: 90%; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${escapeHTML(fileName)}</span>
+                    <div class="preview-btn-row">
+                        <a href="${dataUrl}" target="_blank" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem; height: 32px; background-color: var(--sidebar-active);"><i class="fa-solid fa-eye"></i> View PDF</a>
+                        <a href="${dataUrl}" download="${escapeHTML(fileName)}" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem; height: 32px;"><i class="fa-solid fa-download"></i> Download</a>
+                    </div>
+                `;
+            } else {
+                docBodyHtml = `
+                    <i class="fa-solid fa-file preview-generic-file-icon"></i>
+                    <span style="font-size: 0.8rem; margin-bottom: 8px; color: #475569; max-width: 90%; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${escapeHTML(fileName)}</span>
+                    <div class="preview-btn-row">
+                        <a href="${dataUrl}" download="${escapeHTML(fileName)}" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem; height: 32px;"><i class="fa-solid fa-download"></i> Download</a>
+                    </div>
+                `;
+            }
+        } else {
+            metaHtml = `<span class="preview-doc-meta" style="color: #EF4444;">Not uploaded</span>`;
+            docBodyHtml = `
+                <p style="color: #64748B; font-size: 0.8rem; margin: 0;">No document file uploaded by applicant.</p>
+            `;
+        }
+
+        docsHtml += `
+            <div class="preview-doc-card">
+                <div class="preview-doc-header">
+                    <span class="preview-doc-title">${docLabels[key]}</span>
+                    ${metaHtml}
+                </div>
+                <div class="preview-doc-body">
+                    ${docBodyHtml}
+                </div>
+            </div>
+        `;
+    });
+
+    body.innerHTML = `
+        <div class="preview-modal-grid">
+            <div class="preview-info-section">
+                ${stallHtml}
+                ${personalHtml}
+                ${businessHtml}
+            </div>
+            <div>
+                <h4 style="margin-bottom: 12px; margin-top: 0; color: #143424; font-size: 0.95rem; font-weight: 600; border-bottom: 1px solid #E2E8F0; padding-bottom: 6px;">Uploaded Documents</h4>
+                <div class="preview-docs-list">
+                    ${docsHtml}
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Build the footer buttons
+    let footerHtml = "";
+    if (app.status === "Pending") {
+        footerHtml = `
+            <button type="button" class="btn btn-outline" id="btn-preview-cancel" style="padding: 8px 16px;">Close</button>
+            <button type="button" class="btn btn-red-action-item" id="btn-preview-reject" style="padding: 8px 16px; font-size: 0.85rem;"><i class="fa-solid fa-xmark"></i> Reject Application</button>
+            <button type="button" class="btn btn-primary bg-darkgreen" id="btn-preview-approve" style="padding: 8px 16px; font-size: 0.85rem;"><i class="fa-solid fa-check"></i> Verify & Approve</button>
+        `;
+    } else {
+        footerHtml = `
+            <button type="button" class="btn btn-primary bg-darkgreen" id="btn-preview-cancel" style="padding: 8px 16px;">Close</button>
+        `;
+    }
+    footer.innerHTML = footerHtml;
+
+    // Show the modal
+    modal.style.display = "flex";
+
+    // Event listeners inside the modal
+    const closeBtn = document.getElementById("btn-preview-cancel");
+    if (closeBtn) {
+        closeBtn.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+    }
+
+    const approveBtn = document.getElementById("btn-preview-approve");
+    if (approveBtn) {
+        approveBtn.addEventListener("click", async () => {
+            modal.style.display = "none";
+            await handleApplicationStatusUpdate(appId, "Approved");
+        });
+    }
+
+    const rejectBtn = document.getElementById("btn-preview-reject");
+    if (rejectBtn) {
+        rejectBtn.addEventListener("click", async () => {
+            modal.style.display = "none";
+            await handleApplicationStatusUpdate(appId, "Rejected");
+        });
+    }
 }
 
 // Render Manage Vendors View table
@@ -1545,6 +1854,9 @@ onAuthStateChanged(auth, async (user) => {
         return;
     }
 
+    // Start inactivity session watcher
+    initInactivityWatcher();
+
     try {
         let userData = null;
         const userDoc = await getDoc(doc(db, "users", user.uid));
@@ -1955,6 +2267,16 @@ function initializeAdminDashboard() {
     recModal.addEventListener("click", (e) => {
         if (e.target === recModal) recModal.style.display = "none";
     });
+    
+    const previewModal = document.getElementById("modal-portal-preview-doc");
+    if (previewModal) {
+        document.getElementById("btn-close-preview-modal")?.addEventListener("click", () => {
+            previewModal.style.display = "none";
+        });
+        previewModal.addEventListener("click", (e) => {
+            if (e.target === previewModal) previewModal.style.display = "none";
+        });
+    }
     
     document.getElementById("modal-form-log-pay").addEventListener("submit", async (e) => {
         e.preventDefault();

@@ -611,6 +611,27 @@
         </div>
     </div>
 
+    <!-- Modal 5: Document & Information Preview -->
+    <div class="modal-backdrop-layer-box" id="modal-portal-preview-doc">
+        <div class="modal-window-card shadow-lg width-lg animate-fade-in" style="max-width: 900px; width: 95%; max-height: 90vh; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+            <div class="receipt-header-banner" style="padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+                <div class="receipt-brand-row">
+                    <span class="r-logo" style="background-color: #236944;">PV</span>
+                    <span class="brand-name" style="font-weight: 600;">Application & Document Preview</span>
+                </div>
+                <button type="button" id="btn-close-preview-modal" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; line-height: 1;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div style="flex: 1; overflow-y: auto; padding: 24px;" id="preview-modal-body">
+                <!-- Injected dynamically by JS -->
+            </div>
+            
+            <div style="padding: 16px 24px; border-top: 1px solid #E2E8F0; background-color: #F8FAFC; display: flex; justify-content: flex-end; gap: 12px; align-items: center; flex-shrink: 0;" id="preview-modal-footer">
+                <!-- Action buttons injected dynamically -->
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="admin-function.js"></script>
 </body>
 </html>

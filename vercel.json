@@ -1,0 +1,32 @@
+{
+  "buildCommand": "echo 'Static site'",
+  "outputDirectory": "./Marketra Website",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/Login_Folder/LoginSystem/login.html"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/admin/(.*)",
+      "dest": "/Dashboards_Folder/AdminDashboard/admin.html"
+    },
+    {
+      "src": "/superadmin/(.*)",
+      "dest": "/Dashboards_Folder/SuperAdminDashboard/superadmin.html"
+    },
+    {
+      "src": "/user/(.*)",
+      "dest": "/Dashboards_Folder/UserDashboard/user.html"
+    },
+    {
+      "src": "/login/(.*)",
+      "dest": "/Login_Folder/LoginSystem/login.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/Login_Folder/LoginSystem/login.html"
+    }
+  ]
+}

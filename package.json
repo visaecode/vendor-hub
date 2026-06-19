@@ -1,0 +1,13 @@
+{
+  "name": "marketra-website",
+  "version": "1.0.0",
+  "description": "Marketra Vendor Hub Platform",
+  "main": "index.js",
+  "scripts": {
+    "start": "echo 'Static site'",
+    "build": "echo 'Static site'"
+  },
+  "keywords": ["marketplace", "vendor", "dashboard"],
+  "author": "",
+  "license": "ISC"
+}

@@ -1198,3 +1198,135 @@ footer {
   .input-row { grid-template-columns: 1fr; }
   .modal-card { padding: 28px 20px; }
 }
+
+/* ===== TERMS & PRIVACY MODAL STYLING ===== */
+.terms-card {
+  max-width: 720px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+.terms-tabs {
+  display: flex;
+  background: var(--off-white);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px 0 24px;
+}
+
+.terms-tab {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+  outline: none;
+}
+
+.terms-tab:hover {
+  color: var(--text-dark);
+}
+
+.terms-tab.active {
+  color: var(--green-mid);
+  border-bottom-color: var(--green-mid);
+}
+
+.terms-content-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 32px;
+}
+
+.terms-tab-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.terms-tab-panel[hidden] {
+  display: none !important;
+}
+
+.terms-tab-panel h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 4px;
+  letter-spacing: -0.5px;
+}
+
+.terms-last-updated {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.terms-scroll-body {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.terms-scroll-body h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.terms-scroll-body h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-top: 20px;
+  margin-bottom: 6px;
+}
+
+.terms-scroll-body p {
+  margin-bottom: 12px;
+}
+
+.terms-divider {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 24px 0;
+}
+
+.terms-footer {
+  padding: 16px 32px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  background: var(--off-white);
+}
+
+.btn-terms-accept {
+  background: linear-gradient(135deg, var(--lime-accent), var(--green-light));
+  color: var(--green-dark);
+  border: none;
+  padding: 10px 28px;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
+  letter-spacing: 0.2px;
+}
+
+.btn-terms-accept:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(74, 222, 128, 0.5);
+}
+
+.btn-terms-accept:active {
+  transform: translateY(0);
+  opacity: 0.9;
+}

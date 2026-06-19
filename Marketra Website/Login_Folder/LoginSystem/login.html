@@ -537,7 +537,7 @@
           </div>
           <div class="checkbox-group">
             <input type="checkbox" id="regAgree" required />
-            <label for="regAgree">I agree to the <a href="#">Terms of Service</a> &amp; <a href="#">Privacy Policy</a></label>
+            <label for="regAgree">I agree to the <a href="#" id="termsLink">Terms of Service</a> &amp; <a href="#" id="privacyLink">Privacy Policy</a></label>
           </div>
         </div>
 
@@ -564,6 +564,171 @@
         <p class="modal-signin-prompt">Already have an account? <a href="#" id="goToLogin">Sign in</a></p>
 
       </form>
+    </div>
+  </div>
+
+  <!-- ===== TERMS & PRIVACY MODAL ===== -->
+  <div class="modal-overlay" id="termsModal" aria-hidden="true" role="dialog" aria-labelledby="termsModalTitle">
+    <div class="modal-card terms-card">
+      <button class="modal-close" id="closeTerms" aria-label="Close terms and privacy">&times;</button>
+      
+      <!-- Tabs header -->
+      <div class="terms-tabs" role="tablist">
+        <button class="terms-tab active" id="tabTermsOfService" role="tab" aria-selected="true" aria-controls="contentTermsOfService">
+          Terms of Service
+        </button>
+        <button class="terms-tab" id="tabPrivacyPolicy" role="tab" aria-selected="false" aria-controls="contentPrivacyPolicy">
+          Privacy Policy
+        </button>
+      </div>
+
+      <!-- Tab Content Area -->
+      <div class="terms-content-container">
+        <!-- Content 1: Terms of Service -->
+        <div id="contentTermsOfService" class="terms-tab-panel" role="tabpanel" aria-labelledby="tabTermsOfService">
+          <h2>TERMS AND CONDITIONS</h2>
+          <p class="terms-last-updated">Last Updated: June 19, 2026</p>
+          <div class="terms-scroll-body">
+            <h3>Marketra Vendor Registration System</h3>
+            <p>Welcome to Marketra, a Vendor Registration and Permit Management System designed to streamline vendor registration, permit processing, and compliance monitoring. By accessing or using Marketra, you agree to comply with and be bound by the following Terms and Conditions.</p>
+            
+            <h4>1. Acceptance of Terms</h4>
+            <p>By registering an account, submitting information, or using any feature of Marketra, you acknowledge that you have read, understood, and agreed to these Terms and Conditions. If you do not agree, you must discontinue use of the system.</p>
+            
+            <h4>2. Eligibility</h4>
+            <p>To use Marketra, you must:<br>
+            • Be at least 18 years old or meet the legal age requirements set by the local government.<br>
+            • Provide accurate and complete registration information.<br>
+            • Possess the necessary legal authority to register as a vendor or represent a business entity.</p>
+            
+            <h4>3. Vendor Responsibilities</h4>
+            <p>Registered vendors agree to:<br>
+            • Submit truthful, accurate, and up-to-date information.<br>
+            • Upload valid and authentic documents required for registration and permit processing.<br>
+            • Maintain the confidentiality of their account credentials.<br>
+            • Comply with all applicable market regulations, ordinances, and government requirements.<br>
+            • Update their profile and documents whenever changes occur.<br>
+            Vendors are solely responsible for any inaccuracies, omissions, or false information submitted through the system.</p>
+            
+            <h4>4. Account Security</h4>
+            <p>Users are responsible for:<br>
+            • Keeping login credentials secure.<br>
+            • Preventing unauthorized access to their accounts.<br>
+            • Immediately reporting suspicious activities or unauthorized account access to system administrators.<br>
+            Marketra shall not be liable for losses resulting from a user's failure to protect account credentials.</p>
+            
+            <h4>5. Document Verification and Approval</h4>
+            <p>Submission of an application does not guarantee approval. All registrations, permit applications, renewals, and uploaded documents are subject to review and verification by authorized administrators. Applications may be approved, returned for revision, or rejected if submitted information is incomplete, inaccurate, fraudulent, or fails to meet regulatory requirements.</p>
+            
+            <h4>6. Compliance Monitoring</h4>
+            <p>Marketra may track permit status, document validity, expiration dates, and compliance records to assist administrators in monitoring vendor compliance. Users agree that compliance-related notifications may be sent through the website, including permit expiration reminders, document renewal alerts, registration updates, and administrative notices.</p>
+            
+            <h4>7. Prohibited Activities</h4>
+            <p>Users shall not:<br>
+            • Submit false, misleading, or fraudulent information.<br>
+            • Upload forged, altered, or unauthorized documents.<br>
+            • Attempt to gain unauthorized access to system resources.<br>
+            • Disrupt, damage, or interfere with the operation of the system.<br>
+            • Use the platform for unlawful activities.<br>
+            Violation of these provisions may result in account suspension, termination, or legal action.</p>
+            
+            <h4>8. Privacy and Data Protection</h4>
+            <p>Marketra collects and processes user information solely for registration, verification, permit management, and administrative purposes. The system shall implement reasonable security measures to protect user information. However, no electronic system can guarantee absolute security. By using Marketra, users consent to the collection, storage, and processing of their information in accordance with applicable data protection laws and regulations.</p>
+            
+            <h4>9. Intellectual Property</h4>
+            <p>All content, features, logos, system designs, software, and materials associated with Marketra remain the property of the system owners and developers unless otherwise stated. Users may not reproduce, distribute, modify, or exploit any part of the system without prior written authorization.</p>
+            
+            <h4>10. System Availability</h4>
+            <p>Marketra strives to provide continuous service but does not guarantee uninterrupted availability. The system may experience temporary interruptions due to maintenance activities, software updates, technical issues, network failures, or circumstances beyond reasonable control.</p>
+            
+            <h4>11. Limitation of Liability</h4>
+            <p>Marketra, its administrators, developers, and affiliated parties shall not be liable for:<br>
+            • Data loss resulting from user negligence.<br>
+            • Delays in permit processing caused by incomplete submissions.<br>
+            • Service interruptions beyond reasonable control.<br>
+            • Decisions made by authorized reviewing authorities regarding application approval or rejection.</p>
+            
+            <h4>12. Suspension and Termination</h4>
+            <p>Marketra reserves the right to suspend or terminate accounts that violate these Terms and Conditions, provide false information, engage in fraudulent or unlawful activities, or compromise system security or operations.</p>
+            
+            <h4>13. Amendments</h4>
+            <p>Marketra reserves the right to modify these Terms and Conditions at any time. Updated versions will be posted within the system, and continued use of the platform constitutes acceptance of any revisions.</p>
+            
+            <h4>14. Governing Law</h4>
+            <p>These Terms and Conditions shall be governed by and interpreted in accordance with the laws, regulations, and ordinances applicable within the Republic of the Philippines.</p>
+            
+            <h4>15. Contact Information</h4>
+            <p>For questions, concerns, or support regarding these Terms and Conditions, users may contact the Marketra Administration Office through the official communication channels provided within the system.</p>
+          </div>
+        </div>
+
+        <!-- Content 2: Privacy Policy -->
+        <div id="contentPrivacyPolicy" class="terms-tab-panel" role="tabpanel" aria-labelledby="tabPrivacyPolicy" hidden>
+          <h2>PRIVACY POLICY</h2>
+          <p class="terms-last-updated">Last Updated: June 19, 2026</p>
+          <div class="terms-scroll-body">
+            <h3>Marketra Vendor Registration System</h3>
+            <p>Marketra values the privacy and security of its users. This Privacy Policy explains how we collect, use, store, and protect personal information submitted through the Marketra Vendor Registration System. By using Marketra, you agree to the collection and use of information in accordance with this Privacy Policy.</p>
+            
+            <h4>1. Information We Collect</h4>
+            <p>Marketra may collect the following information during registration and system use:<br>
+            • Personal Information: Full Name, Date of Birth, Gender, Contact Number, Email Address, Residential Address, Valid Government-Issued Identification.<br>
+            • Business Information: Business Name, Business Address, Type of Business, Stall or Vendor Information, Business Permits and Licenses.<br>
+            • System Information: Login Activity, IP Address, Device Information, System Usage Logs, Application and Transaction History.</p>
+            
+            <h4>2. Purpose of Data Collection</h4>
+            <p>The information collected is used to:<br>
+            • Verify vendor identity and eligibility.<br>
+            • Process vendor registrations and permit applications.<br>
+            • Monitor permit validity and compliance requirements.<br>
+            • Communicate application updates and notifications.<br>
+            • Generate reports for authorized administrative purposes.<br>
+            • Improve system functionality, security, and user experience.<br>
+            Marketra collects only the information necessary to perform its services effectively.</p>
+            
+            <h4>3. Data Sharing and Disclosure</h4>
+            <p>Marketra does not sell, rent, or trade personal information to third parties. Information may be shared only with authorized system administrators, local government offices, regulatory authorities, or law enforcement agencies when required by law. Data disclosure shall be limited to purposes necessary for verification, compliance, legal obligations, and administrative operations.</p>
+            
+            <h4>4. Data Security</h4>
+            <p>Marketra implements reasonable technical and organizational security measures to protect user information from unauthorized access, disclosure, alteration, loss, or misuse. These measures may include secure authentication, access controls, encrypted data transmission, and regular system monitoring.</p>
+            
+            <h4>5. Data Retention</h4>
+            <p>Personal and business information will be retained only for as long as necessary to fulfill registration and permit management purposes, meet legal and regulatory requirements, and resolve disputes. After the retention period, data may be securely archived, anonymized, or deleted.</p>
+            
+            <h4>6. User Rights</h4>
+            <p>Users have the right to access their personal information, request correction of inaccurate or outdated information, update account details and documents, request information regarding data usage, and file concerns regarding data privacy practices.</p>
+            
+            <h4>7. Cookies and System Tracking</h4>
+            <p>Marketra may use cookies and similar technologies to maintain user sessions, improve system performance, enhance user experience, and analyze system usage. Users may disable cookies through browser settings; however, some system features may not function properly.</p>
+            
+            <h4>8. Third-Party Services</h4>
+            <p>Marketra may integrate with third-party services for email notifications, document storage, or system maintenance. Such services are required to maintain appropriate confidentiality and security standards.</p>
+            
+            <h4>9. Compliance with Data Privacy Laws</h4>
+            <p>Marketra is committed to complying with applicable data protection regulations, including the provisions of the Data Privacy Act of 2012 and related rules and regulations governing the protection of personal information in the Philippines.</p>
+            
+            <h4>10. Changes to This Privacy Policy</h4>
+            <p>Marketra reserves the right to update or modify this Privacy Policy as necessary. Users will be notified of significant changes through the system or official communication channels. Continued use of the system after updates constitutes acceptance of the revised Privacy Policy.</p>
+            
+            <h4>11. Contact Information</h4>
+            <p>For privacy-related concerns, questions, or requests regarding your personal information, please contact the Marketra Administration Office through the official contact details provided within the system.</p>
+            
+            <hr class="terms-divider">
+            
+            <h4>Consent Statement</h4>
+            <p>By creating an account, submitting information, or using the Marketra Vendor Registration System, you acknowledge that you have read and understood this Privacy Policy and consent to the collection, processing, storage, and use of your information for the purposes described herein.</p>
+            
+            <h4>User Agreement</h4>
+            <p>By clicking "I Agree" or checking the checkbox, creating an account, or using Marketra, you acknowledge that you have read, understood, and accepted these Terms and Conditions and agree to comply with all applicable rules and regulations governing vendor registration and permit management.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accept / Footer actions -->
+      <div class="terms-footer">
+        <button type="button" class="btn-terms-accept" id="btnTermsAccept">I Agree</button>
+      </div>
+
     </div>
   </div>
 

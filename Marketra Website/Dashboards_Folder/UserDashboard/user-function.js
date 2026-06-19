@@ -1118,7 +1118,7 @@ function initializeUserDashboard() {
     // 3. WIZARD WIDGET CONTROLLER (NEW REGISTRATION)
     // ==========================================
     let currentRegStep = 1;
-    const totalRegSteps = 5;
+    const totalRegSteps = 6;
 
     const btnRegNext = document.getElementById("btn-reg-next");
     const btnRegPrev = document.getElementById("btn-reg-prev");
@@ -1129,6 +1129,9 @@ function initializeUserDashboard() {
         if (!btnRegNext) return;
 
         if (currentRegStep === 1) {
+            const agreed = document.getElementById("reg-input-agree")?.checked;
+            btnRegNext.disabled = !agreed;
+        } else if (currentRegStep === 2) {
             const firstname = document.getElementById("reg-input-firstname")?.value.trim();
             const lastname = document.getElementById("reg-input-lastname")?.value.trim();
             const email = document.getElementById("reg-input-email")?.value.trim();
@@ -1139,22 +1142,22 @@ function initializeUserDashboard() {
 
             const isValid = firstname && lastname && email && phone && address && idtype && idno;
             btnRegNext.disabled = !isValid;
-        } else if (currentRegStep === 2) {
+        } else if (currentRegStep === 3) {
             const bizname = document.getElementById("reg-input-bizname")?.value.trim();
             const biztype = document.getElementById("reg-input-biztype")?.value;
             const category = document.getElementById("reg-input-category")?.value;
 
             const isValid = bizname && biztype && category;
             btnRegNext.disabled = !isValid;
-        } else if (currentRegStep === 3) {
+        } else if (currentRegStep === 4) {
             const zone = document.getElementById("reg-input-zone")?.value;
             const size = document.getElementById("reg-input-size")?.value;
             const hours = document.getElementById("reg-input-hours")?.value.trim();
-            const daysCount = document.querySelectorAll("#reg-pane-3 .day-badge.selected").length;
+            const daysCount = document.querySelectorAll("#reg-pane-4 .day-badge.selected").length;
 
             const isValid = zone && size && hours && daysCount > 0;
             btnRegNext.disabled = !isValid;
-        } else if (currentRegStep === 4) {
+        } else if (currentRegStep === 5) {
             const isValid = regUploadedFiles['input-reg-gov-id'] && regUploadedFiles['input-reg-dti'] && regUploadedFiles['input-reg-health'];
             btnRegNext.disabled = !isValid;
         } else {
@@ -1357,7 +1360,7 @@ function initializeUserDashboard() {
         const zone = document.getElementById("reg-input-zone")?.value || "";
         const size = document.getElementById("reg-input-size")?.value || "";
         const hours = document.getElementById("reg-input-hours")?.value.trim() || "";
-        const daysCount = document.querySelectorAll("#reg-pane-3 .day-badge.selected").length;
+        const daysCount = document.querySelectorAll("#reg-pane-4 .day-badge.selected").length;
 
         // Zone
         if (!zone) {
@@ -1416,12 +1419,18 @@ function initializeUserDashboard() {
         
         // Validate current step before proceeding or submitting
         if (currentRegStep === 1) {
-            if (!validateStep1()) return;
+            const agreed = document.getElementById("reg-input-agree")?.checked;
+            if (!agreed) {
+                alert("Please agree to the Terms & Conditions before proceeding.");
+                return;
+            }
         } else if (currentRegStep === 2) {
-            if (!validateStep2()) return;
+            if (!validateStep1()) return;
         } else if (currentRegStep === 3) {
-            if (!validateStep3()) return;
+            if (!validateStep2()) return;
         } else if (currentRegStep === 4) {
+            if (!validateStep3()) return;
+        } else if (currentRegStep === 5) {
             if (!validateStep4()) return;
         }
         
@@ -1435,7 +1444,7 @@ function initializeUserDashboard() {
                                         <div class="table-card-content layout-2col-grid">`;
                 
                 inputs.forEach(input => {
-                    if (input.type === "file") return;
+                    if (input.type === "file" || input.type === "checkbox") return;
                     const labelText = input.parentElement.querySelector("label")?.textContent.replace('*', '').trim() || "Field";
                     const valueText = input.value || "Not provided";
                     summaryHTML += `<div><span class="t-lbl">${labelText}:</span><span class="t-val">${valueText}</span></div>`;
@@ -1468,6 +1477,12 @@ function initializeUserDashboard() {
             }
             
             // Stricter validations of all steps before writing to Firestore
+            const agreedSubmit = document.getElementById("reg-input-agree")?.checked;
+            if (!agreedSubmit) {
+                alert("Submission Blocked: You must agree to the Terms & Conditions.");
+                return;
+            }
+            
             if (!validateStep1() || !validateStep2() || !validateStep3() || !validateStep4()) {
                 alert("Validation failed. Please review your inputs in previous steps before submitting.");
                 return;
@@ -1557,7 +1572,7 @@ function initializeUserDashboard() {
                 
                 // Clear wizard status, files, and form values
                 regUploadedFiles = {};
-                document.querySelectorAll("#reg-pane-4 .dropzone").forEach(dz => {
+                document.querySelectorAll("#reg-pane-5 .dropzone").forEach(dz => {
                     const input = dz.querySelector("input[type='file']");
                     if (input) input.value = "";
                     dz.classList.remove("has-file");

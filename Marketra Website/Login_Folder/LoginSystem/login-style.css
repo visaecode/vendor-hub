@@ -1055,6 +1055,11 @@ footer {
 /* ─── Forgot Password Modal ─────────────────────────────────── */
 
 /* Lock icon badge — amber tint to visually distinguish from register */
+.fp-logo {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b) !important;
+  color: #78350f !important;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3) !important;
+}
 
 /* Success phone/envelope circle on step 2 */
 .fp-success-icon {

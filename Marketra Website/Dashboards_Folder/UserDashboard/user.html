@@ -223,19 +223,53 @@
 
                     <div class="wizard-container">
                         <div class="wizard-header" id="reg-wizard-steps">
-                            <div class="wiz-step active" data-step="1"><span class="wiz-num">1</span><span class="wiz-label">Personal Info</span></div>
+                            <div class="wiz-step active" data-step="1"><span class="wiz-num">1</span><span class="wiz-label">Terms & Conditions</span></div>
                             <div class="wiz-line"></div>
-                            <div class="wiz-step" data-step="2"><span class="wiz-num">2</span><span class="wiz-label">Business Info</span></div>
+                            <div class="wiz-step" data-step="2"><span class="wiz-num">2</span><span class="wiz-label">Personal Info</span></div>
                             <div class="wiz-line"></div>
-                            <div class="wiz-step" data-step="3"><span class="wiz-num">3</span><span class="wiz-label">Stall Details</span></div>
+                            <div class="wiz-step" data-step="3"><span class="wiz-num">3</span><span class="wiz-label">Business Info</span></div>
                             <div class="wiz-line"></div>
-                            <div class="wiz-step" data-step="4"><span class="wiz-num">4</span><span class="wiz-label">Documents</span></div>
+                            <div class="wiz-step" data-step="4"><span class="wiz-num">4</span><span class="wiz-label">Stall Details</span></div>
                             <div class="wiz-line"></div>
-                            <div class="wiz-step" data-step="5"><span class="wiz-num">5</span><span class="wiz-label">Review</span></div>
+                            <div class="wiz-step" data-step="5"><span class="wiz-num">5</span><span class="wiz-label">Documents</span></div>
+                            <div class="wiz-line"></div>
+                            <div class="wiz-step" data-step="6"><span class="wiz-num">6</span><span class="wiz-label">Review</span></div>
                         </div>
 
                         <form id="new-registration-form" class="wizard-form-body">
                             <div class="form-pane active" id="reg-pane-1">
+                                <h3 class="pane-title">Terms & Conditions</h3>
+                                <p class="pane-desc">Please read and agree to our Market Stall Tenant Agreement before proceeding with your registration.</p>
+                                
+                                <div class="terms-container" style="border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; height: 280px; overflow-y: auto; background: #f8fafc; font-size: 0.875rem; line-height: 1.6; color: #334155; margin-bottom: 20px;">
+                                    <h4 style="margin-top: 0; color: #1e293b;">MARKETRA PLATFORM TENANCY CONTRACT</h4>
+                                    <p>Welcome to Marketra. By applying for a stall registration, you agree to comply with and be bound by the following terms, policies, and regulations of the market administration.</p>
+                                    
+                                    <h5 style="color: #1e293b; margin-top: 16px; margin-bottom: 8px;">1. Stall Occupancy and Fees</h5>
+                                    <p>Approved vendors are allocated a stall for their designated business type. Monthly permit and rental fees must be paid on or before their respective due dates. Late payments will automatically accrue a <strong>2% monthly penalty</strong> on outstanding balances.</p>
+                                    
+                                    <h5 style="color: #1e293b; margin-top: 16px; margin-bottom: 8px;">2. Vendor Obligations</h5>
+                                    <p>Vendors must keep their allocated stall clean, sanitary, and compliant with health regulations. Sub-leasing or transferring the stall to another vendor without the explicit written approval of the market administration is strictly prohibited.</p>
+                                    
+                                    <h5 style="color: #1e293b; margin-top: 16px; margin-bottom: 8px;">3. Required Documentation</h5>
+                                    <p>Vendors are required to upload valid government identification, business registration certificates (DTI/SEC), and sanitary/health certificates. Uploading false or expired documents is grounds for immediate application rejection or stall permit revocation.</p>
+                                    
+                                    <h5 style="color: #1e293b; margin-top: 16px; margin-bottom: 8px;">4. Termination and Suspension</h5>
+                                    <p>The market administration reserves the right to suspend or terminate a vendor's stall permit if the vendor commits serious violations of market policy, acts in an unlawful manner, or is overdue by more than six (6) months on payments.</p>
+                                    
+                                    <h5 style="color: #1e293b; margin-top: 16px; margin-bottom: 8px;">5. Revisions of Terms</h5>
+                                    <p>These terms and conditions may be revised by the market administration at any time with prior notice. Continued operation of the stall constitutes agreement to the updated terms.</p>
+                                </div>
+
+                                <div class="form-group" style="display: flex; align-items: flex-start; gap: 10px; margin-top: 12px;">
+                                    <input type="checkbox" id="reg-input-agree" style="width: 18px; height: 18px; margin-top: 2px; cursor: pointer;" required>
+                                    <label for="reg-input-agree" style="font-weight: 500; color: #1e293b; cursor: pointer; user-select: none; font-size: 0.9rem;">
+                                        I read and agree to all terms, conditions, and policies of the tenancy contract. <span class="required">*</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-pane" id="reg-pane-2">
                                 <h3 class="pane-title">Personal Information</h3>
                                 <div class="form-grid layout-2col">
                                     <div class="form-group">
@@ -285,7 +319,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-pane" id="reg-pane-2">
+                            <div class="form-pane" id="reg-pane-3">
                                 <h3 class="pane-title">Business Information</h3>
                                 <div class="form-group">
                                     <label>Business / Trade Name <span class="required">*</span></label>
@@ -323,7 +357,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-pane" id="reg-pane-3">
+                            <div class="form-pane" id="reg-pane-4">
                                 <h3 class="pane-title">Stall Preferences</h3>
                                 <div class="form-grid layout-2col">
                                     <div class="form-group">
@@ -364,7 +398,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-pane" id="reg-pane-4">
+                            <div class="form-pane" id="reg-pane-5">
                                  <h3 class="pane-title">Document Uploads</h3>
                                  <p class="pane-desc">Please upload clear, legible copies of the required documents. Accepted formats: PDF, JPG, PNG (max 5MB each).</p>
                                  
@@ -416,7 +450,7 @@
                                  </div>
                              </div>
 
-                            <div class="form-pane" id="reg-pane-5">
+                            <div class="form-pane" id="reg-pane-6">
                                 <h3 class="pane-title">Review Registration Data</h3>
                                 <div class="review-block-container">
                                     <p>Summary parsing dynamically from fields...</p>

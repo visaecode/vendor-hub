@@ -21,12 +21,43 @@ const toggleAdminBtn  = document.getElementById('toggleAdminPass');
 const adminPassInput  = document.getElementById('adminPassword');
 const adminEyeIcon    = document.getElementById('adminEyeIcon');
 
-toggleAdminBtn.addEventListener('click', () => {
-  const hidden = adminPassInput.type === 'password';
-  adminPassInput.type = hidden ? 'text' : 'password';
-  adminEyeIcon.innerHTML = hidden
-    ? `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`
-    : `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+const loginForm = document.getElementById("loginForm");
+loginForm.addEventListener("submit", (event) => {
+  // Prevent the page from reloading immediately so we can check the values
+  event.preventDefault();
+  // Get the phone number value at the moment of submission
+  const number = document.getElementById("phone").value;
+  // Validation: Numbers only
+  if (!/^\d+$/.test(number)) {
+    alert("Numbers only allowed");
+    return; // Stops execution inside the function
+  }
+  // Validation: Length limitation
+  if (number.length !== 11) {
+    alert("Must be 11 digits");
+    return; // Stops execution inside the function
+  }
+  // If validation passes, you can proceed with logging in
+  alert("Validation passed! Logging in...");
+  // loginForm.submit(); // <-- Uncomment this to actually submit the form
+});
+Option B: If you are using a click event on a login button
+If you don't have a <form> tag and just want to validate when a button (e.g., <button id="loginBtn">) is clicked:
+
+javascript
+
+const loginBtn = document.getElementById("loginBtn");
+loginBtn.addEventListener("click", () => {
+  const number = document.getElementById("phone").value;
+  if (!/^\d+$/.test(number)) {
+    alert("Numbers only allowed");
+    return; 
+  }
+  if (number.length !== 11) {
+    alert("Must be 11 digits");
+    return; 
+  }
+  alert("Validation passed! Logging in...");
 });
 
 /* ---- Admin form submission ---- */

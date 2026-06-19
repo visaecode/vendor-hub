@@ -26,7 +26,7 @@ function renderApplicationCard(app) {
             <div class="app-card-details">
                 <div>
                     <span class="label">STALL PREFERENCE</span>
-                    <span class="val">${app.preferredZone || "N/A"} - ${app.stallSize || "N/A"}</span>
+                    <span class="val">${app.preferredZone || "N/A"} - ${app.stallSize || "Ng/A"}</span>
                 </div>
                 <div>
                     <span class="label">BUSINESS NAME</span>
@@ -757,8 +757,28 @@ function initializeUserDashboard() {
         });
     });
 
-    document.querySelector('[data-action="start-app"]')?.addEventListener("click", () => switchView("view-new-registration"));
-    document.querySelector('[data-action="view-guide"]')?.addEventListener("click", () => switchView("view-reg-guide"));
+document.querySelector('[data-action="start-app"]')?.addEventListener("click", async () => {
+    const token = localStorage.getItem("mkt_token");
+    if (!token) return;
+
+    try {
+        const res = await fetch("http://localhost:3000/api/applications/registration-status", {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+
+        if (data.alreadyRegistered) {
+            alert("YOU ARE ALREADY REGISTERED");
+            return;
+        }
+
+        switchView("view-new-registration");
+    } catch (err) {
+        console.error("Registration status check failed:", err);
+        switchView("view-new-registration"); // fail-open so a network hiccup doesn't lock them out
+    }
+});
+       document.querySelector('[data-action="view-guide"]')?.addEventListener("click", () => switchView("view-reg-guide"));
 
 
     // ==========================================

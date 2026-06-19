@@ -459,36 +459,56 @@
         <p>Join MARKETRA and get started today.</p>
       </div>
 
-      <form id="registerForm" novalidate>
+<form id="registerForm" novalidate>
 
-        <!-- Email or Mobile Number -->
-        <div class="input-group modal-input-group">
-          <svg class="input-icon modal-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
-          </svg>
-          <input type="text" id="regContact" placeholder="Email or Mobile Number" required autocomplete="email" />
-        </div>
+  <!-- Email -->
+  <div class="input-group modal-input-group">
+    <svg class="input-icon modal-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+    </svg>
+    <input type="email" id="regEmail" placeholder="Email Address" required autocomplete="email" />
+  </div>
 
-        <!-- First Name & Last Name row -->
-        <div class="input-row">
-          <div class="input-group modal-input-group">
-            <svg class="input-icon modal-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-            </svg>
-            <input type="text" id="regFirstName" placeholder="First Name" required autocomplete="given-name" />
-          </div>
-          <div class="input-group modal-input-group">
-            <input type="text" id="regLastName" placeholder="Last Name" required autocomplete="family-name" style="padding-left: 16px;" />
-          </div>
-        </div>
+  <!-- Mobile Number -->
+  <div class="input-group modal-input-group">
+    <svg class="input-icon modal-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+    </svg>
+    <input type="tel" id="regPhone" placeholder="Mobile Number (e.g. 09171234567)" required
+           autocomplete="tel" inputmode="numeric" maxlength="11" pattern="^09\d{9}$" />
+  </div>
 
-        <!-- Username -->
-        <div class="input-group modal-input-group">
-          <svg class="input-icon modal-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-          </svg>
-          <input type="text" id="regUsername" placeholder="Username" required autocomplete="username" />
-        </div>
+  <!-- First Name & Last Name row -->
+  <div class="input-row">
+    <div class="input-group modal-input-group">
+      <svg class="input-icon modal-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      </svg>
+      <input type="text" id="regFirstName" placeholder="First Name" required autocomplete="given-name" />
+    </div>
+    <div class="input-group modal-input-group">
+      <input type="text" id="regLastName" placeholder="Last Name" required autocomplete="family-name" style="padding-left: 16px;" />
+    </div>
+  </div>
+
+  <!-- Birthdate -->
+  <div class="input-group modal-input-group">
+    <svg class="input-icon modal-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+    </svg>
+    <input type="date" id="regBirthdate" placeholder="Birthdate" required autocomplete="bday" />
+  </div>
+  <p class="field-hint" id="ageHint" style="display:none; color:#DC2626; font-size:13px; margin:-10px 0 12px 4px;">
+    You must be at least 18 years old to register.
+  </p>
+
+  <!-- Username -->
+  <div class="input-group modal-input-group">
+    <svg class="input-icon modal-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+    </svg>
+    <input type="text" id="regUsername" placeholder="Username" required autocomplete="username" />
+  </div>
 
         <!-- Password -->
         <div class="input-group modal-input-group">
@@ -502,6 +522,16 @@
             </svg>
           </button>
         </div>
+
+      <div class="input-group">
+        <label for="birthDate">Date of Birth</label>
+        <input
+        type="date"
+        id="birthDate"
+        name="birthDate"
+        required
+    >
+       </div>
 
         <!-- Password Policy Checklist -->
         <div class="policy-box" id="policyBox">

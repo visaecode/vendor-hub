@@ -1519,7 +1519,7 @@ function renderInvoicesTable() {
     let html = "";
     allInvoices.forEach(inv => {
         const actionBtn = inv.status === 'Unpaid' 
-            ? `<button class="btn-blue-action-item pay-invoice-btn" data-vendor="${escapeHTML(inv.vendorName)}" data-stall="${escapeHTML(inv.stallNo)}" data-amount="${inv.amount}">Log Pay</button>` 
+            ? `<button class="btn-blue-action-item pay-invoice-btn" data-id="${inv.id}" data-vendor="${escapeHTML(inv.vendorName)}" data-stall="${escapeHTML(inv.stallNo)}" data-amount="${inv.amount}">Log Pay</button>` 
             : `<button class="btn-outline-action-item" style="border: 1px solid #cbd5e1; background: #f8fafc; color: #64748b; font-size: 0.75rem; padding: 4px 8px; border-radius: 4px;" onclick="alert('Receipt: ${escapeHTML(inv.invoiceNo)} is fully settled.')">Paid</button>`;
 
         html += `
@@ -1548,6 +1548,10 @@ function renderInvoicesTable() {
                     inputs[1].value = btn.getAttribute("data-stall") || "";
                     inputs[2].value = btn.getAttribute("data-amount") || "";
                     inputs[3].value = "GCash";
+                }
+                const invoiceIdInput = document.getElementById("payment-modal-invoice-id");
+                if (invoiceIdInput) {
+                    invoiceIdInput.value = btn.getAttribute("data-id") || "";
                 }
                 payModal.style.display = "flex";
             }
@@ -1611,7 +1615,7 @@ function renderArrearsTable() {
                 <td>₱${penalty.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
                 <td><strong>₱${totalDue.toLocaleString(undefined, {minimumFractionDigits: 2})}</strong></td>
                 <td>
-                    <button class="btn-red-action-item pay-invoice-btn" data-vendor="${escapeHTML(inv.vendorName)}" data-stall="${escapeHTML(inv.stallNo)}" data-amount="${totalDue}">Settle</button>
+                    <button class="btn-red-action-item pay-invoice-btn" data-id="${inv.id}" data-vendor="${escapeHTML(inv.vendorName)}" data-stall="${escapeHTML(inv.stallNo)}" data-amount="${totalDue}">Settle</button>
                 </td>
             </tr>
         `;
@@ -1629,6 +1633,10 @@ function renderArrearsTable() {
                     inputs[1].value = btn.getAttribute("data-stall") || "";
                     inputs[2].value = btn.getAttribute("data-amount") || "";
                     inputs[3].value = "GCash";
+                }
+                const invoiceIdInput = document.getElementById("payment-modal-invoice-id");
+                if (invoiceIdInput) {
+                    invoiceIdInput.value = btn.getAttribute("data-id") || "";
                 }
                 payModal.style.display = "flex";
             }
@@ -2209,6 +2217,147 @@ function initializeAdminDashboard() {
     calcZone.addEventListener("change", runFeeCalculationLogic);
     calcDailyBox.addEventListener("change", runFeeCalculationLogic);
 
+    document.getElementById("btn-export-pdf-calc")?.addEventListener("click", () => {
+        const { jsPDF } = window.jspdf;
+        if (!jsPDF) {
+            alert("PDF generation engine is not loaded. Please try again.");
+            return;
+        }
+
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
+
+        // Current Calculation details
+        let baseMonthlyValue = 500;
+        const sizeVal = calcSize.value;
+        if (sizeVal === "small") baseMonthlyValue = systemSettings.feeSmall;
+        else if (sizeVal === "medium") baseMonthlyValue = systemSettings.feeMedium;
+        else if (sizeVal === "large") baseMonthlyValue = systemSettings.feeLarge;
+        else if (sizeVal === "xl") baseMonthlyValue = systemSettings.feeXL;
+
+        const principalBaseFee = baseMonthlyValue * selectedMonths;
+        const zoneSurchargeRate = parseFloat(calcZone.value);
+        const compiledSurchargeValue = principalBaseFee * zoneSurchargeRate;
+        const dailyInclusionFeeValue = calcDailyBox.checked ? (25 * selectedMonths * 4) : 0; 
+        const aggregateFinalTotal = principalBaseFee + compiledSurchargeValue + dailyInclusionFeeValue;
+
+        const zoneText = zoneSurchargeRate > 0 ? "Zone A - Wet Market (+15% Surcharge)" : "Zone B - Dry Goods";
+        const sizeText = sizeVal.charAt(0).toUpperCase() + sizeVal.slice(1);
+
+        // Header Background
+        doc.setFillColor(20, 52, 36); // #143424 Forest Green
+        doc.rect(0, 0, 210, 45, 'F');
+
+        // Title
+        doc.setTextColor(255, 255, 255);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(22);
+        doc.text("ALTURA PUBLIC MARKET", 15, 20);
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+        doc.text("Fee Assessment Breakdown & Calculator Details", 15, 28);
+        doc.text(`Date: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 15, 36);
+
+        // System Brand Text
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(16);
+        doc.text("MARKETRA", 160, 22);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.text("System Portal Admin", 160, 28);
+
+        // Content
+        doc.setTextColor(30, 41, 59); // Dark grey text
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("Assessment Parameters", 15, 60);
+        
+        doc.setDrawColor(226, 232, 240); // light grey line
+        doc.line(15, 63, 195, 63);
+
+        // Parameters table
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        
+        let y = 70;
+        const printRow = (label, val) => {
+            doc.setFont("helvetica", "bold");
+            doc.text(label, 15, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(String(val), 75, y);
+            y += 8;
+        };
+
+        const sizeLabel = systemSettings.stallSizes ? (systemSettings.stallSizes[sizeVal] || '') : '';
+        printRow("Stall Size Preference:", `${sizeText} ${sizeLabel ? '(' + sizeLabel + ')' : ''}`);
+        printRow("Preferred Section / Zone:", zoneText);
+        printRow("Permit Term Duration:", `${selectedMonths} Month(s)`);
+        printRow("Daily Market Fee Inclusion:", calcDailyBox.checked ? "Included (₱25/day rate)" : "Not Included");
+
+        y += 10;
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.text("Calculated Fee Breakdown", 15, y);
+        doc.line(15, y + 3, 195, y + 3);
+        y += 10;
+
+        // Table headers
+        doc.setFillColor(248, 250, 252);
+        doc.rect(15, y, 180, 8, 'F');
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text("Fee Item", 18, y + 5.5);
+        doc.text("Calculation Basis", 90, y + 5.5);
+        doc.text("Amount", 170, y + 5.5);
+        y += 14;
+
+        // Rows
+        doc.setFont("helvetica", "normal");
+        const printTableLine = (item, basis, amount) => {
+            doc.text(item, 18, y);
+            doc.text(basis, 90, y);
+            doc.setFont("helvetica", "bold");
+            doc.text(`PHP ${amount.toLocaleString('en-US', {minimumFractionDigits: 2})}`, 170, y);
+            doc.setFont("helvetica", "normal");
+            doc.line(15, y + 3, 195, y + 3);
+            y += 8;
+        };
+
+        printTableLine("Base Permit Rental", `PHP ${baseMonthlyValue.toLocaleString()}/mo x ${selectedMonths} mo`, principalBaseFee);
+        printTableLine("Zone Surcharge Fee", `${(zoneSurchargeRate * 100).toFixed(0)}% surcharge rate`, compiledSurchargeValue);
+        if (calcDailyBox.checked) {
+            printTableLine("Daily Maintenance Fee", "PHP 25/day x 4 weeks/mo", dailyInclusionFeeValue);
+        }
+
+        y += 4;
+        // Total Box
+        doc.setFillColor(240, 247, 244); // soft green background
+        doc.rect(15, y, 180, 15, 'F');
+        
+        doc.setTextColor(20, 52, 36);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        doc.text("TOTAL ESTIMATED FEES PAYABLE:", 20, y + 9.5);
+        doc.setFontSize(14);
+        doc.text(`PHP ${aggregateFinalTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`, 155, y + 9.5);
+
+        y += 30;
+        // Policy / Footer notes
+        doc.setTextColor(100, 116, 139);
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(9);
+        doc.text("Note: This is an automated preliminary fee calculation breakdown for planning purposes.", 15, y);
+        doc.text("Official invoices will be generated and issued upon application approval by the Market Administration.", 15, y + 4.5);
+        doc.text("Payment terms are subject to Altura Public Market local revenue codes & policies.", 15, y + 9);
+
+        // Download
+        doc.save(`Marketra_Fee_Breakdown_${Date.now()}.pdf`);
+    });
+
     document.getElementById("btn-create-invoice-calc").addEventListener("click", async () => {
         const vendorName = prompt("Enter the Vendor Name for this invoice:");
         if (!vendorName) return;
@@ -2288,6 +2437,9 @@ function initializeAdminDashboard() {
         const stallNo = inputs[1].value.trim().toUpperCase();
         const amount = parseFloat(inputs[2].value);
         const method = inputs[3].value.trim();
+        
+        const invoiceIdInput = document.getElementById("payment-modal-invoice-id");
+        const specificInvoiceId = invoiceIdInput ? invoiceIdInput.value.trim() : "";
 
         if (!vendorName || !stallNo || isNaN(amount)) {
             alert("Please provide valid payment details.");
@@ -2310,18 +2462,25 @@ function initializeAdminDashboard() {
             });
 
             // 2. Check for a matching unpaid invoice and mark it as Paid
-            const invQuery = query(collection(db, "invoices"), 
-                where("vendorName", "==", vendorName),
-                where("stallNo", "==", stallNo),
-                where("status", "==", "Unpaid")
-            );
-            const invSnap = await getDocs(invQuery);
-            if (!invSnap.empty) {
-                const oldestInvoice = invSnap.docs[0];
-                await updateDoc(doc(db, "invoices", oldestInvoice.id), { status: "Paid" });
+            if (specificInvoiceId) {
+                await updateDoc(doc(db, "invoices", specificInvoiceId), { status: "Paid" });
+            } else {
+                const invQuery = query(collection(db, "invoices"), 
+                    where("vendorName", "==", vendorName),
+                    where("stallNo", "==", stallNo),
+                    where("status", "==", "Unpaid")
+                );
+                const invSnap = await getDocs(invQuery);
+                if (!invSnap.empty) {
+                    const oldestInvoice = invSnap.docs[0];
+                    await updateDoc(doc(db, "invoices", oldestInvoice.id), { status: "Paid" });
+                }
             }
 
             e.target.reset();
+            if (invoiceIdInput) {
+                invoiceIdInput.value = "";
+            }
             alert("Payment logged successfully!");
         } catch (err) {
             alert("Failed to log payment: " + err.message);

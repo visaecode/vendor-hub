@@ -6,6 +6,7 @@
     <title>Marketra - Admin Panel</title>
     <link rel="stylesheet" href="admin-style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -362,7 +363,7 @@
                                         <div class="total-payable-row flex-between spacer-top"><span>TOTAL PAYABLE</span><h2 id="lbl-calc-total">₱6,900.00</h2></div>
                                     </div>
                                     <div class="form-grid layout-2col spacer-top">
-                                        <button class="btn btn-outline"><i class="fa-regular fa-file-pdf"></i> Export PDF</button>
+                                        <button class="btn btn-outline" id="btn-export-pdf-calc" type="button"><i class="fa-regular fa-file-pdf"></i> Export PDF</button>
                                         <button class="btn btn-primary" id="btn-create-invoice-calc"><i class="fa-solid fa-plus"></i> Create Invoice</button>
                                     </div>
                                     <div class="callout-banner banner-amber text-xs spacer-top"><p><b>Penalty notice:</b> A 2% monthly penalty applies to unpaid balances after the due date.</p></div>
@@ -534,6 +535,7 @@
                     <button type="button" class="btn btn-outline" id="btn-close-pay-modal">Cancel</button>
                     <button type="submit" class="btn btn-primary bg-darkgreen">Log Payment</button>
                 </div>
+                <input type="hidden" id="payment-modal-invoice-id">
             </form>
         </div>
     </div>

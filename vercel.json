@@ -1,13 +1,47 @@
 {
   "buildCommand": "echo 'Static site'",
   "outputDirectory": "./Marketra Website",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/Login_Folder/LoginSystem/login.html"
-    }
-  ],
   "routes": [
+    {
+      "src": "/Dashboards_Folder/AdminDashboard/(.*\\.css)$",
+      "dest": "/Dashboards_Folder/AdminDashboard/$1"
+    },
+    {
+      "src": "/Dashboards_Folder/AdminDashboard/(.*\\.js)$",
+      "dest": "/Dashboards_Folder/AdminDashboard/$1"
+    },
+    {
+      "src": "/Dashboards_Folder/SuperAdminDashboard/(.*\\.css)$",
+      "dest": "/Dashboards_Folder/SuperAdminDashboard/$1"
+    },
+    {
+      "src": "/Dashboards_Folder/SuperAdminDashboard/(.*\\.js)$",
+      "dest": "/Dashboards_Folder/SuperAdminDashboard/$1"
+    },
+    {
+      "src": "/Dashboards_Folder/UserDashboard/(.*\\.css)$",
+      "dest": "/Dashboards_Folder/UserDashboard/$1"
+    },
+    {
+      "src": "/Dashboards_Folder/UserDashboard/(.*\\.js)$",
+      "dest": "/Dashboards_Folder/UserDashboard/$1"
+    },
+    {
+      "src": "/Login_Folder/LoginSystem/(.*\\.css)$",
+      "dest": "/Login_Folder/LoginSystem/$1"
+    },
+    {
+      "src": "/Login_Folder/LoginSystem/(.*\\.js)$",
+      "dest": "/Login_Folder/LoginSystem/$1"
+    },
+    {
+      "src": "/Login_Folder/LoginSystem/assets/(.*)",
+      "dest": "/Login_Folder/LoginSystem/assets/$1"
+    },
+    {
+      "src": "/Login_Folder/RegistrationGuideFAQ/(.*\\.css)$",
+      "dest": "/Login_Folder/RegistrationGuideFAQ/$1"
+    },
     {
       "src": "/admin/(.*)",
       "dest": "/Dashboards_Folder/AdminDashboard/admin.html"
@@ -22,6 +56,14 @@
     },
     {
       "src": "/login/(.*)",
+      "dest": "/Login_Folder/LoginSystem/login.html"
+    },
+    {
+      "src": "/(.*\\.html)$",
+      "dest": "/$1"
+    },
+    {
+      "src": "/",
       "dest": "/Login_Folder/LoginSystem/login.html"
     },
     {

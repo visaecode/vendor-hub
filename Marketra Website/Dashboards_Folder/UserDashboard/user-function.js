@@ -1216,117 +1216,162 @@ function initializeUserDashboard() {
         updateRegNextButtonState();
     }
 
+    // -- INLINE ERROR HELPERS (Registration Wizard) --
+    function showWizardError(fieldId, message) {
+        const errEl   = document.getElementById("err-" + fieldId);
+        const inputEl = document.getElementById(fieldId);
+        if (errEl)  { errEl.textContent = message; errEl.style.display = "flex"; }
+        if (inputEl) inputEl.classList.add("input-error");
+    }
+
+    function clearWizardError(fieldId) {
+        const errEl   = document.getElementById("err-" + fieldId);
+        const inputEl = document.getElementById(fieldId);
+        if (errEl)  { errEl.textContent = ""; errEl.style.display = "none"; }
+        if (inputEl) inputEl.classList.remove("input-error");
+    }
+
+    function clearAllWizardErrors() {
+        [
+            "reg-input-firstname","reg-input-lastname","reg-input-email",
+            "reg-input-phone","reg-input-address","reg-input-postal",
+            "reg-input-idtype","reg-input-idno",
+            "reg-input-bizname"
+        ].forEach(id => clearWizardError(id));
+    }
+
     // -- VALIDATION HELPERS --
     function validateStep1() {
         const firstname = document.getElementById("reg-input-firstname")?.value.trim() || "";
-        const lastname = document.getElementById("reg-input-lastname")?.value.trim() || "";
-        const email = document.getElementById("reg-input-email")?.value.trim() || "";
-        const phone = document.getElementById("reg-input-phone")?.value.trim() || "";
-        const address = document.getElementById("reg-input-address")?.value.trim() || "";
-        const idtype = document.getElementById("reg-input-idtype")?.value || "";
-        const idno = document.getElementById("reg-input-idno")?.value.trim() || "";
-        const city = document.getElementById("reg-input-city")?.value.trim() || "";
+        const lastname  = document.getElementById("reg-input-lastname")?.value.trim() || "";
+        const email     = document.getElementById("reg-input-email")?.value.trim().toLowerCase() || "";
+        const phone     = document.getElementById("reg-input-phone")?.value.trim() || "";
+        const address   = document.getElementById("reg-input-address")?.value.trim() || "";
+        const postal    = document.getElementById("reg-input-postal")?.value.trim() || "";
+        const idtype    = document.getElementById("reg-input-idtype")?.value || "";
+        const idno      = document.getElementById("reg-input-idno")?.value.trim() || "";
+        const city      = document.getElementById("reg-input-city")?.value.trim() || "";
 
-        // First/Last Name validation: letters, spaces, hyphens, and apostrophes only, min 2 chars
-        const nameRegex = /^[a-zA-Z\s'.]+$/;
+        // Clear previous errors
+        clearAllWizardErrors();
+        let valid = true;
+
+        // First/Last Name — letters, spaces, hyphens, apostrophes only, min 2 chars
+        const nameRegex = /^[a-zA-Z\s'\-]+$/;
         if (!firstname || firstname.length < 2 || !nameRegex.test(firstname)) {
-            alert("Please enter a valid First Name (letters and spaces only, minimum 2 characters).");
-            return false;
+            showWizardError("reg-input-firstname", "⚠ Enter a valid first name (letters, spaces, hyphens, apostrophes; min 2 chars).");
+            valid = false;
         }
         if (!lastname || lastname.length < 2 || !nameRegex.test(lastname)) {
-            alert("Please enter a valid Last Name (letters and spaces only, minimum 2 characters).");
-            return false;
+            showWizardError("reg-input-lastname", "⚠ Enter a valid last name (letters, spaces, hyphens, apostrophes; min 2 chars).");
+            valid = false;
         }
 
-        // Email validation
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        // Email
+        const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
         if (!email || !emailRegex.test(email)) {
-            alert("Please enter a valid email address (e.g., name@domain.com).");
-            return false;
-        }
-        const emailDomain = email.toLowerCase().split("@")[1];
-        if (disposableDomains.includes(emailDomain)) {
-            alert("Temporary or disposable email addresses are not allowed. Please use a standard email provider.");
-            return false;
+            showWizardError("reg-input-email", "⚠ Enter a valid email address (e.g., name@domain.com).");
+            valid = false;
+        } else {
+            const emailDomain = email.split("@")[1];
+            if (disposableDomains.includes(emailDomain)) {
+                showWizardError("reg-input-email", "⚠ Disposable email addresses are not allowed.");
+                valid = false;
+            }
         }
 
-        // Phone validation (Philippine formats: 09XXXXXXXXX or +639XXXXXXXXX)
+        // Phone (Philippine: 09XXXXXXXXX or +639XXXXXXXXX)
         const cleanPhone = phone.replace(/[\s-]/g, "");
         const phoneRegex = /^(09|\+639)\d{9}$/;
         if (!phone || !phoneRegex.test(cleanPhone)) {
-            alert("Please enter a valid Philippine mobile number (e.g., 09XXXXXXXXX or +639XXXXXXXXX).");
-            return false;
+            showWizardError("reg-input-phone", "⚠ Enter a valid Philippine mobile number (e.g., 09XXXXXXXXX or +639XXXXXXXXX).");
+            valid = false;
         }
 
-        // Address validation
+        // Address
         if (!address || address.length < 10) {
-            alert("Please enter a complete home address (minimum 10 characters).");
-            return false;
+            showWizardError("reg-input-address", "⚠ Enter a complete home address (minimum 10 characters).");
+            valid = false;
         }
 
-        // City validation
+        // Postal code (4-digit PH format, optional but validated if provided)
+        if (postal && !/^\d{4}$/.test(postal)) {
+            showWizardError("reg-input-postal", "⚠ Postal code must be exactly 4 digits (e.g., 1000).");
+            valid = false;
+        }
+
+        // City (optional — if entered must be valid characters)
         if (city && (city.length < 2 || !nameRegex.test(city))) {
-            alert("Please enter a valid City/Municipality (letters and spaces only, minimum 2 characters).");
-            return false;
+            // No dedicated error span for city field — silent skip
         }
 
         // ID Type
         if (!idtype) {
-            alert("Please select a Government ID Type.");
-            return false;
+            showWizardError("reg-input-idtype", "⚠ Please select a Government ID Type.");
+            valid = false;
         }
 
-        // ID Number validation based on selected ID Type
-        const cleanIdno = idno.replace(/[\s-]/g, "");
-        if (idtype === "Passport") {
-            const passportRegex = /^[a-zA-Z]{1,2}\d{7}$/;
-            if (!passportRegex.test(cleanIdno)) {
-                alert("Invalid Passport Number. It must start with 1 or 2 letters followed by exactly 7 digits (e.g., PA1234567).");
-                return false;
+        // ID Number validation
+        if (idtype && idno) {
+            const cleanIdno = idno.replace(/[\s-]/g, "");
+            let idValid = true;
+            let idMsg   = "";
+            if (idtype === "Passport") {
+                if (!/^[a-zA-Z]{1,2}\d{7}$/.test(cleanIdno)) {
+                    idMsg = "⚠ Invalid Passport Number. Must start with 1–2 letters followed by exactly 7 digits (e.g., PA1234567).";
+                    idValid = false;
+                }
+            } else if (idtype === "UMID") {
+                if (!/^\d{12}$/.test(cleanIdno)) {
+                    idMsg = "⚠ Invalid UMID CRN. Must be exactly 12 digits.";
+                    idValid = false;
+                }
+            } else if (idtype === "Drivers") {
+                if (!/^[a-zA-Z]\d{10}$/.test(cleanIdno)) {
+                    idMsg = "⚠ Invalid Driver's License. Must be 1 letter followed by 10 digits.";
+                    idValid = false;
+                }
+            } else if (idtype === "PhilSys") {
+                if (!/^(\d{12}|\d{16})$/.test(cleanIdno)) {
+                    idMsg = "⚠ Invalid PhilSys ID. Must be 12 or 16 digits.";
+                    idValid = false;
+                }
+            } else {
+                if (!idno || idno.length < 4 || !/^[a-zA-Z0-9\-\/]+$/.test(idno)) {
+                    idMsg = "⚠ Enter a valid ID Number (alphanumeric, dashes; min 4 characters).";
+                    idValid = false;
+                }
             }
-        } else if (idtype === "UMID") {
-            const umidRegex = /^\d{12}$/;
-            if (!umidRegex.test(cleanIdno)) {
-                alert("Invalid UMID CRN. It must consist of exactly 12 digits (e.g., 1234-5678901-2).");
-                return false;
+            if (!idValid) {
+                showWizardError("reg-input-idno", idMsg);
+                valid = false;
             }
-        } else if (idtype === "Drivers") {
-            const driversRegex = /^[a-zA-Z]\d{10}$/;
-            if (!driversRegex.test(cleanIdno)) {
-                alert("Invalid Driver's License Number. It must consist of 1 letter followed by 10 digits (e.g., L01-23-456789).");
-                return false;
-            }
-        } else if (idtype === "PhilSys") {
-            const philsysRegex = /^(\d{12}|\d{16})$/;
-            if (!philsysRegex.test(cleanIdno)) {
-                alert("Invalid PhilSys ID. It must be either a 12-digit PhilID number or a 16-digit Transaction Number.");
-                return false;
-            }
-        } else {
-            const idRegex = /^[a-zA-Z0-9\-\/]+$/;
-            if (!idno || idno.length < 4 || !idRegex.test(idno)) {
-                alert("Please enter a valid Government ID Number (alphanumeric and dashes only, minimum 4 characters).");
-                return false;
-            }
+        } else if (!idno) {
+            showWizardError("reg-input-idno", "⚠ Please enter your ID Number.");
+            valid = false;
         }
 
-        return true;
+        return valid;
     }
 
     function validateStep2() {
-        const bizname = document.getElementById("reg-input-bizname")?.value.trim() || "";
-        const biztype = document.getElementById("reg-input-biztype")?.value || "";
+        const bizname  = document.getElementById("reg-input-bizname")?.value.trim() || "";
+        const biztype  = document.getElementById("reg-input-biztype")?.value || "";
         const category = document.getElementById("reg-input-category")?.value || "";
         const yearsStr = document.getElementById("reg-input-years")?.value;
-        const tin = document.getElementById("reg-input-tin")?.value.trim() || "";
+        const tin      = document.getElementById("reg-input-tin")?.value.trim() || "";
+
+        let valid = true;
 
         // Business Name
         if (!bizname || bizname.length < 3) {
-            alert("Please enter a valid Business / Trade Name (minimum 3 characters).");
-            return false;
+            showWizardError("reg-input-bizname", "⚠ Enter a valid Business / Trade Name (minimum 3 characters).");
+            valid = false;
+        } else {
+            clearWizardError("reg-input-bizname");
         }
 
-        // Business Type
+        // Business Type (alert still used — no error span in HTML for dropdowns)
         if (!biztype) {
             alert("Please select a Business Type.");
             return false;
@@ -1345,15 +1390,15 @@ function initializeUserDashboard() {
             return false;
         }
 
-        // TIN Number (Philippine TIN is exactly 9 or 12 digits, e.g., 123-456-789-000)
+        // TIN Number (9 or 12 digits)
         const cleanTin = tin.replace(/[\s-]/g, "");
         const tinRegex = /^(\d{9}|\d{12})$/;
         if (tin && !tinRegex.test(cleanTin)) {
-            alert("Invalid TIN format. A standard Philippine TIN must consist of exactly 9 digits, or 12 digits (with 3-digit branch code, e.g., 123-456-789-000).");
+            alert("Invalid TIN format. A Philippine TIN must be exactly 9 digits, or 12 digits with branch code (e.g., 123-456-789-000).");
             return false;
         }
 
-        return true;
+        return valid;
     }
 
     function validateStep3() {
@@ -1497,7 +1542,7 @@ function initializeUserDashboard() {
             const operatingHours = document.getElementById("reg-input-hours").value.trim();
             const operatingDays = Array.from(document.querySelectorAll(".day-badge.selected")).map(b => b.textContent.trim());
 
-            const emailVal = document.getElementById("reg-input-email").value.trim();
+            const emailVal = document.getElementById("reg-input-email").value.trim().toLowerCase();
             
             // Check disposable email
             const emailDomain = emailVal.toLowerCase().split("@")[1];
@@ -1514,6 +1559,7 @@ function initializeUserDashboard() {
                 phone: sanitizeInput(document.getElementById("reg-input-phone").value.trim()),
                 address: sanitizeInput(document.getElementById("reg-input-address").value.trim()),
                 city: sanitizeInput(document.getElementById("reg-input-city").value.trim()),
+                postalCode: sanitizeInput(document.getElementById("reg-input-postal")?.value.trim() || ""),
                 idType: document.getElementById("reg-input-idtype").value,
                 idNumber: sanitizeInput(document.getElementById("reg-input-idno").value.trim()),
                 businessName: sanitizeInput(bizname) || "Market Stall",

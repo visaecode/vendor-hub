@@ -33,7 +33,7 @@
 /* ─── Reset & Base ──────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; font-size: 16px; }
 
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
@@ -1330,3 +1330,157 @@ footer {
   transform: translateY(0);
   opacity: 0.9;
 }
+
+/* ─── Field-level inline errors ─────────────────────────────── */
+.field-error {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: #dc2626;
+  margin-top: 4px;
+  margin-bottom: 2px;
+  min-height: 18px;
+  line-height: 1.4;
+}
+.field-error a { color: #16a34a; font-weight: 600; text-decoration: underline; }
+
+/* Input error border state */
+.input-group.has-error input,
+.input-group.has-error select {
+  border-color: #dc2626 !important;
+  background-color: #fff8f8;
+}
+.input-group.has-error .input-icon {
+  color: #dc2626;
+}
+
+/* ─── Password Strength Meter ─────────────────────────────────── */
+.strength-meter-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 4px;
+}
+.strength-meter-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 99px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+.strength-meter-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.3s ease, background-color 0.3s ease;
+  width: 0%;
+}
+.strength-meter-fill.strength-weak        { background: #dc2626; }
+.strength-meter-fill.strength-fair        { background: #f59e0b; }
+.strength-meter-fill.strength-strong      { background: #16a34a; }
+.strength-meter-fill.strength-very-strong { background: #15803d; }
+
+.strength-meter-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  width: 72px;
+  text-align: right;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+.strength-meter-label.strength-weak        { color: #dc2626; }
+.strength-meter-label.strength-fair        { color: #f59e0b; }
+.strength-meter-label.strength-strong      { color: #16a34a; }
+.strength-meter-label.strength-very-strong { color: #15803d; }
+
+/* ─── Submit button spinner ──────────────────────────────────── */
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}
+.btn-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: btn-spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+/* ─── Remember Me label ──────────────────────────────────────────── */
+.remember-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+.remember-label input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--green-base);
+  cursor: pointer;
+}
+
+/* ─── Modal field labels (DOB, Age, Gender) ───────────────────────── */
+.modal-field-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-mid);
+  margin-bottom: 5px;
+  margin-top: 2px;
+  letter-spacing: 0.2px;
+}
+
+/* Date input styling */
+input[type="date"] {
+  color: var(--text-dark);
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+/* Gender select styling */
+.modal-input-group select {
+  width: 100%;
+  height: 52px;
+  padding: 0 40px 0 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--off-white);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-dark);
+  outline: none;
+  cursor: pointer;
+  transition: var(--transition);
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px;
+}
+
+.modal-input-group select:focus {
+  border-color: var(--green-base);
+  background: var(--white);
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.12);
+}
+
+.modal-input-group select:invalid,
+.modal-input-group select option[value=""] {
+  color: var(--text-muted);
+}
+
+.modal-input-group select option {
+  background: #fff;
+  color: var(--text-dark);
+}

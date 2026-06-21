@@ -958,3 +958,31 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/* ─── Base font size ───────────────────────────────────────────── */
+html { font-size: 16px; }
+
+/* ─── Inline field-level validation errors (Registration Wizard) ── */
+.field-error {
+    display: none;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.78rem;
+    color: #dc2626;
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+/* Input/select error border state */
+input.input-error,
+select.input-error {
+    border-color: #dc2626 !important;
+    background-color: #fff8f8 !important;
+}
+
+/* Form group error state for wizard inputs */
+.form-group input.input-error:focus,
+.form-group select.input-error:focus {
+    outline-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}

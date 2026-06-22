@@ -1339,3 +1339,18 @@ a { text-decoration: none; color: inherit; }
   from { transform: translateY(16px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+
+/* --- CUSTOM CONFIRMATION MODAL --- */
+#super-confirm-modal .modal-container {
+  max-width: 440px;
+  padding: 30px 24px;
+  border-radius: var(--radius-lg);
+}
+.confirm-modal-icon-container {
+  margin-bottom: 16px;
+  text-align: center;
+}
+.confirm-modal-icon-container i {
+  font-size: 3.5rem;
+  color: #f59e0b; /* Warning yellow */
+}

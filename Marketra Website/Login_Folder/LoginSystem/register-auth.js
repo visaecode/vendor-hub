@@ -67,7 +67,8 @@ document.getElementById("registerForm")?.addEventListener("submit", async (e) =>
     }
 
     const emailRaw = document.getElementById("regContact").value;
-    const email = emailRaw.trim();
+    // Lowercase email to ensure consistency and prevent duplicates
+    const email = emailRaw.trim().toLowerCase();
     const firstName = document.getElementById("regFirstName").value.trim();
     const lastName = document.getElementById("regLastName").value.trim();
     const username = document.getElementById("regUsername").value.trim();

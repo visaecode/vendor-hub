@@ -194,6 +194,13 @@
           </button>
         </li>
 
+        <li class="nav-item">
+          <button class="nav-link" id="nav-audit-log" data-section="audit-log">
+            <span class="nav-icon"><i class="fa-solid fa-clipboard-list"></i></span>
+            <span class="nav-label">Audit Log</span>
+          </button>
+        </li>
+
       </ul>
     </nav>
 
@@ -923,6 +930,36 @@
 
       </section>
 
+      <!-- Audit Log Section -->
+      <section class="page-section" id="section-audit-log">
+        <div class="section-header">
+          <h1 class="section-title">Admin Audit Trail</h1>
+          <p class="section-subtitle">System-wide oversight: Monitor admin status changes and application audits</p>
+        </div>
+
+        <div class="card table-card">
+          <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 14.5px; font-weight: 700; color: var(--text-dark); margin: 0;">Logs Queue (Limit 50)</h3>
+            <button class="btn-primary sm" id="btn-refresh-audit-logs"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ADMIN NAME</th>
+                <th>ACTION</th>
+                <th>APPLICATION ID</th>
+                <th>TIMESTAMP</th>
+              </tr>
+            </thead>
+            <tbody id="audit-logs-table-body">
+              <tr>
+                <td colspan="4" class="table-empty">No activity logs recorded yet...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
     </main>
   </div>
 
@@ -1013,7 +1050,7 @@
   <script type="module">
     import { auth, db } from "../../Login_Folder/LoginSystem/firebase-config.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-    import { doc, getDoc, collection, query, where, getDocs, setDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+    import { doc, getDoc, collection, query, where, getDocs, setDoc, updateDoc, deleteDoc, onSnapshot, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signOut as secondarySignOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
 
@@ -1030,6 +1067,54 @@
         }[tag] || tag)
       );
     }
+
+    // Reusable custom confirmation modal helper
+    function showConfirmModal(title, message) {
+      return new Promise((resolve) => {
+        const modal = document.getElementById("super-confirm-modal");
+        const titleEl = document.getElementById("super-confirm-title");
+        const messageEl = document.getElementById("super-confirm-message");
+        const confirmBtn = document.getElementById("btn-super-confirm-action");
+        const cancelBtn = document.getElementById("btn-super-confirm-cancel");
+
+        if (!modal || !confirmBtn || !cancelBtn) {
+          resolve(confirm(message));
+          return;
+        }
+
+        if (titleEl) titleEl.textContent = title;
+        if (messageEl) messageEl.textContent = message;
+
+        modal.style.display = "flex";
+
+        function cleanup(result) {
+          confirmBtn.removeEventListener("click", onConfirm);
+          cancelBtn.removeEventListener("click", onCancel);
+          modal.removeEventListener("click", onBackdropClick);
+          modal.style.display = "none";
+          resolve(result);
+        }
+
+        function onConfirm() {
+          cleanup(true);
+        }
+
+        function onCancel() {
+          cleanup(false);
+        }
+
+        function onBackdropClick(e) {
+          if (e.target === modal) {
+            cleanup(false);
+          }
+        }
+
+        confirmBtn.addEventListener("click", onConfirm);
+        cancelBtn.addEventListener("click", onCancel);
+        modal.addEventListener("click", onBackdropClick);
+      });
+    }
+
 
     // --- INACTIVITY WATCHER MODULE (15 MINUTES) ---
     let idleTimer;
@@ -1050,6 +1135,7 @@
           if (unsubscribeApplications) unsubscribeApplications();
           if (unsubscribePermits) unsubscribePermits();
           if (unsubscribeSuperAdminNotifs) unsubscribeSuperAdminNotifs();
+          if (unsubscribeAuditLogs) unsubscribeAuditLogs();
           await signOut(auth);
           window.location.href = "../../Login_Folder/LoginSystem/login.html";
         } catch (error) {
@@ -1073,7 +1159,9 @@
     let unsubscribeApplications = null;
     let unsubscribePermits = null;
     let unsubscribeSuperAdminNotifs = null;
+    let unsubscribeAuditLogs = null;
     let systemHealthInterval = null;
+    let currentSuperAdminUid = null;
 
     let allAdmins = [];
     let allApplications = [];
@@ -1320,7 +1408,36 @@
         tbody.querySelectorAll(".deactivate-btn").forEach(btn => {
           btn.addEventListener("click", async () => {
             const id = btn.getAttribute("data-id");
-            if (confirm("Are you sure you want to deactivate this admin account?")) {
+            const confirmed = await showConfirmModal(
+              "Deactivate Administrator",
+              "Are you sure you want to deactivate this admin account?"
+            );
+            if (confirmed) {
+              // 1. Self-lock check
+              if (id === currentSuperAdminUid) {
+                alert("You cannot deactivate your own account.");
+                return;
+              }
+
+              // 2. Last-admin lock check
+              try {
+                const q = query(
+                  collection(db, "users"),
+                  where("userRole", "==", "Admin"),
+                  where("status", "==", "Active")
+                );
+                const snap = await getDocs(q);
+                const activeAdmins = snap.docs.map(doc => doc.id);
+                if (activeAdmins.includes(id) && activeAdmins.length <= 1) {
+                  alert("Action Blocked: At least one active Administrator account must remain in the system.");
+                  return;
+                }
+              } catch (err) {
+                console.error("Error checking active admins:", err);
+                alert("Error validating deactivation: " + err.message);
+                return;
+              }
+
               try {
                 await updateDoc(doc(db, "users", id), { status: "Inactive" });
               } catch (err) {
@@ -1334,7 +1451,11 @@
         tbody.querySelectorAll(".activate-btn").forEach(btn => {
           btn.addEventListener("click", async () => {
             const id = btn.getAttribute("data-id");
-            if (confirm("Are you sure you want to activate this admin account?")) {
+            const confirmed = await showConfirmModal(
+              "Activate Administrator",
+              "Are you sure you want to activate this admin account?"
+            );
+            if (confirmed) {
               try {
                 await updateDoc(doc(db, "users", id), { status: "Active" });
               } catch (err) {
@@ -1344,6 +1465,60 @@
           });
         });
       });
+    }
+
+    // Set up real-time listener for audit logs
+    function setupAuditLogsListener() {
+      if (unsubscribeAuditLogs) unsubscribeAuditLogs();
+
+      const auditLogsQuery = query(
+        collection(db, "activityLogs"),
+        orderBy("timestamp", "desc"),
+        limit(50)
+      );
+
+      unsubscribeAuditLogs = onSnapshot(auditLogsQuery, (snapshot) => {
+        renderAuditLogs(snapshot);
+      }, (error) => {
+        console.error("Error in audit logs listener:", error);
+      });
+    }
+
+    function renderAuditLogs(snapshot) {
+      const tbody = document.getElementById("audit-logs-table-body");
+      if (!tbody) return;
+
+      if (snapshot.empty) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="table-empty">No activity logs recorded yet...</td>
+          </tr>
+        `;
+        return;
+      }
+
+      let html = "";
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const adminName = data.adminName || "System Admin";
+        const action = data.action || "Updated Status";
+        const targetAppId = data.targetAppId || "N/A";
+        const refNo = targetAppId !== "N/A" ? targetAppId.slice(0, 8).toUpperCase() : "N/A";
+        const timestamp = data.timestamp ? formatRelativeTime(data.timestamp) : "N/A";
+
+        const statusClass = action === "Approved" ? "status-pill active" : "status-pill inactive";
+
+        html += `
+          <tr>
+            <td><strong>${escapeHTML(adminName)}</strong></td>
+            <td><span class="${statusClass}">${escapeHTML(action)}</span></td>
+            <td><strong>${escapeHTML(refNo)}</strong></td>
+            <td>${escapeHTML(timestamp)}</td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
     }
 
     // Format relative time for activity log metadata
@@ -1682,6 +1857,7 @@
         if (unsubscribeApplications) unsubscribeApplications();
         if (unsubscribePermits) unsubscribePermits();
         if (unsubscribeSuperAdminNotifs) unsubscribeSuperAdminNotifs();
+        if (unsubscribeAuditLogs) unsubscribeAuditLogs();
         window.location.href = "../../Login_Folder/LoginSystem/login.html";
         return;
       }
@@ -1720,6 +1896,7 @@
             if (unsubscribeApplications) unsubscribeApplications();
             if (unsubscribePermits) unsubscribePermits();
             if (unsubscribeSuperAdminNotifs) unsubscribeSuperAdminNotifs();
+            if (unsubscribeAuditLogs) unsubscribeAuditLogs();
             await signOut(auth);
             window.location.href = "../../Login_Folder/LoginSystem/login.html";
             return;
@@ -1728,6 +1905,8 @@
           const firstName = userData.firstName || "";
           const lastName = userData.lastName || "";
           const fullName = `${firstName} ${lastName}`.trim() || userData.username || "Super Admin";
+
+          currentSuperAdminUid = user.uid;
 
           // Populate topbar profile details
           const usernameEl = document.querySelector(".topbar-username");
@@ -1748,6 +1927,7 @@
           setupAdminsListener();
           setupDashboardOverviewListeners();
           setupSuperAdminNotificationsListener();
+          setupAuditLogsListener();
           loadSystemSettings();
         } else {
           alert("No user profile found in Firestore.");
@@ -1796,6 +1976,7 @@
           if (unsubscribeApplications) unsubscribeApplications();
           if (unsubscribePermits) unsubscribePermits();
           if (unsubscribeSuperAdminNotifs) unsubscribeSuperAdminNotifs();
+          if (unsubscribeAuditLogs) unsubscribeAuditLogs();
           await signOut(auth);
           window.location.href = '../../Login_Folder/LoginSystem/login.html';
         } catch (err) {
@@ -2245,6 +2426,14 @@
       });
     }
 
+    // Refresh Audit Logs
+    const refreshAuditLogsBtn = document.getElementById("btn-refresh-audit-logs");
+    if (refreshAuditLogsBtn) {
+      refreshAuditLogsBtn.addEventListener("click", () => {
+        setupAuditLogsListener();
+      });
+    }
+
     // Clear Application Cache
     const clearCacheBtn = document.getElementById("clear-cache-btn");
     if (clearCacheBtn) {
@@ -2259,17 +2448,25 @@
     }
 
     // Reset All Notices (Announcements)
+    // is_deleted is the project-wide soft-delete convention — any future delete feature on users, applications, or other records should follow this same pattern instead of deleteDoc().
     const resetNoticesBtn = document.getElementById("reset-notices-btn");
     if (resetNoticesBtn) {
       resetNoticesBtn.addEventListener("click", async () => {
-        if (confirm("Are you sure you want to delete all system announcements/notices? This action is irreversible.")) {
+        const confirmed = await showConfirmModal(
+          "Delete All Announcements",
+          "Are you sure you want to delete all system announcements/notices? This action is irreversible."
+        );
+        if (confirmed) {
           resetNoticesBtn.disabled = true;
           resetNoticesBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Resetting...';
           try {
             const snap = await getDocs(collection(db, "announcements"));
             const deletePromises = [];
             snap.forEach(docSnap => {
-              deletePromises.push(deleteDoc(doc(db, "announcements", docSnap.id)));
+              deletePromises.push(updateDoc(doc(db, "announcements", docSnap.id), {
+                is_deleted: true,
+                deletedAt: new Date().toISOString()
+              }));
             });
             await Promise.all(deletePromises);
             alert("All system notices have been successfully reset.");
@@ -2384,6 +2581,21 @@
       });
     }
   </script>
+
+  <!-- Modal 3: Super Admin Confirmation Portal -->
+  <div class="modal-overlay" id="super-confirm-modal" style="display: none;">
+    <div class="modal-container" style="max-width: 400px; text-align: center; padding: 30px 24px;">
+      <div class="confirm-modal-icon-container" style="margin-bottom: 16px;">
+        <i class="fa-solid fa-circle-exclamation" style="font-size: 3.5rem; color: #f59e0b;"></i>
+      </div>
+      <h2 class="modal-title" id="super-confirm-title" style="margin-bottom: 12px; display: block; font-size: 1.2rem; font-weight: 700; width: 100%; text-align: center;">Confirm Action</h2>
+      <p id="super-confirm-message" style="margin-bottom: 24px; font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;"></p>
+      <div class="modal-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 0; justify-content: stretch;">
+        <button type="button" class="btn-outline" id="btn-super-confirm-cancel" style="justify-content: center; width: 100%;">Cancel</button>
+        <button type="button" class="btn-primary" id="btn-super-confirm-action" style="justify-content: center; width: 100%;">Confirm</button>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>

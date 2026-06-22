@@ -792,9 +792,12 @@ function handleFileSelection(file, inputId, dz) {
         return;
     }
 
-    const maxSizeBytes = 5 * 1024 * 1024; // 5MB
+    // ==========================================
+    // FILE SIZE VALIDATION (MAX 2MB LIMIT)
+    // ==========================================
+    const maxSizeBytes = 2 * 1024 * 1024; // 2MB
     if (file.size > maxSizeBytes) {
-        alert(`File is too large! Maximum allowed size is 5MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB.`);
+        alert(`File is too large! Maximum allowed size is 2MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB.`);
         return;
     }
     
@@ -1134,13 +1137,17 @@ function initializeUserDashboard() {
         } else if (currentRegStep === 2) {
             const firstname = document.getElementById("reg-input-firstname")?.value.trim();
             const lastname = document.getElementById("reg-input-lastname")?.value.trim();
-            const email = document.getElementById("reg-input-email")?.value.trim();
+            // Lowercase email to ensure consistency and prevent duplicates
+            const email = document.getElementById("reg-input-email")?.value.trim().toLowerCase();
             const phone = document.getElementById("reg-input-phone")?.value.trim();
             const address = document.getElementById("reg-input-address")?.value.trim();
+            // Address details collection (province & postal code)
+            const province = document.getElementById("reg-input-province")?.value.trim();
+            const postal = document.getElementById("reg-input-postal")?.value.trim();
             const idtype = document.getElementById("reg-input-idtype")?.value;
             const idno = document.getElementById("reg-input-idno")?.value.trim();
 
-            const isValid = firstname && lastname && email && phone && address && idtype && idno;
+            const isValid = firstname && lastname && email && phone && address && province && postal && idtype && idno;
             btnRegNext.disabled = !isValid;
         } else if (currentRegStep === 3) {
             const bizname = document.getElementById("reg-input-bizname")?.value.trim();
@@ -1220,9 +1227,13 @@ function initializeUserDashboard() {
     function validateStep1() {
         const firstname = document.getElementById("reg-input-firstname")?.value.trim() || "";
         const lastname = document.getElementById("reg-input-lastname")?.value.trim() || "";
-        const email = document.getElementById("reg-input-email")?.value.trim() || "";
+        // Lowercase email to ensure consistency and prevent duplicates
+        const email = document.getElementById("reg-input-email")?.value.trim().toLowerCase() || "";
         const phone = document.getElementById("reg-input-phone")?.value.trim() || "";
         const address = document.getElementById("reg-input-address")?.value.trim() || "";
+        // Retrieve province and postal code fields
+        const province = document.getElementById("reg-input-province")?.value.trim() || "";
+        const postal = document.getElementById("reg-input-postal")?.value.trim() || "";
         const idtype = document.getElementById("reg-input-idtype")?.value || "";
         const idno = document.getElementById("reg-input-idno")?.value.trim() || "";
         const city = document.getElementById("reg-input-city")?.value.trim() || "";
@@ -1267,6 +1278,19 @@ function initializeUserDashboard() {
         // City validation
         if (city && (city.length < 2 || !nameRegex.test(city))) {
             alert("Please enter a valid City/Municipality (letters and spaces only, minimum 2 characters).");
+            return false;
+        }
+
+        // Province validation
+        if (!province) {
+            alert("Please enter your province.");
+            return false;
+        }
+
+        // Postal Code validation (Philippine 4-digit format)
+        const postalRegex = /^[0-9]{4}$/;
+        if (!postal || !postalRegex.test(postal)) {
+            alert("Please enter a valid 4-digit postal code (e.g., 1008).");
             return false;
         }
 
@@ -1325,6 +1349,11 @@ function initializeUserDashboard() {
             alert("Please enter a valid Business / Trade Name (minimum 3 characters).");
             return false;
         }
+        const bizNameRegex = /^[a-zA-Z0-9\s&.,'ñÑ\-]+$/;
+        if (!bizNameRegex.test(bizname)) {
+            alert("Business Name contains invalid characters. Only letters, numbers, spaces, and & . , ' - are allowed.");
+            return false;
+        }
 
         // Business Type
         if (!biztype) {
@@ -1380,8 +1409,9 @@ function initializeUserDashboard() {
             return false;
         }
 
-        // Operating Hours
-        if (!hours || hours.length < 5 || !/\d/.test(hours) || (!hours.includes("-") && !hours.toLowerCase().includes("to") && !hours.toLowerCase().includes("24 hours"))) {
+        // Operating Hours Format Validation
+        const hoursRegex = /^(24\s*(hours|hrs|hr)|\d{1,2}(:\d{2})?\s*(am|pm)?\s*(-|to)\s*\d{1,2}(:\d{2})?\s*(am|pm)?)$/i;
+        if (!hours || !hoursRegex.test(hours)) {
             alert("Please enter a valid Operating Hours range (e.g., '4:00 AM - 8:00 PM' or '24 Hours').");
             return false;
         }
@@ -1497,7 +1527,8 @@ function initializeUserDashboard() {
             const operatingHours = document.getElementById("reg-input-hours").value.trim();
             const operatingDays = Array.from(document.querySelectorAll(".day-badge.selected")).map(b => b.textContent.trim());
 
-            const emailVal = document.getElementById("reg-input-email").value.trim();
+            // Lowercase email to ensure consistency and prevent duplicates
+            const emailVal = document.getElementById("reg-input-email").value.trim().toLowerCase();
             
             // Check disposable email
             const emailDomain = emailVal.toLowerCase().split("@")[1];
@@ -1514,6 +1545,8 @@ function initializeUserDashboard() {
                 phone: sanitizeInput(document.getElementById("reg-input-phone").value.trim()),
                 address: sanitizeInput(document.getElementById("reg-input-address").value.trim()),
                 city: sanitizeInput(document.getElementById("reg-input-city").value.trim()),
+                province: sanitizeInput(document.getElementById("reg-input-province").value.trim()),
+                postalCode: sanitizeInput(document.getElementById("reg-input-postal").value.trim()),
                 idType: document.getElementById("reg-input-idtype").value,
                 idNumber: sanitizeInput(document.getElementById("reg-input-idno").value.trim()),
                 businessName: sanitizeInput(bizname) || "Market Stall",
@@ -1679,6 +1712,8 @@ function initializeUserDashboard() {
                         phone: data.phone || "",
                         email: data.email || "",
                         address: data.address || "",
+                        province: data.province || "",
+                        postalCode: data.postalCode || data.postal || "",
                         businessName: data.businessName || "",
                         productCategory: data.productCategory || data.category || "",
                         expiryDate: data.expiryDate || "2026-12-31"
@@ -1741,6 +1776,8 @@ function initializeUserDashboard() {
                             phone: userProfile.phone || "",
                             email: userProfile.email || auth.currentUser.email,
                             address: userProfile.address || "",
+                            province: userProfile.province || "",
+                            postalCode: userProfile.postalCode || userProfile.postal || "",
                             businessName: userProfile.businessName || "",
                             productCategory: userProfile.productCategory || "",
                             expiryDate: "2026-12-31"
@@ -1821,6 +1858,8 @@ function initializeUserDashboard() {
                 document.getElementById("ren-email").value = regInfo.email || userProfile.email || record.email || "";
                 document.getElementById("ren-address").value = regInfo.address || userProfile.address || record.address || "";
                 document.getElementById("ren-city").value = regInfo.city || userProfile.city || "";
+                document.getElementById("ren-province").value = regInfo.province || userProfile.province || record.province || "";
+                document.getElementById("ren-postal").value = regInfo.postalCode || regInfo.postal || userProfile.postalCode || userProfile.postal || record.postalCode || record.postal || "";
                 document.getElementById("ren-bname").value = regInfo.businessName || userProfile.businessName || record.businessName || "";
                 
                 const bizTypeSelect = document.getElementById("ren-biztype");
@@ -1913,6 +1952,9 @@ function initializeUserDashboard() {
                 document.getElementById("rv-email").textContent = document.getElementById("ren-email").value || "-";
                 document.getElementById("rv-addr").textContent = document.getElementById("ren-address").value || "-";
                 document.getElementById("rv-city").textContent = document.getElementById("ren-city").value || "-";
+                // Populate Province and Postal Code review elements
+                document.getElementById("rv-province").textContent = document.getElementById("ren-province").value || "-";
+                document.getElementById("rv-postal").textContent = document.getElementById("ren-postal").value || "-";
                 document.getElementById("rv-tin").textContent = document.getElementById("ren-tin").value || "-";
                 
                 document.getElementById("rv-pno").textContent = document.getElementById("vf-no").textContent;
@@ -1949,12 +1991,40 @@ function initializeUserDashboard() {
                 return;
             }
 
-            const emailVal = document.getElementById("ren-email").value.trim();
+            // Lowercase email to ensure consistency and prevent duplicates
+            const emailVal = document.getElementById("ren-email").value.trim().toLowerCase();
             
             // Check disposable email
             const emailDomain = emailVal.toLowerCase().split("@")[1];
             if (disposableDomains.includes(emailDomain)) {
                 alert("Submission Blocked: Temporary or disposable email addresses are not allowed. Please use a standard email provider.");
+                return;
+            }
+
+            // Retrieve and validate Province and Postal Code for renewal submission
+            const provinceVal = document.getElementById("ren-province").value.trim();
+            const postalVal = document.getElementById("ren-postal").value.trim();
+            const bizNameVal = document.getElementById("ren-bname").value.trim();
+
+            if (!provinceVal) {
+                alert("Please enter your province.");
+                return;
+            }
+
+            const postalRegex = /^[0-9]{4}$/;
+            if (!postalVal || !postalRegex.test(postalVal)) {
+                alert("Please enter a valid 4-digit postal code (e.g., 1008).");
+                return;
+            }
+
+            if (!bizNameVal || bizNameVal.length < 3) {
+                alert("Please enter a valid Business / Trade Name (minimum 3 characters).");
+                return;
+            }
+
+            const bizNameRegex = /^[a-zA-Z0-9\s&.,'ñÑ\-]+$/;
+            if (!bizNameRegex.test(bizNameVal)) {
+                alert("Business Name contains invalid characters. Only letters, numbers, spaces, and & . , ' - are allowed.");
                 return;
             }
 
@@ -1966,6 +2036,8 @@ function initializeUserDashboard() {
                 phone: sanitizeInput(document.getElementById("ren-phone").value.trim()),
                 address: sanitizeInput(document.getElementById("ren-address").value.trim()),
                 city: sanitizeInput(document.getElementById("ren-city").value.trim()),
+                province: sanitizeInput(provinceVal),
+                postalCode: sanitizeInput(postalVal),
                 businessName: sanitizeInput(document.getElementById("ren-bname").value.trim()),
                 businessType: document.getElementById("ren-biztype").value,
                 productCategory: document.getElementById("ren-cat").value,
@@ -2050,6 +2122,8 @@ function initializeUserDashboard() {
                 document.getElementById("ren-email").value = "";
                 document.getElementById("ren-address").value = "";
                 document.getElementById("ren-city").value = "";
+                document.getElementById("ren-province").value = "";
+                document.getElementById("ren-postal").value = "";
                 document.getElementById("ren-bname").value = "";
                 document.getElementById("ren-biztype").value = "";
                 document.getElementById("ren-cat").value = "";

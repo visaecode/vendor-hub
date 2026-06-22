@@ -12,9 +12,9 @@ async function processUserAuthorization(email, password) {
         alert(`Account Lockout: Too many failed login attempts. Please try again in ${remainingMin} minutes.`);
         return;
     }
-
     try {
-        let loginEmail = email.trim();
+        // Lowercase input to ensure consistency and prevent duplicates
+        let loginEmail = email.trim().toLowerCase();
         
         // Input sanitization to prevent code injection
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

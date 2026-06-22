@@ -16,6 +16,55 @@ function escapeHTML(str) {
     );
 }
 
+// Reusable custom confirmation modal helper
+function showConfirmModal(title, message) {
+    return new Promise((resolve) => {
+        const modal = document.getElementById("modal-portal-confirm");
+        const titleEl = document.getElementById("confirm-modal-title");
+        const messageEl = document.getElementById("confirm-modal-message");
+        const confirmBtn = document.getElementById("btn-confirm-action");
+        const cancelBtn = document.getElementById("btn-confirm-cancel");
+
+        if (!modal || !confirmBtn || !cancelBtn) {
+            // Fallback to native confirm if element not found
+            resolve(confirm(message));
+            return;
+        }
+
+        if (titleEl) titleEl.textContent = title;
+        if (messageEl) messageEl.textContent = message;
+
+        modal.style.display = "flex";
+
+        function cleanup(result) {
+            confirmBtn.removeEventListener("click", onConfirm);
+            cancelBtn.removeEventListener("click", onCancel);
+            modal.removeEventListener("click", onBackdropClick);
+            modal.style.display = "none";
+            resolve(result);
+        }
+
+        function onConfirm() {
+            cleanup(true);
+        }
+
+        function onCancel() {
+            cleanup(false);
+        }
+
+        function onBackdropClick(e) {
+            if (e.target === modal) {
+                cleanup(false);
+            }
+        }
+
+        confirmBtn.addEventListener("click", onConfirm);
+        cancelBtn.addEventListener("click", onCancel);
+        modal.addEventListener("click", onBackdropClick);
+    });
+}
+
+
 // --- INACTIVITY WATCHER MODULE (15 MINUTES) ---
 let idleTimer;
 function initInactivityWatcher() {
@@ -48,6 +97,7 @@ function initInactivityWatcher() {
     resetTimer(); // Initialize timer
 }
 
+let currentAdmin = null;
 let allApplications = [];
 let allVendors = [];
 let unsubscribeApps = null;
@@ -168,12 +218,47 @@ function renderApplicationsTable() {
 
 // Update application status and push real-time user notification
 async function handleApplicationStatusUpdate(appId, newStatus) {
-    if (!confirm(`Are you sure you want to change the status of this application to ${newStatus}?`)) {
+    const app = allApplications.find(a => a.id === appId);
+    const currentStatus = app ? (app.status || "Pending") : "Pending";
+
+    // Validate transition
+    let isAllowed = false;
+    if (currentStatus === "Pending") {
+        if (newStatus === "Approved" || newStatus === "Rejected") {
+            isAllowed = true;
+        }
+    } else if (currentStatus === "Approved" || currentStatus === "Rejected") {
+        if (newStatus === "Archived") {
+            isAllowed = true;
+        }
+    }
+
+    if (!isAllowed) {
+        alert(`Invalid Status Transition: Cannot transition application status from '${currentStatus}' to '${newStatus}'.`);
+        return;
+    }
+
+    const confirmed = await showConfirmModal(
+        "Confirm Status Change",
+        `Are you sure you want to change the status of this application from '${currentStatus}' to '${newStatus}'?`
+    );
+    if (!confirmed) {
         return;
     }
 
     try {
         await updateDoc(doc(db, "applications", appId), { status: newStatus });
+
+        // Write activity log audit entry
+        const adminId = currentAdmin ? currentAdmin.uid : (auth.currentUser ? auth.currentUser.uid : "unknown");
+        const adminName = currentAdmin ? currentAdmin.fullName : "System Admin";
+        await addDoc(collection(db, "activityLogs"), {
+            adminId: adminId,
+            adminName: adminName,
+            action: newStatus,
+            targetAppId: appId,
+            timestamp: new Date().toISOString()
+        });
 
         // Fetch application details to log notification
         const appDoc = await getDoc(doc(db, "applications", appId));
@@ -291,9 +376,6 @@ function renderDocsTable() {
 }
 
 async function handleVerifyDocs(appId) {
-    if (!confirm("Are you sure you want to mark all documents as verified? This will approve the application.")) {
-        return;
-    }
     await handleApplicationStatusUpdate(appId, "Approved");
 }
 
@@ -342,7 +424,7 @@ async function handlePreviewDocs(appId) {
             </div>
             <div class="preview-field">
                 <span class="preview-label">Home Address</span>
-                <span class="preview-value">${escapeHTML((app.address || '') + (app.city ? ', ' + app.city : '')) || 'N/A'}</span>
+                <span class="preview-value">${escapeHTML((app.address || '') + (app.city ? ', ' + app.city : '') + (app.province ? ', ' + app.province : '') + (app.postalCode ? ', ' + app.postalCode : '')) || 'N/A'}</span>
             </div>
             <div class="preview-grid-2col">
                 <div class="preview-field">
@@ -694,7 +776,11 @@ function renderVendorsTable() {
     tbody.querySelectorAll(".deactivate-vendor-btn").forEach(btn => {
         btn.addEventListener("click", async () => {
             const vendorId = btn.getAttribute("data-id");
-            if (confirm("Are you sure you want to deactivate this vendor?")) {
+            const confirmed = await showConfirmModal(
+                "Deactivate Vendor",
+                "Are you sure you want to deactivate this vendor?"
+            );
+            if (confirmed) {
                 try {
                     await updateDoc(doc(db, "users", vendorId), { status: "Inactive" });
                 } catch (err) {
@@ -707,7 +793,11 @@ function renderVendorsTable() {
     tbody.querySelectorAll(".activate-vendor-btn").forEach(btn => {
         btn.addEventListener("click", async () => {
             const vendorId = btn.getAttribute("data-id");
-            if (confirm("Are you sure you want to activate this vendor?")) {
+            const confirmed = await showConfirmModal(
+                "Activate Vendor",
+                "Are you sure you want to activate this vendor?"
+            );
+            if (confirmed) {
                 try {
                     await updateDoc(doc(db, "users", vendorId), { status: "Active" });
                 } catch (err) {
@@ -1917,6 +2007,11 @@ onAuthStateChanged(auth, async (user) => {
             const firstName = userData.firstName || "";
             const lastName = userData.lastName || "";
             const fullName = `${firstName} ${lastName}`.trim() || userData.username || "Admin";
+
+            currentAdmin = {
+                uid: user.uid,
+                fullName: fullName
+            };
 
             // Populate profile elements
             const nameEl = document.getElementById("admin-profile-name");

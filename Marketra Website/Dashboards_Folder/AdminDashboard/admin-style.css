@@ -763,3 +763,18 @@ body { background-color: var(--bg-main); color: var(--text-dark); overflow-x: hi
     background-color: #236944;
     color: #FFFFFF;
 }
+
+/* --- 17. CUSTOM CONFIRMATION MODAL --- */
+#modal-portal-confirm .modal-window-card {
+    max-width: 440px;
+    padding: 30px 24px;
+    border-radius: 12px;
+}
+.confirm-modal-icon-container {
+    text-align: center;
+    margin-bottom: 16px;
+}
+.confirm-modal-icon-container i {
+    font-size: 3.5rem;
+    color: #f59e0b; /* Amber warn color */
+}

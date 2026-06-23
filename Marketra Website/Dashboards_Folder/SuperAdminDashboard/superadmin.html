@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Super Admin Portal – Manage the Marketra platform, admins, system health, reports, and settings." />
   <title>Marketra - Super Admin</title>
-  <link rel="stylesheet" href="/Dashboards_Folder/SuperAdminDashboard/superadmin.css" />
+  <link rel="stylesheet" href="superadmin.css" />
   <!-- FontAwesome linked for strict cross-dashboard component visual matching -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -151,7 +151,7 @@
 
     <!-- Brand -->
     <div class="sidebar-brand">
-      <img class="brand-logo" src="/Login_Folder/LoginSystem/assets/marketra_logo.png" alt="Logo" style="width: 34px; height: 34px; object-fit: contain; border-radius: 6px; margin-right: 12px; padding: 4px; background: transparent; flex-shrink: 0;">
+      <img class="brand-logo" src="../../Login_Folder/LoginSystem/assets/marketra_logo.png" alt="Logo" style="width: 34px; height: 34px; object-fit: contain; border-radius: 6px; margin-right: 12px; padding: 4px; background: transparent; flex-shrink: 0;">
       <span class="sidebar-brand-name">Super Admin</span>
     </div>
 
@@ -257,7 +257,7 @@
         <div class="page-header">
           <div>
             <h1 class="page-title">Overview</h1>
-            <p class="page-subtitle">System-wide statistics for Altura Market</p>
+            <p class="page-subtitle">System-wide statistics for Oaktown City Public Market</p>
           </div>
         </div>
 
@@ -1788,7 +1788,8 @@
     });
 
     document.getElementById('signout-btn').addEventListener('click', async () => {
-      if (confirm('Are you sure you want to sign out?')) {
+      const confirmed = await showCustomConfirm("Sign Out", "Are you sure you want to sign out?");
+      if (confirmed) {
         try {
           if (systemHealthInterval) clearInterval(systemHealthInterval);
           if (unsubscribeAdmins) unsubscribeAdmins();
@@ -1959,7 +1960,7 @@
         
         return {
           title: "Revenue Report Summary",
-          desc: "High-level financial summaries for Altura Market.",
+          desc: "High-level financial summaries for Oaktown Public Market.",
           headers: ["Financial Metric", "Value Status"],
           keys: ["metric", "value"],
           data: rows

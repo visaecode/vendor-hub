@@ -20,8 +20,19 @@ function sanitizeInput(str) {
         .replace(/'/g, "&#x27;")
         .replace(/\//g, "&#x2F;");
 }
-
 const disposableDomains = ["yopmail.com", "mailinator.com", "tempmail.com", "trashmail.com", "dispostable.com", "10minutemail.com", "sharklasers.com", "guerrillamail.com"];
+
+// ─── Profanity list ───────────────────────────────────────
+const profanityList = [
+    "fuck","shit","ass","bitch","bastard","damn","crap","dick","pussy","cock",
+    "nigger","nigga","faggot","fag","slut","whore","cunt","piss","rape","retard"
+];
+
+function containsProfanity(str) {
+    if (!str) return false;
+    const lower = str.toLowerCase().replace(/[^a-z0-9]/g, "");
+    return profanityList.some(w => lower.includes(w));
+}
 
 // --- INACTIVITY WATCHER MODULE (15 MINUTES) ---
 let idleTimer;
@@ -792,22 +803,22 @@ function handleFileSelection(file, inputId, dz) {
         return;
     }
 
-    const maxSizeBytes = 5 * 1024 * 1024; // 5MB
+    const maxSizeBytes = 2 * 1024 * 1024; // 2MB
     if (file.size > maxSizeBytes) {
-        alert(`File is too large! Maximum allowed size is 5MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB.`);
+        alert(`File is too large! Maximum allowed size is 2MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB.`);
         return;
     }
     
-    const allowedExtensions = /(\.pdf|\.jpg|\.jpeg|\.png)$/i;
+    const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
     if (!allowedExtensions.exec(file.name)) {
-        alert("Invalid file type! Please upload a PDF, JPG, JPEG, or PNG file.");
+        alert("Invalid file type! Please upload a JPG, JPEG, or PNG file.");
         return;
     }
 
     const fileType = file.type || "";
-    const allowedMimeTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
     if (fileType && !allowedMimeTypes.includes(fileType)) {
-        alert("Invalid file content type! Please upload a real PDF, JPG, JPEG, or PNG file.");
+        alert("Invalid file content type! Please upload a real JPG, JPEG, or PNG file.");
         return;
     }
     
@@ -927,8 +938,191 @@ function removeUploadedFile(inputId, dz) {
     }
 }
 
+
+// --- DEBOUNCE UTILITY ---
+function debounce(func, delay) {
+    let timer;
+    return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => func.apply(this, args), delay);
+    };
+}
+
+// --- PREMIUM CUSTOM CONFIRMATION MODAL FUNCTION ---
+function showCustomConfirm(title, message, isDanger = false) {
+    return new Promise((resolve) => {
+        const overlay = document.createElement("div");
+        overlay.className = "custom-confirm-overlay";
+        
+        const modal = document.createElement("div");
+        modal.className = "custom-confirm-modal";
+        
+        const header = document.createElement("div");
+        header.className = "custom-confirm-header";
+        header.innerHTML = `<i class="fa-solid fa-circle-question"></i> <span>${escapeHTML(title)}</span>`;
+        
+        const body = document.createElement("div");
+        body.className = "custom-confirm-body";
+        body.innerHTML = sanitizeInput(message);
+        
+        const footer = document.createElement("div");
+        footer.className = "custom-confirm-footer";
+        
+        const cancelBtn = document.createElement("button");
+        cancelBtn.type = "button";
+        cancelBtn.className = "custom-confirm-btn custom-confirm-btn-cancel";
+        cancelBtn.textContent = "Cancel";
+        
+        const confirmBtn = document.createElement("button");
+        confirmBtn.type = "button";
+        confirmBtn.className = "custom-confirm-btn custom-confirm-btn-confirm" + (isDanger ? " danger" : "");
+        confirmBtn.textContent = "Confirm";
+        
+        footer.appendChild(cancelBtn);
+        footer.appendChild(confirmBtn);
+        
+        modal.appendChild(header);
+        modal.appendChild(body);
+        modal.appendChild(footer);
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+        
+        overlay.offsetHeight; 
+        overlay.classList.add("show");
+        
+        const handleResolve = (val) => {
+            overlay.classList.remove("show");
+            setTimeout(() => {
+                overlay.remove();
+                resolve(val);
+            }, 250);
+        };
+        
+        cancelBtn.addEventListener("click", () => handleResolve(false));
+        confirmBtn.addEventListener("click", () => handleResolve(true));
+        
+        overlay.addEventListener("click", (e) => {
+            if (e.target === overlay) {
+                handleResolve(false);
+            }
+        });
+    });
+}
+
+let isAddressVerified = false;
+
+function setupAddressAutocomplete() {
+    const addressInput = document.getElementById("reg-input-address");
+    const suggestionsContainer = document.getElementById("address-suggestions");
+    if (!addressInput || !suggestionsContainer) return;
+    
+    const fetchSuggestions = debounce(async (queryVal) => {
+        if (!queryVal || queryVal.length < 3) {
+            suggestionsContainer.style.display = "none";
+            suggestionsContainer.innerHTML = "";
+            return;
+        }
+        try {
+            const countryEl = document.getElementById("reg-input-country");
+            const countryCode = countryEl ? countryEl.value.toLowerCase() : "ph";
+            
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(queryVal)}&countrycodes=${countryCode}&limit=5&addressdetails=1`;
+            const res = await fetch(url, {
+                headers: {
+                    'Accept-Language': 'en'
+                }
+            });
+            const data = await res.json();
+            
+            if (data && data.length > 0) {
+                suggestionsContainer.innerHTML = "";
+                data.forEach(item => {
+                    const div = document.createElement("div");
+                    div.className = "address-suggestion-item";
+                    div.textContent = item.display_name;
+                    div.addEventListener("click", () => {
+                        addressInput.value = item.display_name;
+                        isAddressVerified = true;
+                        
+                        const addr = item.address || {};
+                        const cityVal = addr.city || addr.municipality || addr.town || addr.city_district || "";
+                        const cityInput = document.getElementById("reg-input-city");
+                        if (cityInput && cityVal) {
+                            cityInput.value = cityVal;
+                            clearWizardError("reg-input-city");
+                        }
+                        
+                        const provinceVal = addr.province || addr.state || addr.region || "";
+                        const provinceInput = document.getElementById("reg-input-province");
+                        if (provinceInput && provinceVal) {
+                            provinceInput.value = provinceVal;
+                            clearWizardError("reg-input-province");
+                        }
+                        
+                        const postalVal = addr.postcode || "";
+                        const postalInput = document.getElementById("reg-input-postal");
+                        if (postalInput && postalVal) {
+                            postalInput.value = postalVal;
+                            clearWizardError("reg-input-postal");
+                        }
+                        
+                        clearWizardError("reg-input-address");
+                        suggestionsContainer.style.display = "none";
+                        suggestionsContainer.innerHTML = "";
+                    });
+                    suggestionsContainer.appendChild(div);
+                });
+                suggestionsContainer.style.display = "block";
+            } else {
+                suggestionsContainer.innerHTML = `<div class="address-suggestion-item text-muted" style="cursor: default;">No results found. Address is unrecognized.</div>`;
+                suggestionsContainer.style.display = "block";
+            }
+        } catch (err) {
+            console.error("Nominatim geocoding error:", err);
+        }
+    }, 400);
+
+    addressInput.addEventListener("input", (e) => {
+        isAddressVerified = false;
+        fetchSuggestions(e.target.value);
+    });
+
+    document.addEventListener("click", (e) => {
+        if (e.target !== addressInput && !suggestionsContainer.contains(e.target)) {
+            suggestionsContainer.style.display = "none";
+        }
+    });
+}
+
 function initializeUserDashboard() {
     initDocumentUploads();
+    setupAddressAutocomplete();
+    
+    // Auto age calculation listener
+    const dobInput = document.getElementById("reg-input-dob");
+    const ageInput = document.getElementById("reg-input-age");
+    if (dobInput && ageInput) {
+        const calculateAndSetAge = () => {
+            const dobVal = dobInput.value;
+            if (!dobVal) {
+                ageInput.value = "";
+                return;
+            }
+            const today = new Date();
+            const birthDate = new Date(dobVal);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            ageInput.value = age >= 0 ? age : 0;
+            validateSingleField("reg-input-dob");
+        };
+        dobInput.addEventListener("input", calculateAndSetAge);
+        dobInput.addEventListener("change", calculateAndSetAge);
+    }
+    
+    
     
     // Toggle notifications dropdown menu
     const notifBell = document.getElementById("notification-bell");
@@ -1119,11 +1313,112 @@ function initializeUserDashboard() {
     // ==========================================
     let currentRegStep = 1;
     const totalRegSteps = 6;
+    let isWizardDirty = false;
 
     const btnRegNext = document.getElementById("btn-reg-next");
     const btnRegPrev = document.getElementById("btn-reg-prev");
     const btnRegCancel = document.getElementById("btn-reg-cancel");
     const newRegForm = document.getElementById("new-registration-form");
+
+    // Character counters for fields with maxlength
+    function setupCharacterCounters() {
+        document.querySelectorAll(".form-group input[maxlength], .form-group textarea[maxlength]").forEach(input => {
+            const id = input.id;
+            if (id === "reg-input-address") return; // Address already has a custom inline counter in HTML
+            const maxLen = input.getAttribute("maxlength");
+            const group = input.closest(".form-group");
+            if (!group || !maxLen) return;
+            
+            let counterEl = document.getElementById(`counter-${id}`);
+            if (!counterEl) {
+                counterEl = document.createElement("div");
+                counterEl.id = `counter-${id}`;
+                counterEl.style.fontSize = "0.72rem";
+                counterEl.style.color = "#64748b";
+                counterEl.style.textAlign = "right";
+                counterEl.style.marginTop = "4px";
+                counterEl.style.fontWeight = "500";
+                counterEl.textContent = `${input.value.length}/${maxLen}`;
+                group.appendChild(counterEl);
+            }
+            
+            input.addEventListener("input", () => {
+                counterEl.textContent = `${input.value.length}/${maxLen}`;
+                if (input.value.length >= maxLen) {
+                    counterEl.style.color = "#dc2626";
+                } else {
+                    counterEl.style.color = "#64748b";
+                }
+            });
+        });
+    }
+
+    // Live numeric key blocking during typing
+    function setupNumericRestrictions() {
+        // Phone fields
+        ["reg-input-phone", "ren-phone"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener("input", () => {
+                    el.value = el.value.replace(/[^0-9+\s-]/g, "");
+                });
+            }
+        });
+        
+        // TIN fields
+        ["reg-input-tin", "ren-tin"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener("input", () => {
+                    el.value = el.value.replace(/[^0-9-]/g, "");
+                });
+            }
+        });
+        
+        // Years field
+        const yearsEl = document.getElementById("reg-input-years");
+        if (yearsEl) {
+            yearsEl.addEventListener("input", () => {
+                yearsEl.value = yearsEl.value.replace(/[^0-9]/g, "");
+            });
+        }
+    }
+
+    // Name field key blocking during typing (block numbers/symbols, except letters, spaces, hyphens, and apostrophes)
+    function setupNameFieldRestrictions() {
+        ["reg-input-firstname", "reg-input-lastname", "ren-firstname", "ren-lastname"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener("input", () => {
+                    el.value = el.value.replace(/[^a-zA-Z\s'\-]/g, "");
+                });
+            }
+        });
+    }
+
+    // Unsaved changes listener
+    window.addEventListener("beforeunload", (e) => {
+        if (isWizardDirty && currentRegStep > 1) {
+            e.preventDefault();
+            e.returnValue = "You have unsaved changes in the registration wizard. Are you sure you want to leave?";
+            return e.returnValue;
+        }
+    });
+
+    // Mark wizard as dirty on input
+    if (newRegForm) {
+        newRegForm.addEventListener("input", () => {
+            isWizardDirty = true;
+        });
+        newRegForm.addEventListener("change", () => {
+            isWizardDirty = true;
+        });
+    }
+
+    setupCharacterCounters();
+    setupNumericRestrictions();
+    setupNameFieldRestrictions();
+
 
     function updateRegNextButtonState() {
         if (!btnRegNext) return;
@@ -1216,214 +1511,434 @@ function initializeUserDashboard() {
         updateRegNextButtonState();
     }
 
-    // -- VALIDATION HELPERS --
-    function validateStep1() {
-        const firstname = document.getElementById("reg-input-firstname")?.value.trim() || "";
-        const lastname = document.getElementById("reg-input-lastname")?.value.trim() || "";
-        const email = document.getElementById("reg-input-email")?.value.trim() || "";
-        const phone = document.getElementById("reg-input-phone")?.value.trim() || "";
-        const address = document.getElementById("reg-input-address")?.value.trim() || "";
-        const idtype = document.getElementById("reg-input-idtype")?.value || "";
-        const idno = document.getElementById("reg-input-idno")?.value.trim() || "";
-        const city = document.getElementById("reg-input-city")?.value.trim() || "";
+    // -- INLINE ERROR HELPERS (Registration Wizard) --
+    function showWizardError(fieldId, message) {
+        const errElId = "err-" + fieldId.replace("-input-", "-");
+        const errEl   = document.getElementById(errElId);
+        const inputEl = document.getElementById(fieldId);
+        if (errEl)  { errEl.textContent = message; errEl.style.display = "flex"; }
+        if (inputEl) inputEl.classList.add("input-error");
+    }
 
-        // First/Last Name validation: letters, spaces, hyphens, and apostrophes only, min 2 chars
-        const nameRegex = /^[a-zA-Z\s'.]+$/;
-        if (!firstname || firstname.length < 2 || !nameRegex.test(firstname)) {
-            alert("Please enter a valid First Name (letters and spaces only, minimum 2 characters).");
-            return false;
-        }
-        if (!lastname || lastname.length < 2 || !nameRegex.test(lastname)) {
-            alert("Please enter a valid Last Name (letters and spaces only, minimum 2 characters).");
-            return false;
-        }
+    function clearWizardError(fieldId) {
+        const errElId = "err-" + fieldId.replace("-input-", "-");
+        const errEl   = document.getElementById(errElId);
+        const inputEl = document.getElementById(fieldId);
+        if (errEl)  { errEl.textContent = ""; errEl.style.display = "none"; }
+        if (inputEl) inputEl.classList.remove("input-error");
+    }
 
-        // Email validation
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if (!email || !emailRegex.test(email)) {
-            alert("Please enter a valid email address (e.g., name@domain.com).");
-            return false;
-        }
-        const emailDomain = email.toLowerCase().split("@")[1];
-        if (disposableDomains.includes(emailDomain)) {
-            alert("Temporary or disposable email addresses are not allowed. Please use a standard email provider.");
-            return false;
-        }
-
-        // Phone validation (Philippine formats: 09XXXXXXXXX or +639XXXXXXXXX)
-        const cleanPhone = phone.replace(/[\s-]/g, "");
-        const phoneRegex = /^(09|\+639)\d{9}$/;
-        if (!phone || !phoneRegex.test(cleanPhone)) {
-            alert("Please enter a valid Philippine mobile number (e.g., 09XXXXXXXXX or +639XXXXXXXXX).");
-            return false;
-        }
-
-        // Address validation
-        if (!address || address.length < 10) {
-            alert("Please enter a complete home address (minimum 10 characters).");
-            return false;
-        }
-
-        // City validation
-        if (city && (city.length < 2 || !nameRegex.test(city))) {
-            alert("Please enter a valid City/Municipality (letters and spaces only, minimum 2 characters).");
-            return false;
-        }
-
-        // ID Type
-        if (!idtype) {
-            alert("Please select a Government ID Type.");
-            return false;
-        }
-
-        // ID Number validation based on selected ID Type
-        const cleanIdno = idno.replace(/[\s-]/g, "");
-        if (idtype === "Passport") {
-            const passportRegex = /^[a-zA-Z]{1,2}\d{7}$/;
-            if (!passportRegex.test(cleanIdno)) {
-                alert("Invalid Passport Number. It must start with 1 or 2 letters followed by exactly 7 digits (e.g., PA1234567).");
-                return false;
-            }
-        } else if (idtype === "UMID") {
-            const umidRegex = /^\d{12}$/;
-            if (!umidRegex.test(cleanIdno)) {
-                alert("Invalid UMID CRN. It must consist of exactly 12 digits (e.g., 1234-5678901-2).");
-                return false;
-            }
-        } else if (idtype === "Drivers") {
-            const driversRegex = /^[a-zA-Z]\d{10}$/;
-            if (!driversRegex.test(cleanIdno)) {
-                alert("Invalid Driver's License Number. It must consist of 1 letter followed by 10 digits (e.g., L01-23-456789).");
-                return false;
-            }
-        } else if (idtype === "PhilSys") {
-            const philsysRegex = /^(\d{12}|\d{16})$/;
-            if (!philsysRegex.test(cleanIdno)) {
-                alert("Invalid PhilSys ID. It must be either a 12-digit PhilID number or a 16-digit Transaction Number.");
-                return false;
-            }
-        } else {
-            const idRegex = /^[a-zA-Z0-9\-\/]+$/;
-            if (!idno || idno.length < 4 || !idRegex.test(idno)) {
-                alert("Please enter a valid Government ID Number (alphanumeric and dashes only, minimum 4 characters).");
-                return false;
+    function showPaneErrorSummary(paneId, errors) {
+        const summaryEl = document.getElementById(paneId + "-error-summary");
+        if (summaryEl) {
+            if (!errors || errors.length === 0) {
+                summaryEl.style.display = "none";
+                summaryEl.innerHTML = "";
+            } else {
+                summaryEl.innerHTML = `
+                    <h4><i class="fa-solid fa-circle-exclamation"></i> Please correct the following errors:</h4>
+                    <ul>
+                        ${errors.map(err => `<li>${escapeHTML(err)}</li>`).join("")}
+                    </ul>
+                `;
+                summaryEl.style.display = "block";
+                summaryEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
             }
         }
+    }
 
+    function clearPaneErrorSummary(paneId) {
+        const summaryEl = document.getElementById(paneId + "-error-summary");
+        if (summaryEl) {
+            summaryEl.style.display = "none";
+            summaryEl.innerHTML = "";
+        }
+    }
+
+    function clearAllWizardErrors() {
+        [
+            "reg-input-firstname", "reg-input-lastname", "reg-input-email",
+            "reg-input-phone", "reg-input-address", "reg-input-postal",
+            "reg-input-city", "reg-input-idtype", "reg-input-idno",
+            "reg-input-bizname", "reg-input-biztype", "reg-input-category",
+            "reg-input-years", "reg-input-tin", "reg-input-zone",
+            "reg-input-size", "reg-input-days", "reg-input-hours", "reg-docs"
+        ].forEach(id => clearWizardError(id));
+
+        for (let i = 1; i <= totalRegSteps; i++) {
+            clearPaneErrorSummary(`reg-pane-${i}`);
+        }
+    }
+
+    // -- SINGLE FIELD VALIDATOR --
+    function validateSingleField(id) {
+        const el = document.getElementById(id);
+        if (!el) return true;
+        const val = el.value.trim();
+        const nameRegex = /^[a-zA-Z\s'\-]+$/;
+        
+        switch (id) {
+            case "reg-input-firstname":
+                if (!val || val.length < 2 || !nameRegex.test(val)) {
+                    showWizardError(id, "⚠ Enter a valid first name (letters, spaces, hyphens, apostrophes; min 2 chars).");
+                    return false;
+                } else if (containsProfanity(val)) {
+                    showWizardError(id, "⚠ First name contains profanity or inappropriate words.");
+                    return false;
+                }
+                break;
+            case "reg-input-lastname":
+                if (!val || val.length < 2 || !nameRegex.test(val)) {
+                    showWizardError(id, "⚠ Enter a valid last name (letters, spaces, hyphens, apostrophes; min 2 chars).");
+                    return false;
+                } else if (containsProfanity(val)) {
+                    showWizardError(id, "⚠ Last name contains profanity or inappropriate words.");
+                    return false;
+                }
+                break;
+            case "reg-input-email":
+                const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+                if (!val || !emailRegex.test(val)) {
+                    showWizardError(id, "⚠ Enter a valid email address (e.g., name@domain.com).");
+                    return false;
+                }
+                const emailDomain = val.toLowerCase().split("@")[1];
+                if (disposableDomains.includes(emailDomain)) {
+                    showWizardError(id, "⚠ Disposable email addresses are not allowed.");
+                    return false;
+                }
+                break;
+            case "reg-input-phone":
+                const cleanPhone = val.replace(/[\s-]/g, "");
+                const phoneRegex = /^(09|\+639)\d{9}$/;
+                if (!val || !phoneRegex.test(cleanPhone)) {
+                    showWizardError(id, "⚠ Enter a valid Philippine mobile number (e.g., 09XXXXXXXXX or +639XXXXXXXXX).");
+                    return false;
+                }
+                break;
+            case "reg-input-dob":
+                if (!val) {
+                    showWizardError(id, "⚠ Date of birth is required.");
+                    return false;
+                }
+                const dobDate = new Date(val);
+                const todayDate = new Date();
+                todayDate.setHours(0,0,0,0);
+                if (dobDate >= todayDate) {
+                    showWizardError(id, "⚠ Date of birth cannot be today or in the future.");
+                    return false;
+                }
+                let calculatedAge = todayDate.getFullYear() - dobDate.getFullYear();
+                const monthDiff = todayDate.getMonth() - dobDate.getMonth();
+                if (monthDiff < 0 || (monthDiff === 0 && todayDate.getDate() < dobDate.getDate())) {
+                    calculatedAge--;
+                }
+                if (calculatedAge < 18) {
+                    showWizardError(id, "⚠ You must be at least 18 years old to register. Calculated age: " + calculatedAge);
+                    return false;
+                }
+                break;
+            case "reg-input-gender":
+                if (!val) {
+                    showWizardError(id, "⚠ Please select your Gender / Pronouns.");
+                    return false;
+                }
+                break;
+            case "reg-input-address":
+                if (!val || val.length < 10) {
+                    showWizardError(id, "⚠ Enter a complete home address (minimum 10 characters).");
+                    return false;
+                } else if (containsProfanity(val)) {
+                    showWizardError(id, "⚠ Home address contains profanity or inappropriate words.");
+                    return false;
+                }
+                break;
+            case "reg-input-postal":
+                if (val && !/^\d{4}$/.test(val)) {
+                    showWizardError(id, "⚠ Postal code must be exactly 4 digits (e.g., 1000).");
+                    return false;
+                }
+                break;
+            case "reg-input-city":
+                if (val && (val.length < 2 || !nameRegex.test(val))) {
+                    showWizardError(id, "⚠ Enter a valid city name (letters, spaces, hyphens, apostrophes; min 2 chars).");
+                    return false;
+                } else if (val && containsProfanity(val)) {
+                    showWizardError(id, "⚠ City/Municipality contains profanity or inappropriate words.");
+                    return false;
+                }
+                break;
+            case "reg-input-idtype":
+                if (!val) {
+                    showWizardError(id, "⚠ Please select a Government ID Type.");
+                    return false;
+                }
+                break;
+            case "reg-input-idno":
+                const idtype = document.getElementById("reg-input-idtype")?.value || "";
+                if (!val) {
+                    showWizardError(id, "⚠ Please enter your ID Number.");
+                    return false;
+                }
+                if (idtype) {
+                    const cleanIdno = val.replace(/[\s-]/g, "");
+                    if (idtype === "Passport") {
+                        if (!/^[a-zA-Z]{1,2}\d{7}$/.test(cleanIdno)) {
+                            showWizardError(id, "⚠ Invalid Passport Number. Must start with 1–2 letters followed by exactly 7 digits (e.g., PA1234567).");
+                            return false;
+                        }
+                    } else if (idtype === "UMID") {
+                        if (!/^\d{12}$/.test(cleanIdno)) {
+                            showWizardError(id, "⚠ Invalid UMID CRN. Must be exactly 12 digits.");
+                            return false;
+                        }
+                    } else if (idtype === "Drivers") {
+                        if (!/^[a-zA-Z]\d{10}$/.test(cleanIdno)) {
+                            showWizardError(id, "⚠ Invalid Driver's License. Must be 1 letter followed by 10 digits.");
+                            return false;
+                        }
+                    } else if (idtype === "PhilSys") {
+                        if (!/^(\d{12}|\d{16})$/.test(cleanIdno)) {
+                            showWizardError(id, "⚠ Invalid PhilSys ID. Must be 12 or 16 digits.");
+                            return false;
+                        }
+                    } else {
+                        if (val.length < 4 || !/^[a-zA-Z0-9\-\/]+$/.test(val)) {
+                            showWizardError(id, "⚠ Enter a valid ID Number (alphanumeric, dashes; min 4 characters).");
+                            return false;
+                        }
+                    }
+                }
+                break;
+            case "reg-input-bizname":
+                if (!val || val.length < 3) {
+                    showWizardError(id, "⚠ Enter a valid Business / Trade Name (minimum 3 characters).");
+                    return false;
+                } else if (containsProfanity(val)) {
+                    showWizardError(id, "⚠ Business Name contains profanity or inappropriate words.");
+                    return false;
+                }
+                break;
+            case "reg-input-biztype":
+                if (!val) {
+                    showWizardError(id, "⚠ Please select a Business Type.");
+                    return false;
+                }
+                break;
+            case "reg-input-category":
+                if (!val) {
+                    showWizardError(id, "⚠ Please select a Product Category.");
+                    return false;
+                }
+                break;
+            case "reg-input-years":
+                const years = parseInt(val);
+                if (val === "" || isNaN(years) || years < 0 || years > 80) {
+                    showWizardError(id, "⚠ Please enter a valid number of years in business (between 0 and 80).");
+                    return false;
+                }
+                break;
+            case "reg-input-tin":
+                if (val) {
+                    const cleanTin = val.replace(/[\s-]/g, "");
+                    if (!/^(\d{9}|\d{12})$/.test(cleanTin)) {
+                        showWizardError(id, "⚠ Invalid TIN format. A Philippine TIN must be exactly 9 digits, or 12 digits (e.g. 123-456-789-000).");
+                        return false;
+                    }
+                }
+                break;
+            case "reg-input-zone":
+                if (!val) {
+                    showWizardError(id, "⚠ Please select a Preferred Zone.");
+                    return false;
+                }
+                break;
+            case "reg-input-size":
+                if (!val) {
+                    showWizardError(id, "⚠ Please select a Stall Size.");
+                    return false;
+                }
+                break;
+            case "reg-input-hours":
+                if (!val || val.length < 5 || !/\d/.test(val) || (!val.includes("-") && !val.toLowerCase().includes("to") && !val.toLowerCase().includes("24 hours"))) {
+                    showWizardError(id, "⚠ Please enter a valid Operating Hours range (e.g. '4:00 AM - 8:00 PM').");
+                    return false;
+                } else if (containsProfanity(val)) {
+                    showWizardError(id, "⚠ Operating Hours contains profanity or inappropriate words.");
+                    return false;
+                }
+                break;
+        }
+        
+        clearWizardError(id);
         return true;
+    }
+
+    // -- VALIDATION HELPERS --
+    function validateTerms() {
+        const agreed = document.getElementById("reg-input-agree")?.checked;
+        if (!agreed) {
+            showPaneErrorSummary("reg-pane-1", ["You must read and agree to all terms, conditions, and policies of the tenancy contract to proceed."]);
+            return false;
+        }
+        clearPaneErrorSummary("reg-pane-1");
+        return true;
+    }
+
+    function validateStep1() {
+        let errors = [];
+        const fields = [
+            "reg-input-firstname", "reg-input-lastname", "reg-input-email",
+            "reg-input-phone", "reg-input-address", "reg-input-postal",
+            "reg-input-city", "reg-input-idtype", "reg-input-idno"
+        ];
+        
+        fields.forEach(id => {
+            if (!validateSingleField(id)) {
+                const errElId = "err-" + id.replace("-input-", "-");
+                const errEl = document.getElementById(errElId);
+                if (errEl && errEl.textContent) {
+                    errors.push(errEl.textContent.replace("⚠", "").trim());
+                }
+            }
+        });
+        
+        if (errors.length > 0) {
+            showPaneErrorSummary("reg-pane-2", errors);
+            return false;
+        } else {
+            clearPaneErrorSummary("reg-pane-2");
+            return true;
+        }
     }
 
     function validateStep2() {
-        const bizname = document.getElementById("reg-input-bizname")?.value.trim() || "";
-        const biztype = document.getElementById("reg-input-biztype")?.value || "";
-        const category = document.getElementById("reg-input-category")?.value || "";
-        const yearsStr = document.getElementById("reg-input-years")?.value;
-        const tin = document.getElementById("reg-input-tin")?.value.trim() || "";
-
-        // Business Name
-        if (!bizname || bizname.length < 3) {
-            alert("Please enter a valid Business / Trade Name (minimum 3 characters).");
+        let errors = [];
+        const fields = [
+            "reg-input-bizname", "reg-input-biztype", "reg-input-category",
+            "reg-input-years", "reg-input-tin"
+        ];
+        
+        fields.forEach(id => {
+            if (!validateSingleField(id)) {
+                const errElId = "err-" + id.replace("-input-", "-");
+                const errEl = document.getElementById(errElId);
+                if (errEl && errEl.textContent) {
+                    errors.push(errEl.textContent.replace("⚠", "").trim());
+                }
+            }
+        });
+        
+        if (errors.length > 0) {
+            showPaneErrorSummary("reg-pane-3", errors);
             return false;
+        } else {
+            clearPaneErrorSummary("reg-pane-3");
+            return true;
         }
-
-        // Business Type
-        if (!biztype) {
-            alert("Please select a Business Type.");
-            return false;
-        }
-
-        // Product Category
-        if (!category) {
-            alert("Please select a Product Category.");
-            return false;
-        }
-
-        // Years in business
-        const years = parseInt(yearsStr);
-        if (yearsStr === "" || isNaN(years) || years < 0 || years > 80) {
-            alert("Please enter a valid number of years in business (between 0 and 80).");
-            return false;
-        }
-
-        // TIN Number (Philippine TIN is exactly 9 or 12 digits, e.g., 123-456-789-000)
-        const cleanTin = tin.replace(/[\s-]/g, "");
-        const tinRegex = /^(\d{9}|\d{12})$/;
-        if (tin && !tinRegex.test(cleanTin)) {
-            alert("Invalid TIN format. A standard Philippine TIN must consist of exactly 9 digits, or 12 digits (with 3-digit branch code, e.g., 123-456-789-000).");
-            return false;
-        }
-
-        return true;
     }
 
     function validateStep3() {
-        const zone = document.getElementById("reg-input-zone")?.value || "";
-        const size = document.getElementById("reg-input-size")?.value || "";
-        const hours = document.getElementById("reg-input-hours")?.value.trim() || "";
+        let errors = [];
+        const fields = ["reg-input-zone", "reg-input-size", "reg-input-hours"];
+        
+        fields.forEach(id => {
+            if (!validateSingleField(id)) {
+                const errElId = "err-" + id.replace("-input-", "-");
+                const errEl = document.getElementById(errElId);
+                if (errEl && errEl.textContent) {
+                    errors.push(errEl.textContent.replace("⚠", "").trim());
+                }
+            }
+        });
+        
+        // Days Count validation
         const daysCount = document.querySelectorAll("#reg-pane-4 .day-badge.selected").length;
-
-        // Zone
-        if (!zone) {
-            alert("Please select a Preferred Zone.");
-            return false;
-        }
-
-        // Size
-        if (!size) {
-            alert("Please select a Stall Size.");
-            return false;
-        }
-
-        // Days Count
         if (daysCount === 0) {
-            alert("Please select at least one Operating Day.");
-            return false;
+            showWizardError("reg-input-days", "⚠ Please select at least one Operating Day.");
+            errors.push("Please select at least one Operating Day.");
+        } else {
+            clearWizardError("reg-input-days");
         }
-
-        // Operating Hours
-        if (!hours || hours.length < 5 || !/\d/.test(hours) || (!hours.includes("-") && !hours.toLowerCase().includes("to") && !hours.toLowerCase().includes("24 hours"))) {
-            alert("Please enter a valid Operating Hours range (e.g., '4:00 AM - 8:00 PM' or '24 Hours').");
+        
+        if (errors.length > 0) {
+            showPaneErrorSummary("reg-pane-4", errors);
             return false;
+        } else {
+            clearPaneErrorSummary("reg-pane-4");
+            return true;
         }
-
-        return true;
     }
 
     function validateStep4() {
+        let errors = [];
+        clearWizardError("reg-docs");
+        
         if (!regUploadedFiles['input-reg-gov-id'] || !regUploadedFiles['input-reg-dti'] || !regUploadedFiles['input-reg-health']) {
-            alert("Please upload all required documents (Valid Government ID, DTI / SEC Certificate, and Health Certificate).");
-            return false;
-        }
-
-        // Double check files properties (size and data content)
-        const requiredKeys = ['input-reg-gov-id', 'input-reg-dti', 'input-reg-health', 'input-reg-bir'];
-        for (const key of requiredKeys) {
-            const fileInfo = regUploadedFiles[key];
-            if (fileInfo) {
-                if (!fileInfo.data || fileInfo.data.length < 100) {
-                    alert(`The uploaded file for ${key.replace('input-reg-', '').toUpperCase()} is invalid or empty. Please re-upload.`);
-                    return false;
-                }
-                if (fileInfo.sizeKB <= 0) {
-                    alert(`The uploaded file for ${key.replace('input-reg-', '').toUpperCase()} is empty (0 KB). Please upload a valid file.`);
-                    return false;
+            const msg = "Please upload all required documents (Valid Government ID, DTI / SEC Certificate, and Health Certificate).";
+            showWizardError("reg-docs", "⚠ " + msg);
+            errors.push(msg);
+        } else {
+            const requiredKeys = ['input-reg-gov-id', 'input-reg-dti', 'input-reg-health', 'input-reg-bir'];
+            for (const key of requiredKeys) {
+                const fileInfo = regUploadedFiles[key];
+                if (fileInfo) {
+                    if (!fileInfo.data || fileInfo.data.length < 100) {
+                        const msg = `The uploaded file for ${key.replace('input-reg-', '').toUpperCase()} is invalid or empty. Please re-upload.`;
+                        showWizardError("reg-docs", "⚠ " + msg);
+                        errors.push(msg);
+                    }
+                    if (fileInfo.sizeKB <= 0) {
+                        const msg = `The uploaded file for ${key.replace('input-reg-', '').toUpperCase()} is empty (0 KB). Please upload a valid file.`;
+                        showWizardError("reg-docs", "⚠ " + msg);
+                        errors.push(msg);
+                    }
                 }
             }
         }
-
-        return true;
+        
+        if (errors.length > 0) {
+            showPaneErrorSummary("reg-pane-5", errors);
+            return false;
+        } else {
+            clearPaneErrorSummary("reg-pane-5");
+            return true;
+        }
     }
+
+    // Bind blur event listeners on all text/select elements to validate fields dynamically
+    function setupWizardBlurListeners() {
+        const fieldIds = [
+            "reg-input-firstname", "reg-input-lastname", "reg-input-email",
+            "reg-input-phone", "reg-input-address", "reg-input-postal",
+            "reg-input-city", "reg-input-idtype", "reg-input-idno",
+            "reg-input-bizname", "reg-input-biztype", "reg-input-category",
+            "reg-input-years", "reg-input-tin", "reg-input-zone",
+            "reg-input-size", "reg-input-hours"
+        ];
+        
+        fieldIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener("blur", () => {
+                    validateSingleField(id);
+                });
+                if (el.tagName === "SELECT") {
+                    el.addEventListener("change", () => {
+                        validateSingleField(id);
+                    });
+                }
+            }
+        });
+    }
+    setupWizardBlurListeners();
 
     btnRegNext.addEventListener("click", async (e) => {
         e.preventDefault(); 
         
         // Validate current step before proceeding or submitting
         if (currentRegStep === 1) {
-            const agreed = document.getElementById("reg-input-agree")?.checked;
-            if (!agreed) {
-                alert("Please agree to the Terms & Conditions before proceeding.");
-                return;
-            }
+            if (!validateTerms()) return;
         } else if (currentRegStep === 2) {
             if (!validateStep1()) return;
         } else if (currentRegStep === 3) {
@@ -1472,19 +1987,19 @@ function initializeUserDashboard() {
         } else {
             // Check auth state
             if (!auth.currentUser) {
-                alert("You must be logged in to submit an application.");
+                showPaneErrorSummary("reg-pane-6", ["You must be logged in to submit an application."]);
                 return;
             }
             
             // Stricter validations of all steps before writing to Firestore
             const agreedSubmit = document.getElementById("reg-input-agree")?.checked;
             if (!agreedSubmit) {
-                alert("Submission Blocked: You must agree to the Terms & Conditions.");
+                showPaneErrorSummary("reg-pane-6", ["Submission Blocked: You must agree to the Terms & Conditions."]);
                 return;
             }
             
             if (!validateStep1() || !validateStep2() || !validateStep3() || !validateStep4()) {
-                alert("Validation failed. Please review your inputs in previous steps before submitting.");
+                showPaneErrorSummary("reg-pane-6", ["Validation failed. Please review your inputs in previous steps before submitting."]);
                 return;
             }
 
@@ -1497,12 +2012,12 @@ function initializeUserDashboard() {
             const operatingHours = document.getElementById("reg-input-hours").value.trim();
             const operatingDays = Array.from(document.querySelectorAll(".day-badge.selected")).map(b => b.textContent.trim());
 
-            const emailVal = document.getElementById("reg-input-email").value.trim();
+            const emailVal = document.getElementById("reg-input-email").value.trim().toLowerCase();
             
             // Check disposable email
             const emailDomain = emailVal.toLowerCase().split("@")[1];
             if (disposableDomains.includes(emailDomain)) {
-                alert("Submission Blocked: Temporary or disposable email addresses are not allowed. Please use a standard email provider.");
+                showPaneErrorSummary("reg-pane-6", ["Submission Blocked: Temporary or disposable email addresses are not allowed. Please use a standard email provider."]);
                 return;
             }
 
@@ -1512,8 +2027,12 @@ function initializeUserDashboard() {
                 lastName: sanitizeInput(document.getElementById("reg-input-lastname").value.trim()),
                 email: sanitizeInput(emailVal),
                 phone: sanitizeInput(document.getElementById("reg-input-phone").value.trim()),
+                dateOfBirth: document.getElementById("reg-input-dob").value,
+                age: parseInt(document.getElementById("reg-input-age").value) || 0,
+                gender: document.getElementById("reg-input-gender").value,
                 address: sanitizeInput(document.getElementById("reg-input-address").value.trim()),
                 city: sanitizeInput(document.getElementById("reg-input-city").value.trim()),
+                postalCode: sanitizeInput(document.getElementById("reg-input-postal")?.value.trim() || ""),
                 idType: document.getElementById("reg-input-idtype").value,
                 idNumber: sanitizeInput(document.getElementById("reg-input-idno").value.trim()),
                 businessName: sanitizeInput(bizname) || "Market Stall",
@@ -1536,8 +2055,51 @@ function initializeUserDashboard() {
                 createdAt: new Date().toISOString()
             };
 
+            // Double submission prevention / spinner
+            btnRegNext.setAttribute("disabled", "true");
+            btnRegNext.innerHTML = `<span class="btn-spinner" aria-hidden="true"></span> Submitting...`;
+
             try {
-                btnRegNext.setAttribute("disabled", "true");
+                // Check duplicates
+                const queries = [];
+                
+                // 1. Same user check
+                queries.push(getDocs(query(collection(db, "applications"), where("userId", "==", auth.currentUser.uid), where("status", "==", "Pending"))));
+                
+                // 2. Same business name check
+                if (bizname && bizname !== "Market Stall") {
+                    queries.push(getDocs(query(collection(db, "applications"), where("businessName", "==", bizname), where("status", "==", "Pending"))));
+                }
+                
+                // 3. Same TIN check
+                if (appPayload.tinNumber) {
+                    queries.push(getDocs(query(collection(db, "applications"), where("tinNumber", "==", appPayload.tinNumber), where("status", "==", "Pending"))));
+                }
+                
+                const querySnapshots = await Promise.all(queries);
+                let duplicateFound = false;
+                let duplicateMessage = "";
+                
+                querySnapshots.forEach((snap, idx) => {
+                    if (!snap.empty) {
+                        duplicateFound = true;
+                        if (idx === 0) {
+                            duplicateMessage = "You already have a pending application. Multiple active applications are not permitted.";
+                        } else if (idx === 1 && bizname) {
+                            duplicateMessage = `An application for the business name "${bizname}" is already pending review.`;
+                        } else {
+                            duplicateMessage = "An application with the same TIN number is already pending review.";
+                        }
+                    }
+                });
+                
+                if (duplicateFound) {
+                    showPaneErrorSummary("reg-pane-6", [duplicateMessage]);
+                    btnRegNext.removeAttribute("disabled");
+                    btnRegNext.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Submit Application';
+                    return;
+                }
+
                 await addDoc(collection(db, "applications"), appPayload);
                 
                 // Add real-time notification
@@ -1569,6 +2131,7 @@ function initializeUserDashboard() {
                 }
 
                 alert("Application submitted successfully!");
+                isWizardDirty = false; // Reset dirty flag on successful submit
                 
                 // Clear wizard status, files, and form values
                 regUploadedFiles = {};
@@ -1592,9 +2155,10 @@ function initializeUserDashboard() {
                 document.querySelectorAll(".day-badge").forEach(b => b.classList.remove("selected"));
                 updateRegistrationWizardUI();
             } catch (err) {
-                alert("Submission Failed: " + err.message);
+                showPaneErrorSummary("reg-pane-6", ["Submission Failed: " + err.message]);
             } finally {
                 btnRegNext.removeAttribute("disabled");
+                btnRegNext.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Submit Application';
             }
         }
     });
@@ -1610,6 +2174,7 @@ function initializeUserDashboard() {
     btnRegCancel.addEventListener("click", (e) => {
         e.preventDefault();
         if (confirm("Are you sure you want to cancel? All progress will be cleared.")) {
+            isWizardDirty = false;
             newRegForm.reset();
             currentRegStep = 1;
             updateRegistrationWizardUI();

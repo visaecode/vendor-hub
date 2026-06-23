@@ -13,6 +13,18 @@ async function processUserAuthorization(email, password) {
         return;
     }
 
+    const signinBtn = document.getElementById("signinBtn");
+    const adminSigninBtn = document.getElementById("adminSigninBtn");
+
+    if (signinBtn) {
+        signinBtn.disabled = true;
+        signinBtn.innerHTML = `<span class="btn-spinner" aria-hidden="true"></span> Signing In...`;
+    }
+    if (adminSigninBtn) {
+        adminSigninBtn.disabled = true;
+        adminSigninBtn.innerHTML = `<span class="btn-spinner" aria-hidden="true"></span> Signing In...`;
+    }
+
     try {
         let loginEmail = email.trim();
         
@@ -39,7 +51,7 @@ async function processUserAuthorization(email, password) {
             userData = userDoc.data();
         } else {
             // Fallback: Query collection by email field
-            const q = query(collection(db, "users"), where("email", "==", loginEmail));
+            const q = query(collection(db, "users"), where("email", "==", loginEmail.toLowerCase()));
             const querySnapshot = await getDocs(q);
             if (!querySnapshot.empty) {
                 userData = querySnapshot.docs[0].data();
@@ -87,6 +99,15 @@ async function processUserAuthorization(email, password) {
             // Generic disclosure warning message
             alert("Login Failure: Incorrect email, username, or password.");
         }
+    } finally {
+        if (signinBtn) {
+            signinBtn.disabled = false;
+            signinBtn.textContent = "Sign In";
+        }
+        if (adminSigninBtn) {
+            adminSigninBtn.disabled = false;
+            adminSigninBtn.textContent = "Sign In";
+        }
     }
 }
 
@@ -104,7 +125,7 @@ async function continueWithGoogle() {
             userData = userDoc.data();
         } else {
             // Fallback: Query collection by email field
-            const q = query(collection(db, "users"), where("email", "==", user.email));
+            const q = query(collection(db, "users"), where("email", "==", user.email.toLowerCase()));
             const querySnapshot = await getDocs(q);
             if (!querySnapshot.empty) {
                 userData = querySnapshot.docs[0].data();
@@ -255,7 +276,7 @@ async function triggerPasswordReset(email) {
 // Submit handler
 document.getElementById("forgotForm")?.addEventListener("submit", (e) => {
     e.preventDefault();
-    const email = fpContactInput?.value.trim();
+    const email = fpContactInput?.value.trim().toLowerCase();
     triggerPasswordReset(email);
 });
 

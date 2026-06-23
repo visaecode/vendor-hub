@@ -167,6 +167,68 @@ function renderApplicationsTable() {
 }
 
 // Update application status and push real-time user notification
+
+// --- PREMIUM CUSTOM CONFIRMATION MODAL FUNCTION ---
+function showCustomConfirm(title, message, isDanger = false) {
+    return new Promise((resolve) => {
+        const overlay = document.createElement("div");
+        overlay.className = "custom-confirm-overlay";
+        
+        const modal = document.createElement("div");
+        modal.className = "custom-confirm-modal";
+        
+        const header = document.createElement("div");
+        header.className = "custom-confirm-header";
+        header.innerHTML = `<i class="fa-solid fa-circle-question"></i> <span>${escapeHTML(title)}</span>`;
+        
+        const body = document.createElement("div");
+        body.className = "custom-confirm-body";
+        body.innerHTML = message;
+        
+        const footer = document.createElement("div");
+        footer.className = "custom-confirm-footer";
+        
+        const cancelBtn = document.createElement("button");
+        cancelBtn.type = "button";
+        cancelBtn.className = "custom-confirm-btn custom-confirm-btn-cancel";
+        cancelBtn.textContent = "Cancel";
+        
+        const confirmBtn = document.createElement("button");
+        confirmBtn.type = "button";
+        confirmBtn.className = "custom-confirm-btn custom-confirm-btn-confirm" + (isDanger ? " danger" : "");
+        confirmBtn.textContent = "Confirm";
+        
+        footer.appendChild(cancelBtn);
+        footer.appendChild(confirmBtn);
+        
+        modal.appendChild(header);
+        modal.appendChild(body);
+        modal.appendChild(footer);
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+        
+        overlay.offsetHeight; 
+        overlay.classList.add("show");
+        
+        const handleResolve = (val) => {
+            overlay.classList.remove("show");
+            setTimeout(() => {
+                overlay.remove();
+                resolve(val);
+            }, 250);
+        };
+        
+        cancelBtn.addEventListener("click", () => handleResolve(false));
+        confirmBtn.addEventListener("click", () => handleResolve(true));
+        
+        overlay.addEventListener("click", (e) => {
+            if (e.target === overlay) {
+                handleResolve(false);
+            }
+        });
+    });
+}
+
 async function handleApplicationStatusUpdate(appId, newStatus) {
     if (!confirm(`Are you sure you want to change the status of this application to ${newStatus}?`)) {
         return;
@@ -291,7 +353,8 @@ function renderDocsTable() {
 }
 
 async function handleVerifyDocs(appId) {
-    if (!confirm("Are you sure you want to mark all documents as verified? This will approve the application.")) {
+    const confirmed = await showCustomConfirm("Verify Documents", "Are you sure you want to mark all documents as verified? This will approve the application.");
+    if (!confirmed) {
         return;
     }
     await handleApplicationStatusUpdate(appId, "Approved");
@@ -694,7 +757,8 @@ function renderVendorsTable() {
     tbody.querySelectorAll(".deactivate-vendor-btn").forEach(btn => {
         btn.addEventListener("click", async () => {
             const vendorId = btn.getAttribute("data-id");
-            if (confirm("Are you sure you want to deactivate this vendor?")) {
+            const confirmed = await showCustomConfirm("Deactivate Vendor", "Are you sure you want to deactivate this vendor?", true);
+            if (confirmed) {
                 try {
                     await updateDoc(doc(db, "users", vendorId), { status: "Inactive" });
                 } catch (err) {
@@ -707,7 +771,8 @@ function renderVendorsTable() {
     tbody.querySelectorAll(".activate-vendor-btn").forEach(btn => {
         btn.addEventListener("click", async () => {
             const vendorId = btn.getAttribute("data-id");
-            if (confirm("Are you sure you want to activate this vendor?")) {
+            const confirmed = await showCustomConfirm("Activate Vendor", "Are you sure you want to activate this vendor?");
+            if (confirmed) {
                 try {
                     await updateDoc(doc(db, "users", vendorId), { status: "Active" });
                 } catch (err) {
@@ -1353,7 +1418,8 @@ function renderAssignStallsTable() {
     tbody.querySelectorAll(".unassign-stall-btn").forEach(btn => {
         btn.addEventListener("click", async () => {
             const stallId = btn.getAttribute("data-id");
-            if (!confirm("Are you sure you want to unassign this stall? This will set it back to Available.")) return;
+            const confirmed = await showCustomConfirm("Unassign Stall", "Are you sure you want to unassign this stall? This will set it back to Available.", true);
+            if (!confirmed) return;
 
             try {
                 const stall = allStalls.find(s => s.id === stallId);
@@ -2060,7 +2126,8 @@ function initializeAdminDashboard() {
     // Sign out button handler
     document.querySelector(".btn-logout")?.addEventListener("click", async (e) => {
         e.preventDefault();
-        if (confirm("Are you sure you want to sign out?")) {
+        const confirmed = await showCustomConfirm("Sign Out", "Are you sure you want to sign out?");
+        if (confirmed) {
             try {
                 if (unsubscribeSystemSettings) unsubscribeSystemSettings();
                 await signOut(auth);
